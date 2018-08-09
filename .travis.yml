@@ -1,12 +1,19 @@
 # Config file for automatic testing at travis-ci.com
 
 language: python
-python:
-    - 3.7
-    - 3.6
-    - 3.5
-    - 3.4
-dist: xenial
-sudo: true
+matrix:
+    include:
+        - python: 3.4
+          dist: trusty
+          sudo: false
+        - python: 3.5
+          dist: trusty
+          sudo: false
+        - python: 3.6
+          dist: trusty
+          sudo: false
+        - python: 3.7
+          dist: xenial
+          sudo: true
 install: pip install -U tox-travis
 script: tox
