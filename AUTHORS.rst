@@ -5,7 +5,8 @@ Credits
 Development Lead
 ----------------
 
-* Dileep Kishore, Srikiran Chandrasekaran <k.dileep1994@gmail.com>
+* Dileep Kishore <k.dileep1994@gmail.com>
+* Srikiran Chandrasekaran
 
 Contributors
 ------------
