@@ -10,7 +10,7 @@ a line by itself, preferably preceded by a blank line.
 """
 import numpy as np
 
-def direct_naive(V, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
+def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     r"""Naive implementation of the Direct Method.
 
     Several sentences providing an extended description. Refer to
@@ -95,19 +95,16 @@ def direct_naive(V, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
 
     """
 
-    Na = 6.023e23
-    ite = 1
+    Na = 6.023e23 # Avogadro's constant
+    ite = 1 # Iteration counter
     t = 0 # Time in seconds
-    nr = V.shape[0] # Number of reactions
-    ns = V.shape[1] # Number of species
-    Xt = X0 # Number of species at time t
+    nr = V_r.shape[0] # Number of reactions
+    ns = V_r.shape[1] # Number of species
+    V = V_p-V_r # nr x ns
+    Xt = np.copy(X0) # Number of species at time t
     Xtemp = np.zeros(nr) # Temporary X for updating
-    prop = np.ones(nr) # Vector of propensities
     kstoc = np.zeros(nr) # Stochastic rate constants
-    V_reactants = V # nr x ns
-    V_reactants[V>0] = 0
-    V_reactants = V_reactants * -1
-    orders = np.sum(V_reactants,1) # Order of rxn = number of reactants
+    orders = np.sum(V_r,1) # Order of rxn = number of reactants
 
     if np.max(orders) > 3:
         raise RuntimeError('Order greater than 3 detected.')
@@ -118,33 +115,34 @@ def direct_naive(V, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     # Determine kstoc from kdet and the highest order or reactions
     for ind in range(nr):
         # If highest order is 3
-        if np.max(V_reactants[ind,:]) == 3:
-            kstoc[ind] = k_det[ind] * 6 / np.power(Na*V, 3)
-        elif np.max(V_reactants[ind,:]) == 2: # Highest order is 2
-            kstoc[ind] = k_det[ind] * 2 / np.power(Na*V, orders[ind])
+        if np.max(V_r[ind,:]) == 3:
+            kstoc[ind] = k_det[ind] * 6 / np.power(Na*volume, 3)
+        elif np.max(V_r[ind,:]) == 2: # Highest order is 2
+            kstoc[ind] = k_det[ind] * 2 / np.power(Na*volume, orders[ind])
         else:
             kstoc[ind] = k_det[ind]
-
+    prop = np.copy(kstoc) # Vector of propensities
 
     while ite<max_iter:
         # Calculate propensities
         for ind1 in range(nr):
             for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                prop[ind] *= np.power(Xt[ind2], V_reactants[ind1,ind2])
+                prop[ind1] *= np.power(Xt[ind2], V_r[ind1,ind2])
         # Roulette wheel
         prop0 = np.sum(prop) # Sum of propensities
         prop = prop/prop0 # Normalize propensities to be < 1
         # Concatenate 0 to list of probabilities
-        probs = [0]+list(np.cumsum(prop/prop0))
+        probs = [0]+list(np.cumsum(prop))
         r1 = np.random.rand() # Roll the wheel
         # Identify where it lands and update that reaction
-        for ind1 in range(nr):
+        for ind1 in range(nr+1):
             if r1 <= probs[ind1]:
                 Xtemp = Xt + V[ind1-1,:]
                 break
-        print(Xt, Xtemp)
-        prop = kstoc
+        print(Xt, Xtemp, probs)
+        print("-------------------------------------------------")
+        prop = np.copy(kstoc)
         ite += 1
         # If negative species produced, reject step
         if np.min(Xtemp) < 0:
@@ -159,8 +157,9 @@ def direct_naive(V, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
                 break
 
 if __name__ == "__main__":
-    V = np.array([[-1,1,0], [0,-1,1]])
+    V_r = np.array([[1,0,0],[0,1,0]])
+    V_p = np.array([[0,1,0],[0,0,1]])
     X0 = np.array([100,0,0])
     k = np.array([1,1])
-    print(V, X0, V.shape, X0.shape)
-    direct_naive(V, X0, k, max_t = 10, max_iter = 110)
+    print(V_r, X0, V_r.shape, X0.shape)
+    direct_naive(V_r, V_p, X0, k, max_t = 10, max_iter = 60)
