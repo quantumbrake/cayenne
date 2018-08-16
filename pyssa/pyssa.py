@@ -9,6 +9,7 @@ a line by itself, preferably preceded by a blank line.
 
 """
 import numpy as np
+import sys
 
 def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     r"""Naive implementation of the Direct Method.
@@ -105,8 +106,10 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     Xtemp = np.zeros(nr) # Temporary X for updating
     kstoc = np.zeros(nr) # Stochastic rate constants
     orders = np.sum(V_r,1) # Order of rxn = number of reactants
+    status = 0
 
     if np.max(orders) > 3:
+        status = -1
         raise RuntimeError('Order greater than 3 detected.')
 
     if np.max(orders) >1:
@@ -131,6 +134,13 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
                 prop[ind1] *= np.power(Xt[ind2], V_r[ind1,ind2])
         # Roulette wheel
         prop0 = np.sum(prop) # Sum of propensities
+        if prop0 == 0:
+            if np.sum(Xt) == 0:
+                status = 3
+                return [t, Xt, status]
+            else:
+                t, Xt = 0, 0
+                raise RuntimeWarning('Propensity zero detected, stopping simulation')
         prop = prop/prop0 # Normalize propensities to be < 1
         # Concatenate 0 to list of probabilities
         probs = [0]+list(np.cumsum(prop))
@@ -153,13 +163,16 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
             r2 = np.random.rand()
             t += 1/prop0 * np.log(1/r2)
             if t>max_t:
+                status = 2
                 print("Reached maximum time (t = )",t)
-                break
+                return [t, Xt, status]
+    status = 1
+    return [t, Xt, status]
 
 if __name__ == "__main__":
     V_r = np.array([[1,0,0],[0,1,0]])
     V_p = np.array([[0,1,0],[0,0,1]])
     X0 = np.array([100,0,0])
-    k = np.array([1,1])
+    k = np.array([0,0])
     print(V_r, X0, V_r.shape, X0.shape)
     direct_naive(V_r, V_p, X0, k, max_t = 10, max_iter = 60)
