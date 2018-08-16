@@ -168,11 +168,3 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
                 return [t, Xt, status]
     status = 1
     return [t, Xt, status]
-
-if __name__ == "__main__":
-    V_r = np.array([[1,0,0],[0,1,0]])
-    V_p = np.array([[0,1,0],[0,0,1]])
-    X0 = np.array([100,0,0])
-    k = np.array([0,0])
-    print(V_r, X0, V_r.shape, X0.shape)
-    direct_naive(V_r, V_p, X0, k, max_t = 10, max_iter = 60)
