@@ -12,64 +12,55 @@ import numpy as np
 import sys
 
 def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
-    r"""Naive implementation of the Direct Method.
+    r"""Naive implementation of the Direct method.
 
-    Several sentences providing an extended description. Refer to
-    variables using back-ticks, e.g. `var`.
+    A naive implementation of the Direct method of the SSA algorithm
+    using back-ticks, e.g. `var`.
 
     Parameters
     ----------
-    var1 : array_like
-        Array_like means all those objects -- lists, nested lists, etc. --
-        that can be converted to an array.  We can also refer to
-        variables like `var1`.
-    var2 : int
-        The type above can either refer to an actual Python type
-        (e.g. ``int``), or describe the type of the variable in more
-        detail, e.g. ``(N,) ndarray`` or ``array_like``.
-    long_var_name : {'hi', 'ho'}, optional
-        Choices in brackets, default first when optional.
+    V_r : (nr, ns) ndarray
+        A 2D array of the stoichiometric coefficients of the reactants.
+        Reactions are rows and species are columns.
+    V_p : (nr, ns) ndarray
+        A 2D array of the stoichiometric coefficients of the products.
+        Reactions are rows and species are columns.
+    X0 : (ns,) ndarray
+        A 1D array representing the initial state of the system.
+    k_det : (nr,) ndarray
+        A 1D array representing the deterministic rate constants of the
+        system.
+    max_t : float, optional
+        The end time of the simulation. The default is `max_t`=1.0 units.
+    max_iter : int, optional
+        The maximum number of iterations of the simulation loop. The
+        default is 100 iterations.
+    volume : float, optional
+        The volume of the reactor vessel which is important for second
+        and higher order reactions. Defaults to 1 arbitrary units.
 
     Returns
     -------
-    type
-        Explanation of anonymous return value of type ``type``.
-    describe : type
-        Explanation of return value named `describe`.
-    out : type
-        Explanation of `out`.
-    type_without_description
-
-    Other Parameters
-    ----------------
-    only_seldom_used_keywords : type
-        Explanation
-    common_parameters_listed_above : type
-        Explanation
+    t : float
+        End time of the simulation.
+    Xt : ndarray
+        System state at time `t` and initial.
+    status : int
+        Indicates the status of the simulation at exit.
+            1 : Succesful completion, terminated when `max_iter`
+            iterations reached.
+            2 : Succesful completion, terminated when `max_t` croosed.
+            3 : Succesful completion, terminated when all species
+            went extinct.
+            -1 : Failure, order greater than 3 detected.
+            -2 : Failure, propensity zero without extinction.
 
     Raises
     ------
-    BadException
-        Because you shouldn't have done that.
+    RuntimeError
+        If supplied with order > 3.
 
-    See Also
-    --------
-    otherfunc : relationship (optional)
-    newfunc : Relationship (optional), which could be fairly long, in which
-              case the line wraps here.
-    thirdfunc, fourthfunc, fifthfunc
 
-    Notes
-    -----
-    Notes about the implementation algorithm (if needed).
-
-    This can have multiple paragraphs.
-
-    You may include some math:
-
-    .. math:: X(e^{j\omega } ) = x(n)e^{ - j\omega n}
-
-    And even use a Greek symbol like :math:`\omega` inline.
 
     References
     ----------
@@ -109,7 +100,6 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     status = 0
 
     if np.max(orders) > 3:
-        status = -1
         raise RuntimeError('Order greater than 3 detected.')
 
     if np.max(orders) >1:
@@ -140,7 +130,8 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
                 return [t, Xt, status]
             else:
                 t, Xt = 0, 0
-                raise RuntimeWarning('Propensity zero detected, stopping simulation')
+                status = -2
+                return [t, Xt, status]
         prop = prop/prop0 # Normalize propensities to be < 1
         # Concatenate 0 to list of probabilities
         probs = [0]+list(np.cumsum(prop))
