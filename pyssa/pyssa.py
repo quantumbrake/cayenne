@@ -78,12 +78,11 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     These are written in doctest format, and should illustrate how to
     use the function.
 
-    >>> a = [1, 2, 3]
-    >>> print [x + 3 for x in a]
-    [4, 5, 6]
-    >>> print "a\n\nb"
-    a
-    b
+    >>> V_r = np.array([[1,0,0],[0,1,0]])
+    >>> V_p = np.array([[0,1,0],[0,0,1]])
+    >>> X0 = np.array([10,0,0])
+    >>> k = np.array([1,1])
+    >>> [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t = 1, max_iter = 100)
 
     """
 
