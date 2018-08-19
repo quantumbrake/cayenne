@@ -67,11 +67,16 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     Cite the relevant literature, e.g. [1]_.  You may also cite these
     references in the notes section above.
 
-    .. [1] O. McNoleg, "The integration of GIS, remote sensing,
-       expert systems and adaptive co-kriging for environmental habitat
-       modelling of the Highland Haggis using object-oriented, fuzzy-logic
-       and neural-network techniques," Computers & Geosciences, vol. 22,
-       pp. 585-588, 1996.
+    .. [1] Gillespie, D.T., 1976. A general method for numerically
+    simulating the stochastic time evolution of coupled chemical
+    reactions. J. Comput. Phys. 22, 403–434.
+    doi:10.1016/0021-9991(76)90041-3.
+    .. [2] Cao, Y., Gillespie, D.T., Petzold, L.R., 2006.
+    Efficient step size selection for the tau-leaping simulation
+    method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
+    .. [3] Gupta, A., 2013. Parameter estimation in deterministic
+    and stochastic models of biological systems. University of
+    Wisconsin-Madison.
 
     Examples
     --------
