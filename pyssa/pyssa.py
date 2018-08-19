@@ -14,8 +14,7 @@ import sys
 def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     r"""Naive implementation of the Direct method.
 
-    A naive implementation of the Direct method of the SSA algorithm
-    using back-ticks, e.g. `var`.
+    A naive implementation of the Direct method of the SSA algorithm.
 
     Parameters
     ----------
@@ -60,12 +59,8 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     RuntimeError
         If supplied with order > 3.
 
-
-
     References
     ----------
-    Cite the relevant literature, e.g. [1]_.  You may also cite these
-    references in the notes section above.
 
     .. [1] Gillespie, D.T., 1976. A general method for numerically
     simulating the stochastic time evolution of coupled chemical
@@ -80,9 +75,6 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
 
     Examples
     --------
-    These are written in doctest format, and should illustrate how to
-    use the function.
-
     >>> V_r = np.array([[1,0,0],[0,1,0]])
     >>> V_p = np.array([[0,1,0],[0,0,1]])
     >>> X0 = np.array([10,0,0])
