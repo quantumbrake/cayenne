@@ -29,7 +29,7 @@ def test_too_high_order():
     X0 = np.array([100,0,0])
     k = np.array([1,1])
     print(V_r, X0, V_r.shape, X0.shape)
-    with pytest.raises(RuntimeError):
+    with pytest.raises(ValueError):
         direct_naive(V_r, V_p, X0, k, max_t = 10, max_iter = 100)
 
 def test_status_3():

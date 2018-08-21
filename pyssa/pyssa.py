@@ -56,7 +56,7 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
 
     Raises
     ------
-    RuntimeError
+    ValueError
         If supplied with order > 3.
 
     References
@@ -96,7 +96,7 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     status = 0
 
     if np.max(orders) > 3:
-        raise RuntimeError('Order greater than 3 detected.')
+        raise ValueError('Order greater than 3 detected.')
 
     if np.max(orders) >1:
         raise RuntimeWarning('Order greater than 1, using volume = ', volume)
