@@ -11,8 +11,8 @@ def test_null():
     X0 = np.array([100,0,0])
     k = np.array([0,0])
     print(V_r, X0, V_r.shape, X0.shape)
-    with pytest.raises(RuntimeWarning):
-        direct_naive(V_r, V_p, X0, k, max_t = 10, max_iter = 100)
+    [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t = 10, max_iter = 100)
+    assert status == -2
 
 def test_higher_order():
     V_r = np.array([[2,0,0],[0,1,0]])
