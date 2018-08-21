@@ -119,28 +119,13 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
                 # prop = kstoc * product of (number raised to order)
                 prop[ind1] *= np.power(Xt[ind2], V_r[ind1,ind2])
         # Roulette wheel
-        prop0 = np.sum(prop) # Sum of propensities
-        if prop0 == 0:
-            if np.sum(Xt) == 0:
-                status = 3
-                return [t, Xt, status]
-            else:
-                t, Xt = 0, 0
-                status = -2
-                return [t, Xt, status]
-        prop = prop/prop0 # Normalize propensities to be < 1
-        # Concatenate 0 to list of probabilities
-        probs = [0]+list(np.cumsum(prop))
-        r1 = np.random.rand() # Roll the wheel
-        # Identify where it lands and update that reaction
-        for ind1 in range(nr+1):
-            if r1 <= probs[ind1]:
-                Xtemp = Xt + V[ind1-1,:]
-                break
-        print(Xt, Xtemp, probs)
+        [choice,status] = roulette_selection(prop,Xt)
+        if status == 0:
+            Xtemp = Xt + V[choice,:]
+        else:
+            return [t,Xt,status]
+        print(Xt, Xtemp)
         print("-------------------------------------------------")
-        prop = np.copy(kstoc)
-        ite += 1
         # If negative species produced, reject step
         if np.min(Xtemp) < 0:
             continue
@@ -148,10 +133,55 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
         else:
             Xt = Xtemp
             r2 = np.random.rand()
-            t += 1/prop0 * np.log(1/r2)
+            t += 1/np.sum(prop) * np.log(1/r2)
             if t>max_t:
                 status = 2
                 print("Reached maximum time (t = )",t)
                 return [t, Xt, status]
+        prop = np.copy(kstoc)
+        ite += 1
     status = 1
     return [t, Xt, status]
+
+def roulette_selection(prop_list, Xt):
+    r"""Perform roulette selection on the list of propensities.
+
+    Return the index of the selected reaction (`choice`) by performing
+    Roulette selection on the given list of reaction propensities.
+
+    Parameters
+    ----------
+    prop : array_like
+        A 1D array of the propensities of the reactions.
+
+    Returns
+    -------
+    choice : int
+        Index of the chosen reaction.
+    status : int
+        Status of the simulation as described in `direct_naive`.
+
+    Examples
+    --------
+    >>>
+
+    """
+    prop = np.copy(prop_list)
+    prop0 = np.sum(prop) # Sum of propensities
+    if prop0 == 0:
+        if np.sum(Xt) == 0:
+            status = 3
+            return [-1, status]
+        else:
+            status = -2
+            return [-1, status]
+    prop = prop/prop0 # Normalize propensities to be < 1
+    # Concatenate 0 to list of probabilities
+    probs = [0]+list(np.cumsum(prop))
+    r1 = np.random.rand() # Roll the wheel
+    # Identify where it lands and update that reaction
+    for ind1 in range(len(probs)):
+        if r1 <= probs[ind1]:
+            choice = ind1-1
+            break
+    return [choice, 0]
