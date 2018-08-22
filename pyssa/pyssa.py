@@ -103,7 +103,7 @@ def direct_naive(
     if np.any(X0 < 0):
         raise ValueError('Initial numbers in X0 can\'t be negative.')
 
-    if np.min(k_det) < 0:
+    if np.any(k_det < 0):
         neg_indices = np.where(k_det < 0)[0]
         raise ValueError('Rate constant(s) at position(s) '+str(neg_indices)+' are negative.')
 
