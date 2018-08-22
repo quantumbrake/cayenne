@@ -91,16 +91,16 @@ def direct_naive(
     >>> [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t = 1, max_iter = 100)
     """
 
-    Na = 6.023e23 # Avogadro's constant
-    ite = 1 # Iteration counter
-    t = 0 # Time in seconds
-    nr = V_r.shape[0] # Number of reactions
-    ns = V_r.shape[1] # Number of species
-    V = V_p-V_r # nr x ns
-    Xt = np.copy(X0) # Number of species at time t
-    Xtemp = np.zeros(nr) # Temporary X for updating
-    kstoc = np.zeros(nr) # Stochastic rate constants
-    orders = np.sum(V_r,1) # Order of rxn = number of reactants
+    Na = 6.023e23  # Avogadro's constant
+    ite = 1  # Iteration counter
+    t = 0  # Time in seconds
+    nr = V_r.shape[0]  # Number of reactions
+    ns = V_r.shape[1]  # Number of species
+    V = V_p-V_r  # nr x ns
+    Xt = np.copy(X0)  # Number of species at time t
+    Xtemp = np.zeros(nr)  # Temporary X for updating
+    kstoc = np.zeros(nr)  # Stochastic rate constants
+    orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
     status = 0
 
     if np.max(orders) > 3:
