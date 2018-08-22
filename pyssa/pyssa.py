@@ -1,11 +1,21 @@
 """
     Naive implementation of the Gillespie algorithm (Direct method)
 """
-import numpy as np
-import sys
 
-def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
-    r"""Naive implementation of the Direct method.
+from typing import Tuple
+
+import numpy as np
+
+
+def direct_naive(
+        V_r: np.ndarray,
+        V_p: np.ndarray,
+        X0: np.ndarray,
+        k_det, max_t: float = 1.0,
+        max_iter: int = 100,
+        volume: float = 1.0,
+) -> Tuple[float, np.ndarray, int]:
+    """Naive implementation of the Direct method.
 
     A naive implementation of the Direct method of the SSA algorithm
     using back-ticks, e.g. `var`.
