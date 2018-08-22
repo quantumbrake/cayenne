@@ -96,7 +96,7 @@ def direct_naive(
     t = 0  # Time in seconds
     nr = V_r.shape[0]  # Number of reactions
     ns = V_r.shape[1]  # Number of species
-    V = V_p-V_r  # nr x ns
+    V = V_p - V_r  # nr x ns
     Xt = np.copy(X0)  # Number of species at time t
     Xtemp = np.zeros(nr)  # Temporary X for updating
     kstoc = np.zeros(nr)  # Stochastic rate constants
@@ -113,11 +113,11 @@ def direct_naive(
         # If highest order is 3
         if np.max(V_r[ind, :]) == 3:
             kstoc[ind] = k_det[ind] * 6 / np.power(Na * volume, 3)
-        elif np.max(V_r[ind, :]) == 2: # Highest order is 2
+        elif np.max(V_r[ind, :]) == 2:  # Highest order is 2
             kstoc[ind] = k_det[ind] * 2 / np.power(Na * volume, orders[ind])
         else:
             kstoc[ind] = k_det[ind]
-    prop = np.copy(kstoc) # Vector of propensities
+    prop = np.copy(kstoc)  # Vector of propensities
 
     while ite < max_iter:
         # Calculate propensities
@@ -142,7 +142,7 @@ def direct_naive(
         # Identify where it lands and update that reaction
         for ind1 in range(nr + 1):
             if r1 <= probs[ind1]:
-                Xtemp = Xt + V[ind1 - 1,:]
+                Xtemp = Xt + V[ind1 - 1, :]
                 break
         print(Xt, Xtemp, probs)
         print('-' * 80)
