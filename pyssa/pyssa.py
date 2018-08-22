@@ -88,6 +88,23 @@ def direct_naive(V_r, V_p, X0, k_det, max_t = 1, max_iter = 100, volume = 1):
     t = 0 # Time in seconds
     nr = V_r.shape[0] # Number of reactions
     ns = V_r.shape[1] # Number of species
+
+    if (nr != V_p.shape[0]) or (ns != V_p.shape[1]):
+        raise ValueError('V_r and V_p should be the same shape.')
+
+    if np.any(V_r<0):
+        raise ValueError('V_r cannot have negative elements.')
+
+    if np.any(V_p<0):
+        raise ValueError('V_p cannot have negative elements.')
+
+    if np.any(X0<0):
+        raise ValueError('Initial numbers in X0 can\'t be negative.')
+
+    if np.min(k_det) < 0:
+        neg_indices = np.where(k_det<0)[0]
+        raise ValueError('Rate constant(s) at position(s) '+str(neg_indices)+' are negative.')
+# ADD TESTS FOR THESE SANITY CHECKS
     V = V_p-V_r # nr x ns
     Xt = np.copy(X0) # Number of species at time t
     Xtemp = np.zeros(nr) # Temporary X for updating
