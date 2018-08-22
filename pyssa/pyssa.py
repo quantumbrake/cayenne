@@ -63,8 +63,6 @@ def direct_naive(
     RuntimeError
         If supplied with order > 3.
 
-
-
     References
     ----------
     Cite the relevant literature, e.g. [1]_.  You may also cite these
@@ -91,7 +89,6 @@ def direct_naive(
     >>> X0 = np.array([10,0,0])
     >>> k = np.array([1,1])
     >>> [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t = 1, max_iter = 100)
-
     """
 
     Na = 6.023e23 # Avogadro's constant
