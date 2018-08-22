@@ -105,48 +105,47 @@ def direct_naive(
 
     if np.max(orders) > 3:
         raise RuntimeError('Order greater than 3 detected.')
-
-    if np.max(orders) >1:
+    if np.max(orders) > 1:
         raise RuntimeWarning('Order greater than 1, using volume = ', volume)
 
     # Determine kstoc from kdet and the highest order or reactions
     for ind in range(nr):
         # If highest order is 3
-        if np.max(V_r[ind,:]) == 3:
-            kstoc[ind] = k_det[ind] * 6 / np.power(Na*volume, 3)
-        elif np.max(V_r[ind,:]) == 2: # Highest order is 2
-            kstoc[ind] = k_det[ind] * 2 / np.power(Na*volume, orders[ind])
+        if np.max(V_r[ind, :]) == 3:
+            kstoc[ind] = k_det[ind] * 6 / np.power(Na * volume, 3)
+        elif np.max(V_r[ind, :]) == 2: # Highest order is 2
+            kstoc[ind] = k_det[ind] * 2 / np.power(Na * volume, orders[ind])
         else:
             kstoc[ind] = k_det[ind]
     prop = np.copy(kstoc) # Vector of propensities
 
-    while ite<max_iter:
+    while ite < max_iter:
         # Calculate propensities
         for ind1 in range(nr):
             for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= np.power(Xt[ind2], V_r[ind1,ind2])
+                prop[ind1] *= np.power(Xt[ind2], V_r[ind1, ind2])
         # Roulette wheel
-        prop0 = np.sum(prop) # Sum of propensities
+        prop0 = np.sum(prop)  # Sum of propensities
         if prop0 == 0:
             if np.sum(Xt) == 0:
                 status = 3
-                return [t, Xt, status]
+                return t, Xt, status
             else:
                 t, Xt = 0, 0
                 status = -2
-                return [t, Xt, status]
-        prop = prop/prop0 # Normalize propensities to be < 1
+                return t, Xt, status
+        prop = prop / prop0  # Normalize propensities to be < 1
         # Concatenate 0 to list of probabilities
-        probs = [0]+list(np.cumsum(prop))
-        r1 = np.random.rand() # Roll the wheel
+        probs = [0] + list(np.cumsum(prop))
+        r1 = np.random.rand()  # Roll the wheel
         # Identify where it lands and update that reaction
-        for ind1 in range(nr+1):
+        for ind1 in range(nr + 1):
             if r1 <= probs[ind1]:
-                Xtemp = Xt + V[ind1-1,:]
+                Xtemp = Xt + V[ind1 - 1,:]
                 break
         print(Xt, Xtemp, probs)
-        print("-------------------------------------------------")
+        print('-' * 80)
         prop = np.copy(kstoc)
         ite += 1
         # If negative species produced, reject step
@@ -156,10 +155,10 @@ def direct_naive(
         else:
             Xt = Xtemp
             r2 = np.random.rand()
-            t += 1/prop0 * np.log(1/r2)
-            if t>max_t:
+            t += 1 / prop0 * np.log(1 / r2)
+            if t > max_t:
                 status = 2
-                print("Reached maximum time (t = )",t)
-                return [t, Xt, status]
+                print("Reached maximum time (t = )", t)
+                return t, Xt, status
     status = 1
-    return [t, Xt, status]
+    return t, Xt, status
