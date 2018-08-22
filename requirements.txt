@@ -1,2 +1,2 @@
 -i https://pypi.org/simple
-
+numpy==1.15.1
