@@ -1,12 +1,12 @@
 -i https://pypi.org/simple
 alabaster==0.7.11
 argh==0.26.2
-astroid==2.0.3
+astroid==2.0.4
 atomicwrites==1.1.5
 attrs==18.1.0
 babel==2.6.0
 bumpversion==0.5.3
-certifi==2018.4.16
+certifi==2018.8.13
 chardet==3.0.4
 coverage==4.5.1
 docutils==0.14
@@ -31,15 +31,15 @@ pylint==2.1.1
 pyparsing==2.2.0
 pytest-cov==2.5.1
 pytest-runner==4.2
-pytest==3.7.1
+pytest==3.7.2
 pytz==2018.5
 pyyaml==3.13
 requests==2.19.1; python_version != '3.2.*'
 six==1.11.0
 snowballstemmer==1.2.1
-sphinx==1.7.6
+sphinx==1.7.7
 sphinxcontrib-websupport==1.1.0; python_version != '3.2.*'
-tox==3.1.3
+tox==3.2.1
 typed-ast==1.1.0; python_version < '3.7' and implementation_name == 'cpython'
 urllib3==1.23; python_version != '3.2.*'
 virtualenv==16.0.0; python_version != '3.2.*'
