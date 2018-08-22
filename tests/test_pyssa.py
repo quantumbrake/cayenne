@@ -49,3 +49,12 @@ def test_status_2():
     print(V_r, X0, V_r.shape, X0.shape)
     [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t = 1, max_iter = 100)
     assert status == 2
+
+def test_neg_k():
+    V_r = np.array([[1,0,0,0,0],[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1]])
+    V_p = np.array([[0,1,0,0,0],[0,0,1,0,0],[0,0,0,1,0],[0,0,0,0,1],[0,0,0,0,0]])
+    X0 = np.array([10,0,0,0,0])
+    k = np.array([1,1,-1,1,-1])
+    print(V_r, X0, V_r.shape, X0.shape)
+    with pytest.raises(ValueError):
+        direct_naive(V_r, V_p, X0, k, max_t = 1, max_iter = 100)
