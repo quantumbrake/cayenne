@@ -14,6 +14,7 @@ def direct_naive(
         k_det, max_t: float = 1.0,
         max_iter: int = 100,
         volume: float = 1.0,
+        seed: int = 0,
 ) -> Tuple[float, np.ndarray, int]:
     """Naive implementation of the Direct method.
 
@@ -113,6 +114,7 @@ def direct_naive(
     kstoc = np.zeros(nr)  # Stochastic rate constants
     orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
     status = 0
+    np.random.seed(seed = seed)  # Set the seed
 
     if np.max(orders) > 3:
         raise ValueError('Order greater than 3 detected.')
