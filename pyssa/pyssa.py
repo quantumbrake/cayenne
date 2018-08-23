@@ -94,6 +94,10 @@ def direct_naive(
     if (nr != V_p.shape[0]) or (ns != V_p.shape[1]):
         raise ValueError('V_r and V_p should be the same shape.')
 
+    if (nr != k_det.shape[0]):
+        raise ValueError('Number of elements in k_det must equal\
+         number of rows in V_r.')
+
     if np.any(V_r < 0):
         raise ValueError('V_r cannot have negative elements.')
 
