@@ -86,7 +86,6 @@ def direct_naive(
     >>> [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t = 1, max_iter = 100)
     """
 
-    Na = 6.023e23  # Avogadro's constant
     ite = 1  # Iteration counter
     t = 0  # Time in seconds
     nr = V_r.shape[0]  # Number of reactions
@@ -123,15 +122,8 @@ def direct_naive(
         raise RuntimeWarning('Order greater than 1, using volume = ', volume)
 
     # Determine kstoc from kdet and the highest order or reactions
-    for ind in range(nr):
-        # If highest order is 3
-        if np.max(V_r[ind, :]) == 3:
-            kstoc[ind] = k_det[ind] * 6 / np.power(Na * volume, 3)
-        elif np.max(V_r[ind, :]) == 2:  # Highest order is 2
-            kstoc[ind] = k_det[ind] * 2 / np.power(Na * volume, orders[ind])
-        else:
-            kstoc[ind] = k_det[ind]
-    prop = np.copy(kstoc)  # Vector of propensities
+    kstoc = get_kstoc(k_det, V_r, volume)
+    prop = np.copy(kstoc) # Vector of propensities
 
     while ite < max_iter:
         # Calculate propensities
@@ -206,3 +198,57 @@ def roulette_selection(prop_list, Xt):
             choice = ind1 - 1
             break
     return [choice, 0]
+
+def get_kstoc(k_det, V_r, volume = 1.0):
+    r"""Compute k_stoc from k_det.
+
+    Return a vector of the stochastic rate constants (k_stoc) determined
+    from the deterministic rate constants (k_det).
+
+    Parameters
+    ----------
+    k_det : (nr,) ndarray
+        A 1D array representing the deterministic rate constants of the
+        system.
+    V_r : (nr, ns) ndarray
+        A 2D array of the stoichiometric coefficients of the reactants.
+        Reactions are rows and species are columns.
+    volume : float, optional
+        The volume of the reactor vessel which is important for second
+        and higher order reactions. Defaults to 1 arbitrary units.
+
+    Returns
+    -------
+    k_stoc : (nr,) ndarray
+        A 1D array representing the stochastic rate constants of the
+        system.
+
+    References
+    ----------
+
+    .. [1] Gillespie, D.T., 1976. A general method for numerically
+    simulating the stochastic time evolution of coupled chemical
+    reactions. J. Comput. Phys. 22, 403–434.
+    doi:10.1016/0021-9991(76)90041-3.
+
+    Examples
+    --------
+    >>>
+
+    """
+
+    Na = 6.023e23  # Avogadro's constant
+    nr = V_r.shape[0]  # Number of reactions
+    orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
+    k_stoc = np.copy(k_det)
+
+    for ind in range(nr):
+        # If highest order is 3
+        if np.max(V_r[ind, :]) == 3:
+            k_stoc[ind] = k_det[ind] * 6 / np.power(Na * volume, 2)
+        elif np.max(V_r[ind, :]) == 2:  # Highest order is 2
+            k_stoc[ind] = k_det[ind] * 2 / np.power(Na * volume, orders[ind]-1)
+        else:
+            k_stoc[ind] = k_det[ind] / np.power(Na * volume, orders[ind]-1)
+
+    return k_stoc
