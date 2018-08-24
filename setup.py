@@ -2,6 +2,8 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
+from setuptools.extension import Extension
+from Cython.Build import cythonize
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -15,6 +17,13 @@ setup_requirements = ['pytest-runner', ]
 
 test_requirements = ['pytest', ]
 
+extensions = [
+    Extension(
+        "pyssa.pyssa_cython",
+        ["pyssa/pyssa_cython.pyx"],
+    ),
+]
+
 setup(
     author="Dileep Kishore, Srikiran Chandrasekaran",
     author_email='k.dileep1994@gmail.com',
@@ -23,9 +32,6 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: Apache Software License',
         'Natural Language :: English',
-        "Programming Language :: Python :: 2",
-        'Programming Language :: Python :: 2.7',
-        'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
@@ -39,6 +45,7 @@ setup(
     keywords='pyssa',
     name='pyssa',
     packages=find_packages(include=['pyssa']),
+    ext_modules=cythonize(extensions),
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
