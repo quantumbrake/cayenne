@@ -3,7 +3,7 @@
 import numpy as np
 import pytest
 
-from pyssa.pyssa import direct_naive
+from pyssa.pyssa import direct_naive, get_kstoc
 
 def test_null():
     V_r = np.array([[1,0,0],[0,1,0]])

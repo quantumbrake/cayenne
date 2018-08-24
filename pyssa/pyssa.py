@@ -6,6 +6,7 @@ from typing import Tuple
 
 import numpy as np
 
+Na = 6.023e23  # Avogadro's constant
 
 def direct_naive(
         V_r: np.ndarray,
@@ -241,7 +242,6 @@ def get_kstoc(k_det, V_r, volume = 1.0):
 
     """
 
-    Na = 6.023e23  # Avogadro's constant
     nr = V_r.shape[0]  # Number of reactions
     orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
     k_stoc = np.copy(k_det)
