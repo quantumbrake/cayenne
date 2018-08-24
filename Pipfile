@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 numpy = "*"
+cython = "*"
 
 [dev-packages]
 bumpversion = "*"
