@@ -124,9 +124,6 @@ def direct_naive(
     if np.max(orders) > 3:
         raise ValueError('Order greater than 3 detected.')
 
-    if np.max(orders) > 1:
-        raise RuntimeWarning('Order greater than 1, using volume = ', volume)
-
     # Determine kstoc from kdet and the highest order or reactions
     kstoc = get_kstoc(k_det, V_r, volume)
     prop = np.copy(kstoc)  # Vector of propensities
@@ -143,8 +140,7 @@ def direct_naive(
             Xtemp = Xt + V[choice, :]
         else:
             return t, Xt, status
-        print(Xt, Xtemp)
-        print('-' * 80)
+
         # If negative species produced, reject step
         if np.min(Xtemp) < 0:
             continue
