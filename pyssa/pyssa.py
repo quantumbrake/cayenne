@@ -8,6 +8,7 @@ import numpy as np
 
 Na = 6.023e23  # Avogadro's constant
 
+
 def direct_naive(
         V_r: np.ndarray,
         V_p: np.ndarray,
@@ -110,7 +111,7 @@ def direct_naive(
 
     if np.any(k_det < 0):
         neg_indices = np.where(k_det < 0)[0]
-        raise ValueError('Rate constant(s) at position(s) '+str(neg_indices)+' are negative.')
+        raise ValueError('Rate constant(s) at position(s) ' + str(neg_indices) + ' are negative.')
 
     V = V_p - V_r  # nr x ns
     Xt = np.copy(X0)  # Number of species at time t
@@ -118,7 +119,7 @@ def direct_naive(
     kstoc = np.zeros(nr)  # Stochastic rate constants
     orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
     status = 0
-    np.random.seed(seed = seed)  # Set the seed
+    np.random.seed(seed=seed)  # Set the seed
 
     if np.max(orders) > 3:
         raise ValueError('Order greater than 3 detected.')
@@ -128,7 +129,7 @@ def direct_naive(
 
     # Determine kstoc from kdet and the highest order or reactions
     kstoc = get_kstoc(k_det, V_r, volume)
-    prop = np.copy(kstoc) # Vector of propensities
+    prop = np.copy(kstoc)  # Vector of propensities
 
     while ite < max_iter:
         # Calculate propensities
@@ -137,7 +138,7 @@ def direct_naive(
                 # prop = kstoc * product of (number raised to order)
                 prop[ind1] *= np.power(Xt[ind2], V_r[ind1, ind2])
         # Roulette wheel
-        [choice, status] = roulette_selection(prop,Xt)
+        [choice, status] = roulette_selection(prop, Xt)
         if status == 0:
             Xtemp = Xt + V[choice, :]
         else:
@@ -154,12 +155,13 @@ def direct_naive(
             t += 1 / np.sum(prop) * np.log(1 / r2)
             if t > max_t:
                 status = 2
-                print("Reached maximum time (t = )",t)
+                print("Reached maximum time (t = )", t)
                 return t, Xt, status
         prop = np.copy(kstoc)
         ite += 1
     status = 1
     return t, Xt, status
+
 
 def roulette_selection(prop_list, Xt):
     r"""Perform roulette selection on the list of propensities.
@@ -195,8 +197,8 @@ def roulette_selection(prop_list, Xt):
             return [-1, status]
     prop = prop / prop0  # Normalize propensities to be < 1
     # Concatenate 0 to list of probabilities
-    probs = [0]+list(np.cumsum(prop))
-    r1 = np.random.rand() # Roll the wheel
+    probs = [0] + list(np.cumsum(prop))
+    r1 = np.random.rand()  # Roll the wheel
     # Identify where it lands and update that reaction
     for ind1 in range(len(probs)):
         if r1 <= probs[ind1]:
@@ -204,7 +206,8 @@ def roulette_selection(prop_list, Xt):
             break
     return [choice, 0]
 
-def get_kstoc(k_det, V_r, volume = 1.0):
+
+def get_kstoc(k_det, V_r, volume=1.0):
     r"""Compute k_stoc from k_det.
 
     Return a vector of the stochastic rate constants (k_stoc) determined
@@ -251,8 +254,8 @@ def get_kstoc(k_det, V_r, volume = 1.0):
         if np.max(V_r[ind, :]) == 3:
             k_stoc[ind] = k_det[ind] * 6 / np.power(Na * volume, 2)
         elif np.max(V_r[ind, :]) == 2:  # Highest order is 2
-            k_stoc[ind] = k_det[ind] * 2 / np.power(Na * volume, orders[ind]-1)
+            k_stoc[ind] = k_det[ind] * 2 / np.power(Na * volume, orders[ind] - 1)
         else:
-            k_stoc[ind] = k_det[ind] / np.power(Na * volume, orders[ind]-1)
+            k_stoc[ind] = k_det[ind] / np.power(Na * volume, orders[ind] - 1)
 
     return k_stoc
