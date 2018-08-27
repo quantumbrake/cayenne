@@ -100,3 +100,19 @@ class TestSanitize():
         [t1, _, _] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100, seed=0)
         [t2, _, _] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100, seed=1)
         assert t1 != t2
+
+
+def test_bifurcation():
+    V_r = np.array([[1, 0, 0, 0], [0, 1, 0, 1], [1, 0, 0, 0]])
+    V_p = np.array([[0, 1, 0, 0], [0, 2, 0, 0], [0, 0, 1, 0]])
+    k = np.array([1, 0.01 * Na, 1])
+    X0 = np.array([1, 0, 0, 10])
+    count_excitation = 0
+    n_runs = 1000
+    deviation_tolerance = 0.05
+    for ind in range(n_runs):
+        [_, Xt, _] = direct_naive(V_r, V_p, X0, k, max_t=150, max_iter=1000, seed=ind)
+        assert np.all(Xt - np.array([0, 11, 0, 0]) == 0) or np.all(Xt - np.array([0, 0, 1, 10]) == 0)
+        if np.all(Xt - np.array([0, 11, 0, 0]) == 0):
+            count_excitation += 1
+    assert np.abs(count_excitation / n_runs - 0.5) < deviation_tolerance
