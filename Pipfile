@@ -20,6 +20,8 @@ pytest-runner = "*"
 pylint = "*"
 mypy = "*"
 pytest-cov = "*"
+ipython = "*"
+jupyter = "*"
 
 [requires]
 python_version = "3.6"
