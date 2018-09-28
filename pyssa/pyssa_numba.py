@@ -161,7 +161,7 @@ def direct_naive(
     return t, Xt, status
 
 
-@jit(nogil=True, cache=False)
+@njit(nogil=True, cache=False)
 def roulette_selection(prop_list, Xt):
     r"""Perform roulette selection on the list of propensities.
 
