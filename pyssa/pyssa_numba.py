@@ -3,7 +3,7 @@
 """
 
 import numpy as np
-from numba import jit
+from numba import jit, njit
 from typing import Tuple
 
 Na = 6.023e23  # Avogadro's constant
