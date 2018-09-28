@@ -136,7 +136,7 @@ def direct_naive(
                 # prop = kstoc * product of (number raised to order)
                 prop[ind1] *= np.power(Xt[ind2], V_r[ind1, ind2])
         # Roulette wheel
-        print(Xt)
+        print(ite, Xt)
         [choice, status] = roulette_selection(prop, Xt)
         if status == 0:
             Xtemp = Xt + V[choice, :]
@@ -185,8 +185,7 @@ def roulette_selection(prop_list, Xt):
     >>>
 
     """
-    prop = prop_list  # LIKELY A PROBLEM HERE
-    prop0 = np.sum(prop)  # Sum of propensities
+    prop0 = np.sum(prop_list)  # Sum of propensities
     # choice = 0
     if prop0 == 0:
         if np.sum(Xt) == 0:
@@ -195,16 +194,16 @@ def roulette_selection(prop_list, Xt):
         else:
             status = -2
             return [-1, status]
-    prop = prop / prop0  # Normalize propensities to be < 1
+    prop_norm = prop_list / prop0  # Normalize propensities to be < 1
     # Concatenate 0 to list of probabilities
-    probs = np.cumsum(prop)
+    probs = np.cumsum(prop_norm)
     r1 = np.random.rand()  # Roll the wheel
     # Identify where it lands and update that reaction VERIFY MAY BE WRONG
     for ind1 in range(len(probs)):
         # print(ind1, probs[ind1], r1)
         if r1 <= probs[ind1]:
             choice = ind1
-            print(ind1, r1, probs, "got here", choice)
+            # print(ind1, r1, prop_list, probs, "got here", choice)
             return [choice, 0]
 
 
@@ -262,16 +261,16 @@ def get_kstoc(k_det, V_r, volume=1.0):
     return k_stoc
 
 
-# if __name__ == "__main__":
-    # V_r = np.array([[1, 0, 0], [0, 1, 0]])
-    # V_p = np.array([[0, 1, 0], [0, 0, 1]])
-    # X0 = np.array([100, 0, 0])
-    # k = np.array([1, 0])
-    # [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=10, max_iter=100)
+if __name__ == "__main__":
+    V_r = np.array([[1, 0, 0], [0, 1, 0]])
+    V_p = np.array([[0, 1, 0], [0, 0, 1]])
+    X0 = np.array([100, 0, 0])
+    k = np.array([1, 0])
+    [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=10, max_iter=100)
 
-    # V_r = np.array([[1, 0, 0], [0, 1, 0]])
-    # V_p = np.array([[0, 1, 0], [0, 0, 1]])
-    # k = np.array([1, 1])
-    # X0 = np.array([10, 0, 0])
-    # [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100)
+    V_r = np.array([[1, 0, 0], [0, 1, 0]])
+    V_p = np.array([[0, 1, 0], [0, 0, 1]])
+    k = np.array([1, 1])
+    X0 = np.array([10, 0, 0])
+    [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100)
     # assert status == 2
