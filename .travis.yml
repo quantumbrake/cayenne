@@ -15,5 +15,7 @@ matrix:
         - python: 3.7
           dist: xenial
           sudo: true
-install: pip install -U tox-travis
+install:
+    - pip install -U tox-travis
+    - pip install -U cython
 script: tox
