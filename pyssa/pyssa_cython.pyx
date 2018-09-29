@@ -6,6 +6,9 @@ import cython
 import numpy as np
 
 
+Na = 6.023e23  # Avogadro's constant
+
+
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef (int, int) cy_roulette_selection(double[:] prop_list, long[:] Xt):
