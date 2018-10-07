@@ -13,7 +13,7 @@ Na = 6.023e23  # Avogadro's constant
 @cython.wraparound(False)
 cdef (int, int) cy_roulette_selection(double[:] prop_list, long[:] Xt):
     """Perform roulette selection on the list of propensities"""
-    cdef int prop0 = np.sum(prop_list)  # Sum of propensities
+    cdef double prop0 = np.sum(prop_list)  # Sum of propensities
     cdef int status
     if prop0 == 0:
         if np.sum(Xt) == 0:
