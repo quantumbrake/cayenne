@@ -113,7 +113,7 @@ cpdef cy_direct_naive(
                 # prop = kstoc * product of (number raised to order)
                 prop[ind1] *= np.power(Xt[ind2], V_r[ind1, ind2])
         # Roulette wheel
-        [choice, status] = cy_roulette_selection(prop, Xt)
+        choice, status = cy_roulette_selection(prop, Xt)
         if status == 0:
             Xtemp = Xt + V[choice, :]
         else:
