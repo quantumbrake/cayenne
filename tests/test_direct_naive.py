@@ -96,7 +96,7 @@ def test_bifurcation():
     n_runs = 1000
     deviation_tolerance = 0.05
     for ind in range(n_runs):
-        [_, Xt, _] = direct_naive(V_r, V_p, X0, k, max_t=150, max_iter=1000, seed=ind)
+        [t, Xt, status] = direct_naive(V_r, V_p, X0, k, max_t=150, max_iter=1000, seed=ind)
         assert np.all(Xt - np.array([0, 11, 0, 0]) == 0) or np.all(Xt - np.array([0, 0, 1, 10]) == 0)
         if np.all(Xt - np.array([0, 11, 0, 0]) == 0):
             count_excitation += 1
