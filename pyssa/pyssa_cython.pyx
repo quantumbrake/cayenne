@@ -117,7 +117,7 @@ cpdef cy_direct_naive(
         if status == 0:
             Xtemp = Xt + V[choice, :]
         else:
-            return t, Xt, status
+            return t, Xt.base, status
 
         # If negative species produced, reject step
         if np.min(Xtemp) < 0:
@@ -130,8 +130,8 @@ cpdef cy_direct_naive(
             if t > max_t:
                 status = 2
                 print("Reached maximum time (t = )", t)
-                return t, Xt, status
+                return t, Xt.base, status
         prop = np.copy(kstoc)
         ite += 1
     status = 1
-    return t, Xt, status
+    return t, Xt.base, status
