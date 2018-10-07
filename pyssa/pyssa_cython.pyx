@@ -24,16 +24,13 @@ cdef (int, int) cy_roulette_selection(double[:] prop_list, long[:] Xt):
             return -1, status
     cdef double[:] prop = np.divide(prop_list, prop0)  # Normalize propensities to be < 1
     # Concatenate 0 to list of probabilities
-    probs = [0] + list(np.cumsum(prop))
+    cdef double[:] probs = np.cumsum(prop)
     cdef float r1 = np.random.random() # Roll the wheel
     # Identify where it lands and update that reaction
     cdef int ind1
-    cdef int choice = 0
     for ind1 in range(len(probs)):
         if r1 <= probs[ind1]:
-            choice = ind1 - 1
-            break
-    return choice, 0
+            return ind1, 0
 
 
 @cython.boundscheck(False)
