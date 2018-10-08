@@ -87,17 +87,13 @@ class TestSanitize:
         assert t1 != t2
 
 
-def test_bifurcation():
-    V_r = np.array([[1, 0, 0, 0], [0, 1, 0, 1], [1, 0, 0, 0]])
-    V_p = np.array([[0, 1, 0, 0], [0, 2, 0, 0], [0, 0, 1, 0]])
-    k = np.array([1.0, 0.01 * Na, 1.0])
-    X0 = np.array([1, 0, 0, 10])
+def test_bifurcation(setup_bifurcation):
+    V_r, V_p, k, X0 = setup_bifurcation
     count_excitation = 0
     n_runs = 1000
     deviation_tolerance = 0.05
     for ind in range(n_runs):
-        [t, X_memview, status] = cy_direct_naive(V_r, V_p, X0, k, max_t=150, max_iter=1000, seed=ind)
-        Xt = np.asarray(X_memview)
+        t, Xt, status = cy_direct_naive(V_r, V_p, X0, k, max_t=150, max_iter=1000, seed=ind)
         assert np.all(Xt == np.array([0, 11, 0, 0])) or np.all(Xt == np.array([0, 0, 1, 10]))
         if np.all(Xt == np.array([0, 11, 0, 0])):
             count_excitation += 1
