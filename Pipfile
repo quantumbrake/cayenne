@@ -21,6 +21,7 @@ pylint = "*"
 mypy = "*"
 pytest-cov = "*"
 ipython = "*"
+pytest-benchmark = {version = "*", extras = ["histogram"]}
 
 [requires]
 python_version = "3.6"
