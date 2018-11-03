@@ -98,3 +98,19 @@ def test_bifurcation(setup_bifurcation):
         if np.all(Xt == np.array([0, 11, 0, 0])):
             count_excitation += 1
     assert np.abs(count_excitation / n_runs - 0.5) < deviation_tolerance
+
+
+def test_long(setup_long):
+    V_r, V_p, k, X0 = setup_long
+    t, Xt, status = cy_direct_naive(
+        V_r,
+        V_p,
+        X0,
+        k,
+        max_t=int(1e5),
+        max_iter=int(1e8),
+        chem_flag=False
+    )
+    X_output = np.array([0, 0, X0[0]])
+    assert status == -2
+    assert Xt.all() == X_output.all()
