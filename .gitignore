@@ -103,3 +103,6 @@ ENV/
 
 # ignore tags
 tags
+
+# Cython compiled files
+*.c
