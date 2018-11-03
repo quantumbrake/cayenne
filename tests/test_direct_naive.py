@@ -146,13 +146,17 @@ def test_bifurcation(setup_bifurcation):
     assert np.abs(count_excitation / n_runs - 0.5) < deviation_tolerance
 
 
-def test_long():
-    V_r = np.array([[1, 0, 0], [0, 1, 0]])
-    V_p = np.array([[0, 1, 0], [0, 0, 1]])
-    k = np.array([1.0, 1.0])
-    X0 = np.array([4e5, 0, 0])
+def test_long(setup_long):
+    V_r, V_p, k, X0 = setup_long
+    t, Xt, status = direct_naive(
+        V_r,
+        V_p,
+        X0,
+        k,
+        max_t=1e5,
+        max_iter=1e8,
+        chem_flag=False
+    )
     X_output = np.array([0, 0, X0[0]])
-
-    [_, Xt, status] = direct_naive(V_r, V_p, X0, k, max_t=1e5, max_iter=1e8, chem_flag=False)
     assert status == -2
     assert Xt.all() == X_output.all()
