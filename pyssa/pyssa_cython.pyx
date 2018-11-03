@@ -3,6 +3,7 @@
 """
 
 import cython
+from cpython cimport bool
 import numpy as np
 
 
@@ -35,21 +36,26 @@ cdef (int, int) cy_roulette_selection(double[:] prop_list, long[:] Xt):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef double[:] cy_get_kstoc(double[:] k_det, long[:, :] V_r, float volume = 1.0):
+cdef double[:] cy_get_kstoc(double[:] k_det, long[:, :] V_r, float volume = 1.0, bool chem_flag = False):
     """Compute k_stoc from k_det"""
     cdef double Na = 6.023e23  # Avogadro's constant
     cdef int nr = V_r.shape[0]  # Number of reactions
     cdef long[:] orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
     k_stoc = np.zeros_like(k_det)
+    cdef double factor
+    if chem_flag:
+        factor = Na
+    else:
+        factor = 1.0
     cdef int ind
     for ind in range(nr):
         # If highest order is 3
         if np.max(V_r[ind, :]) == 3:
-            k_stoc[ind] = k_det[ind] * 6 / np.power(Na * volume, 2)
+            k_stoc[ind] = k_det[ind] * 6 / np.power(factor * volume, 2)
         elif np.max(V_r[ind, :]) == 2:  # Highest order is 2
-            k_stoc[ind] = k_det[ind] * 2 / np.power(Na * volume, orders[ind] - 1)
+            k_stoc[ind] = k_det[ind] * 2 / np.power(factor * volume, orders[ind] - 1)
         else:
-            k_stoc[ind] = k_det[ind] / np.power(Na * volume, orders[ind] - 1)
+            k_stoc[ind] = k_det[ind] / np.power(factor * volume, orders[ind] - 1)
     return k_stoc
 
 
@@ -63,6 +69,7 @@ cpdef cy_direct_naive(
     float max_t = 1.0,
     long max_iter = 100,
     float volume = 1.0,
+    bool chem_flag = False,
     int seed = 0
 ):
     """Naive implementation of the Direct method"""
@@ -103,7 +110,7 @@ cpdef cy_direct_naive(
         raise ValueError('Order greater than 3 detected.')
 
     # Determine kstoc from kdet and the highest order or reactions
-    kstoc = cy_get_kstoc(k_det, V_r, volume)
+    kstoc = cy_get_kstoc(k_det, V_r, volume, chem_flag)
     prop = np.copy(kstoc)  # Vector of propensities
 
     while ite < max_iter:
