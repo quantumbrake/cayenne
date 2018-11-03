@@ -16,9 +16,17 @@ requirements = [
     'cython',
 ]
 
-setup_requirements = ['pytest-runner', ]
+setup_requirements = [
+    'numpy',
+    'numba',
+    'cython',
+]
 
-test_requirements = ['pytest', ]
+test_requirements = [
+    'pytest',
+    'pytest-runner',
+    'pytest-benchmark',
+]
 
 extensions = [
     Extension(
