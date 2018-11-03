@@ -5,11 +5,13 @@ import pytest
 
 from pyssa.pyssa import get_kstoc, Na
 
+
 @pytest.fixture
 def setup_system():
     k_det = np.array([3.0])
     volume = 7.0
     return k_det, volume
+
 
 class TestKstoc():
 
@@ -48,5 +50,3 @@ class TestKstoc():
         V_r = np.array([[3, 0, 0]])
         k_stoc = get_kstoc(k_det, V_r, volume)
         assert k_stoc == k_det * 6 / (Na * volume) ** 2
-
-
