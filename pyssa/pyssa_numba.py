@@ -10,7 +10,7 @@ Na = 6.023e23  # Avogadro's constant
 
 
 @njit(nogil=True, cache=True)
-def direct_naive(
+def numba_direct_naive(
         V_r: np.ndarray,
         V_p: np.ndarray,
         X0: np.ndarray,
@@ -18,6 +18,7 @@ def direct_naive(
         max_t: float = 1.0,
         max_iter: int = 100,
         volume: float = 1.0,
+        chem_flag: bool = False,
         seed: int = 0,
 ) -> Tuple[float, np.ndarray, int]:
     """Naive implementation of the Direct method.
@@ -45,6 +46,9 @@ def direct_naive(
     volume : float, optional
         The volume of the reactor vessel which is important for second
         and higher order reactions. Defaults to 1 arbitrary units.
+    chem_flag : bool, optional
+        If True, divide by Na while calculating stochastic rate constants.
+        Defaults to False.
 
     Returns
     -------
@@ -112,9 +116,10 @@ def direct_naive(
         raise ValueError('Initial numbers in X0 can\'t be negative.')
 
     if np.any(k_det < 0):
-        # neg_indices = np.where(k_det < 0)[0]
-        # raise ValueError('Rate constant(s) at position(s) ', neg_indices,  ' are negative.')
         raise ValueError('Rate constant(s) can\'t be negative.')
+
+    if chem_flag not in (True, False):
+        raise ValueError('chem_flag must be a boolean True or False.')
 
     V = V_p - V_r  # nr x ns
     Xt = np.copy(X0)  # Number of species at time t
@@ -127,9 +132,9 @@ def direct_naive(
         raise ValueError('Order greater than 3 detected.')
 
     # Determine kstoc from kdet and the highest order or reactions
-    prop = np.copy(get_kstoc(k_det, V_r, volume))  # Vector of propensities
+    prop = np.copy(get_kstoc(k_det, V_r, volume, chem_flag))  # Vector of propensities
     kstoc = np.copy(prop)  # Stochastic rate constants
-    print(kstoc)
+
     while ite < max_iter:
         # Calculate propensities
         for ind1 in range(nr):
@@ -209,7 +214,7 @@ def roulette_selection(prop_list, Xt):
 
 
 @njit(nogil=True, cache=True)
-def get_kstoc(k_det, V_r, volume=1.0):
+def get_kstoc(k_det, V_r, volume=1.0, chem_flag=False):
     r"""Compute k_stoc from k_det.
 
     Return a vector of the stochastic rate constants (k_stoc) determined
@@ -226,6 +231,9 @@ def get_kstoc(k_det, V_r, volume=1.0):
     volume : float, optional
         The volume of the reactor vessel which is important for second
         and higher order reactions. Defaults to 1 arbitrary units.
+    chem_flag : bool, optional
+        If True, divide by Na while calculating stochastic rate constants.
+        Defaults to False.
 
     Returns
     -------
@@ -250,14 +258,18 @@ def get_kstoc(k_det, V_r, volume=1.0):
     nr = V_r.shape[0]  # Number of reactions
     orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
     k_stoc = np.copy(k_det)
+    if chem_flag:
+        factor = Na
+    else:
+        factor = 1.0
 
     for ind in range(nr):
         # If highest order is 3
         if np.max(V_r[ind, :]) == 3:
-            k_stoc[ind] = k_det[ind] * 6 / np.power(Na * volume, 2)
+            k_stoc[ind] = k_det[ind] * 6 / np.power(factor * volume, 2)
         elif np.max(V_r[ind, :]) == 2:  # Highest order is 2
-            k_stoc[ind] = k_det[ind] * 2 / np.power(Na * volume, orders[ind] - 1)
+            k_stoc[ind] = k_det[ind] * 2 / np.power(factor * volume, orders[ind] - 1)
         else:
-            k_stoc[ind] = k_det[ind] / np.power(Na * volume, orders[ind] - 1)
+            k_stoc[ind] = k_det[ind] / np.power(factor * volume, orders[ind] - 1)
 
     return k_stoc
