@@ -40,3 +40,11 @@ def setup_bifurcation():
     k = np.array([1.0, 0.01 * Na, 1.0])
     X0 = np.array([1, 0, 0, 10])
     return V_r, V_p, k, X0
+
+@pytest.fixture
+def setup_long():
+    V_r = np.array([[1, 0, 0], [0, 1, 0]])
+    V_p = np.array([[0, 1, 0], [0, 0, 1]])
+    k = np.array([1.0, 1.0])
+    X0 = np.array([4e5, 0, 0])
+    return V_r, V_p, k, X0
