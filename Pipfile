@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 numpy = "*"
+cython = "*"
 
 [dev-packages]
 bumpversion = "*"
@@ -19,6 +20,8 @@ pytest-runner = "*"
 pylint = "*"
 mypy = "*"
 pytest-cov = "*"
+ipython = "*"
+pytest-benchmark = {version = "*", extras = ["histogram"]}
 
 [requires]
 python_version = "3.6"
