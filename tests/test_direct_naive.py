@@ -29,7 +29,8 @@ class TestSanitize():
     def test_null(self):
         V_r, V_p, X0, k = setup_basic()
         k = np.array([0, 0])
-        [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=10, max_iter=100)
+        [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=10, max_iter=100,
+                                      chem_flag=True)
         assert status == -2
 
     def test_too_high_order(self):
@@ -42,13 +43,15 @@ class TestSanitize():
         V_r, V_p, X0, k = setup_basic()
         V_p = np.array([[0, 0, 0], [0, 0, 1]])
         X0 = np.array([10, 0, 0])
-        [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=10, max_iter=100)
+        [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=10, max_iter=100,
+                                      chem_flag=True)
         assert status == 3
 
     def test_status_2(self):
         V_r, V_p, X0, k = setup_basic()
         X0 = np.array([10, 0, 0])
-        [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100)
+        [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100,
+                                      chem_flag=True)
         assert status == 2
 
     def test_neg_k(self):
@@ -89,16 +92,20 @@ class TestSanitize():
 
     def test_reproduce(self):
         V_r, V_p, X0, k = setup_basic()
-        [t1, Xt1, status1] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100, seed=0)
-        [t2, Xt2, status2] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100, seed=0)
+        [t1, Xt1, status1] = direct_naive(V_r, V_p, X0, k, max_t=1,
+                                          max_iter=100, seed=0, chem_flag=True)
+        [t2, Xt2, status2] = direct_naive(V_r, V_p, X0, k, max_t=1,
+                                          max_iter=100, seed=0, chem_flag=True)
         assert t1 == t2
         assert Xt1.all() == Xt2.all()
         assert status1 == status2
 
     def test_reproduce_fail(self):
         V_r, V_p, X0, k = setup_basic()
-        [t1, _, _] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100, seed=0)
-        [t2, _, _] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100, seed=1)
+        [t1, _, _] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100,
+                                  seed=0, chem_flag=True)
+        [t2, _, _] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100,
+                                  seed=1, chem_flag=True)
         assert t1 != t2
 
 
@@ -111,7 +118,8 @@ def test_bifurcation():
     n_runs = 1000
     deviation_tolerance = 0.05
     for ind in range(n_runs):
-        [_, Xt, _] = direct_naive(V_r, V_p, X0, k, max_t=150, max_iter=1000, seed=ind)
+        [_, Xt, _] = direct_naive(V_r, V_p, X0, k, max_t=150, max_iter=1000, seed=ind,
+                                  chem_flag=True)
         assert np.all(Xt - np.array([0, 11, 0, 0]) == 0) or np.all(Xt - np.array([0, 0, 1, 10]) == 0)
         if np.all(Xt - np.array([0, 11, 0, 0]) == 0):
             count_excitation += 1
