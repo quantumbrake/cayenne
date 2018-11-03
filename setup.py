@@ -3,7 +3,7 @@
 
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
-from Cython.Build import cythonize
+from Cython.Build import cythonize, build_ext
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -49,6 +49,7 @@ setup(
     name='pyssa',
     packages=find_packages(include=['pyssa']),
     ext_modules=cythonize(extensions),
+    cmdclass={'build_ext': build_ext},
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
