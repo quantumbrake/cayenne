@@ -3,7 +3,7 @@
 """
 
 import numpy as np
-from numba import jit, njit
+from numba import njit
 from typing import Tuple
 
 Na = 6.023e23  # Avogadro's constant
@@ -117,50 +117,49 @@ def direct_naive(
         raise ValueError('Rate constant(s) can\'t be negative.')
 
     V = V_p - V_r  # nr x ns
-    # Xt = np.copy(X0)  # Number of species at time t
-    # Xtemp = np.zeros(nr)  # Temporary X for updating
-    # kstoc = np.zeros(nr)  # Stochastic rate constants
-    # orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
-    # status = 0
-    # np.random.seed(seed=seed)  # Set the seed
+    Xt = np.copy(X0)  # Number of species at time t
+    Xtemp = np.copy(X0)  # Temporary X for updating
+    orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
+    status = 0
+    np.random.seed(seed)  # Set the seed
 
-    # if np.max(orders) > 3:
-    #     raise ValueError('Order greater than 3 detected.')
+    if np.max(orders) > 3:
+        raise ValueError('Order greater than 3 detected.')
 
-    # # Determine kstoc from kdet and the highest order or reactions
-    # kstoc = get_kstoc(k_det, V_r, volume)
-    # prop = np.copy(kstoc)  # Vector of propensities
+    # Determine kstoc from kdet and the highest order or reactions
+    prop = np.copy(get_kstoc(k_det, V_r, volume))  # Vector of propensities
+    kstoc = np.copy(prop)  # Stochastic rate constants
+    print(kstoc)
+    while ite < max_iter:
+        # Calculate propensities
+        for ind1 in range(nr):
+            for ind2 in range(ns):
+                # prop = kstoc * product of (number raised to order)
+                prop[ind1] *= np.power(Xt[ind2], V_r[ind1, ind2])
+        # Roulette wheel
+        # print(ite, Xt)
+        [choice, status] = roulette_selection(prop, Xt)
+        if status == 0:
+            Xtemp = Xt + V[choice, :]
+        else:
+            return t, Xt, status
 
-    # while ite < max_iter:
-    #     # Calculate propensities
-    #     for ind1 in range(nr):
-    #         for ind2 in range(ns):
-    #             # prop = kstoc * product of (number raised to order)
-    #             prop[ind1] *= np.power(Xt[ind2], V_r[ind1, ind2])
-    #     # Roulette wheel
-    #     print(ite, Xt)
-    #     [choice, status] = roulette_selection(prop, Xt)
-    #     if status == 0:
-    #         Xtemp = Xt + V[choice, :]
-    #     else:
-    #         return t, Xt, status
-
-    #     # If negative species produced, reject step
-    #     if np.min(Xtemp) < 0:
-    #         continue
-    #     # Update Xt and t
-    #     else:
-    #         Xt = Xtemp
-    #         r2 = np.random.rand()
-    #         t += 1 / np.sum(prop) * np.log(1 / r2)
-    #         if t > max_t:
-    #             status = 2
-    #             print("Reached maximum time (t = )", t)
-    #             return t, Xt, status
-    #     prop = np.copy(kstoc)
-    #     ite += 1
-    # status = 1
-    # return t, Xt, status
+        # If negative species produced, reject step
+        if np.min(Xtemp) < 0:
+            continue
+        # Update Xt and t
+        else:
+            Xt = Xtemp
+            r2 = np.random.rand()
+            t += 1 / np.sum(prop) * np.log(1 / r2)
+            if t > max_t:
+                status = 2
+                print("Reached maximum time (t = )", t)
+                return t, Xt, status
+        prop = np.copy(kstoc)
+        ite += 1
+    status = 1
+    return t, Xt, status
 
 
 @njit(nogil=True, cache=False)
@@ -209,6 +208,7 @@ def roulette_selection(prop_list, Xt):
             return [choice, 0]
 
 
+@njit(nogil=True, cache=True)
 def get_kstoc(k_det, V_r, volume=1.0):
     r"""Compute k_stoc from k_det.
 
@@ -261,18 +261,3 @@ def get_kstoc(k_det, V_r, volume=1.0):
             k_stoc[ind] = k_det[ind] / np.power(Na * volume, orders[ind] - 1)
 
     return k_stoc
-
-
-if __name__ == "__main__":
-    V_r = np.array([[1, 0, 0], [0, 1, 0]])
-    V_p = np.array([[0, 1, 0], [0, 0, 1]])
-    X0 = np.array([100, 0, 0])
-    k = np.array([1, 0])
-    [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=10, max_iter=100)
-
-    # V_r = np.array([[1, 0, 0], [0, 1, 0]])
-    # V_p = np.array([[0, 1, 0], [0, 0, 1]])
-    # k = np.array([1, 1])
-    # X0 = np.array([10, 0, 0])
-    # [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100)
-    # assert status == 2
