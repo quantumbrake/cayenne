@@ -69,10 +69,10 @@ cdef np.ndarray[np.float_t, ndim=1] cy_get_kstoc(
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cpdef cy_direct_naive(
-    long[:, :] V_r,
-    long[:, :] V_p,
-    long[:] X0,
-    double[:] k_det,
+    np.ndarray[np.int_t, ndim=2] V_r,
+    np.ndarray[np.int_t, ndim=2] V_p,
+    np.ndarray[np.int_t, ndim=1] X0,
+    np.ndarray[np.float_t, ndim=1] k_det,
     float max_t = 1.0,
     long max_iter = 100,
     float volume = 1.0,
@@ -92,33 +92,33 @@ cpdef cy_direct_naive(
         raise ValueError('Number of elements in k_det must equal\
          number of rows in V_r.')
 
-    if np.any(np.less(V_r, 0)):
+    if np.any(V_r < 0):
         raise ValueError('V_r cannot have negative elements.')
 
-    if np.any(np.less(V_p, 0)):
+    if np.any(V_p < 0):
         raise ValueError('V_p cannot have negative elements.')
 
-    if np.any(np.less(X0, 0)):
+    if np.any(X0 < 0):
         raise ValueError('Initial numbers in X0 can\'t be negative.')
 
-    if np.any(np.less(k_det, 0)):
-        neg_indices = np.where(np.less(k_det, 0))[0]
+    if np.any(k_det < 0):
+        neg_indices = np.where(k_det < 0)[0]
         raise ValueError('Rate constant(s) at position(s) ' + str(neg_indices) + ' are negative.')
 
-    V = np.subtract(V_p, V_r)  # nr x ns
-    cdef long[:] Xt = np.copy(X0)  # Number of species at time t
-    cdef long[:] Xtemp = np.zeros(nr, dtype=int)  # Temporary X for updating
-    cdef double[:] kstoc = np.zeros(nr)  # Stochastic rate constants
-    cdef long[:] orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
+    V = V_p - V_r  # nr x ns
+    cdef np.ndarray[np.int_t, ndim=1] Xt = X0.copy()  # Number of species at time t
+    cdef np.ndarray[np.int_t, ndim=1] Xtemp = np.zeros(nr, dtype=int)  # Temporary X for updating
+    cdef np.ndarray[np.float_t, ndim=1] kstoc = np.zeros(nr)  # Stochastic rate constants
+    cdef np.ndarray[np.int_t, ndim=1] orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
     cdef int status = 0
     np.random.seed(seed=seed)  # Set the seed
 
-    if np.max(orders) > 3:
+    if orders.max() > 3:
         raise ValueError('Order greater than 3 detected.')
 
     # Determine kstoc from kdet and the highest order or reactions
     kstoc = cy_get_kstoc(k_det, V_r, volume, chem_flag)
-    prop = np.copy(kstoc)  # Vector of propensities
+    prop = kstoc.copy()  # Vector of propensities
 
     while ite < max_iter:
         # Calculate propensities
@@ -131,21 +131,21 @@ cpdef cy_direct_naive(
         if status == 0:
             Xtemp = Xt + V[choice, :]
         else:
-            return t, Xt.base, status
+            return t, Xt, status
 
         # If negative species produced, reject step
-        if np.min(Xtemp) < 0:
+        if Xtemp.min() < 0:
             continue
         # Update Xt and t
         else:
             Xt = Xtemp
             r2 = np.random.rand()
-            t += 1 / np.sum(prop) * np.log(1 / r2)
+            t += 1 / prop.sum() * np.log(1 / r2)
             if t > max_t:
                 status = 2
                 print("Reached maximum time (t = )", t)
-                return t, Xt.base, status
-        prop = np.copy(kstoc)
+                return t, Xt, status
+        prop = kstoc.copy()
         ite += 1
     status = 1
-    return t, Xt.base, status
+    return t, Xt, status
