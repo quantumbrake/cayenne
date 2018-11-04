@@ -2,9 +2,11 @@
     Naive implementation of the Gillespie algorithm (direct method) in Cython
 """
 
-import cython
 from cpython cimport bool
+
+import cython
 import numpy as np
+cimport numpy as np
 
 
 Na = 6.023e23  # Avogadro's constant
