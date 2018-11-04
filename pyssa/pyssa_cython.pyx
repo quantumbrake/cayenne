@@ -14,20 +14,20 @@ Na = 6.023e23  # Avogadro's constant
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef (int, int) cy_roulette_selection(double[:] prop_list, long[:] Xt):
+cdef (int, int) cy_roulette_selection(np.ndarray[np.float_t, ndim=1] prop_list, np.ndarray[np.int_t, ndim=1] Xt):
     """Perform roulette selection on the list of propensities"""
-    cdef double prop0 = np.sum(prop_list)  # Sum of propensities
+    cdef double prop0 = prop_list.sum()  # Sum of propensities
     cdef int status
     if prop0 == 0:
-        if np.sum(Xt) == 0:
+        if Xt.sum() == 0:
             status = 3
             return -1, status
         else:
             status = -2
             return -1, status
-    cdef double[:] prop = np.divide(prop_list, prop0)  # Normalize propensities to be < 1
+    cdef np.ndarray[np.float_t, ndim=1] prop = prop_list / prop0  # Normalize propensities to be < 1
     # Concatenate 0 to list of probabilities
-    cdef double[:] probs = np.cumsum(prop)
+    cdef np.ndarray[np.float_t, ndim=1] probs = prop.cumsum()
     cdef float r1 = np.random.random() # Roll the wheel
     # Identify where it lands and update that reaction
     cdef int ind1
