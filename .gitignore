@@ -106,3 +106,6 @@ tags
 
 # Cython compiled files
 *.c
+
+# Profiling files
+*.prof
