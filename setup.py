@@ -3,7 +3,9 @@
 
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
+
 from Cython.Build import cythonize, build_ext
+import numpy
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -32,6 +34,7 @@ extensions = [
     Extension(
         "pyssa.pyssa_cython",
         ["pyssa/pyssa_cython.pyx"],
+        include_dirs=[numpy.get_include()],
     ),
 ]
 
