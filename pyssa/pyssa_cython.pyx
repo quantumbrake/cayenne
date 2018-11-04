@@ -38,12 +38,17 @@ cdef (int, int) cy_roulette_selection(np.ndarray[np.float_t, ndim=1] prop_list, 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef double[:] cy_get_kstoc(double[:] k_det, long[:, :] V_r, float volume = 1.0, bool chem_flag = False):
+cdef np.ndarray[np.float_t, ndim=1] cy_get_kstoc(
+        np.ndarray[np.float_t, ndim=1] k_det,
+        np.ndarray[np.int_t, ndim=2] V_r,
+        float volume = 1.0,
+        bool chem_flag = False
+):
     """Compute k_stoc from k_det"""
     cdef double Na = 6.023e23  # Avogadro's constant
     cdef int nr = V_r.shape[0]  # Number of reactions
-    cdef long[:] orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
-    k_stoc = np.zeros_like(k_det)
+    cdef np.ndarray[np.int_t, ndim=1] orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
+    cdef np.ndarray[np.float_t, ndim=1] k_stoc = np.zeros_like(k_det, dtype=np.float)
     cdef double factor
     if chem_flag:
         factor = Na
@@ -52,9 +57,9 @@ cdef double[:] cy_get_kstoc(double[:] k_det, long[:, :] V_r, float volume = 1.0,
     cdef int ind
     for ind in range(nr):
         # If highest order is 3
-        if np.max(V_r[ind, :]) == 3:
+        if V_r[ind, :].max() == 3:
             k_stoc[ind] = k_det[ind] * 6 / np.power(factor * volume, 2)
-        elif np.max(V_r[ind, :]) == 2:  # Highest order is 2
+        elif V_r[ind, :].max() == 2:  # Highest order is 2
             k_stoc[ind] = k_det[ind] * 2 / np.power(factor * volume, orders[ind] - 1)
         else:
             k_stoc[ind] = k_det[ind] / np.power(factor * volume, orders[ind] - 1)
