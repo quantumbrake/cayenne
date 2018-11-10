@@ -6,7 +6,7 @@ Development Lead
 ----------------
 
 * Dileep Kishore <k.dileep1994@gmail.com>
-* Srikiran Chandrasekaran
+* Srikiran Chandrasekaran <srikiranc@gmail.com>
 
 Contributors
 ------------
