@@ -1,15 +1,16 @@
 """
-    Naive implementation of the Gillespie algorithm (Direct method)
+    Naive implementation of the Gillespie algorithm (direct method) in Numba
 """
 
-from typing import Tuple
-
 import numpy as np
+from numba import njit
+from typing import Tuple
 
 Na = 6.023e23  # Avogadro's constant
 
 
-def direct_naive(
+@njit(nogil=True, cache=True)
+def numba_direct_naive(
         V_r: np.ndarray,
         V_p: np.ndarray,
         X0: np.ndarray,
@@ -115,26 +116,24 @@ def direct_naive(
         raise ValueError('Initial numbers in X0 can\'t be negative.')
 
     if np.any(k_det < 0):
-        neg_indices = np.where(k_det < 0)[0]
-        raise ValueError('Rate constant(s) at position(s) ' + str(neg_indices) + ' are negative.')
+        raise ValueError('Rate constant(s) can\'t be negative.')
 
-    if not(isinstance(chem_flag, bool)):
+    if chem_flag not in (True, False):
         raise ValueError('chem_flag must be a boolean True or False.')
 
     V = V_p - V_r  # nr x ns
     Xt = np.copy(X0)  # Number of species at time t
-    Xtemp = np.zeros(nr)  # Temporary X for updating
-    kstoc = np.zeros(nr)  # Stochastic rate constants
+    Xtemp = np.copy(X0)  # Temporary X for updating
     orders = np.sum(V_r, 1)  # Order of rxn = number of reactants
     status = 0
-    np.random.seed(seed=seed)  # Set the seed
+    np.random.seed(seed)  # Set the seed
 
     if np.max(orders) > 3:
         raise ValueError('Order greater than 3 detected.')
 
     # Determine kstoc from kdet and the highest order or reactions
-    kstoc = get_kstoc(k_det, V_r, volume, chem_flag)
-    prop = np.copy(kstoc)  # Vector of propensities
+    prop = np.copy(get_kstoc(k_det, V_r, volume, chem_flag))  # Vector of propensities
+    kstoc = np.copy(prop)  # Stochastic rate constants
 
     while ite < max_iter:
         # Calculate propensities
@@ -143,6 +142,7 @@ def direct_naive(
                 # prop = kstoc * product of (number raised to order)
                 prop[ind1] *= np.power(Xt[ind2], V_r[ind1, ind2])
         # Roulette wheel
+        # print(ite, Xt)
         [choice, status] = roulette_selection(prop, Xt)
         if status == 0:
             Xtemp = Xt + V[choice, :]
@@ -167,6 +167,7 @@ def direct_naive(
     return t, Xt, status
 
 
+@njit(nogil=True, cache=False)
 def roulette_selection(prop_list, Xt):
     r"""Perform roulette selection on the list of propensities.
 
@@ -190,8 +191,8 @@ def roulette_selection(prop_list, Xt):
     >>>
 
     """
-    prop = np.copy(prop_list)
-    prop0 = np.sum(prop)  # Sum of propensities
+    prop0 = np.sum(prop_list)  # Sum of propensities
+    # choice = 0
     if prop0 == 0:
         if np.sum(Xt) == 0:
             status = 3
@@ -199,18 +200,20 @@ def roulette_selection(prop_list, Xt):
         else:
             status = -2
             return [-1, status]
-    prop = prop / prop0  # Normalize propensities to be < 1
+    prop_norm = prop_list / prop0  # Normalize propensities to be < 1
     # Concatenate 0 to list of probabilities
-    probs = [0] + list(np.cumsum(prop))
+    probs = np.cumsum(prop_norm)
     r1 = np.random.rand()  # Roll the wheel
-    # Identify where it lands and update that reaction
+    # Identify where it lands and update that reaction VERIFY MAY BE WRONG
     for ind1 in range(len(probs)):
+        # print(ind1, probs[ind1], r1)
         if r1 <= probs[ind1]:
-            choice = ind1 - 1
-            break
-    return [choice, 0]
+            choice = ind1
+            # print(ind1, r1, prop_list, probs, "got here", choice)
+            return [choice, 0]
 
 
+@njit(nogil=True, cache=True)
 def get_kstoc(k_det, V_r, volume=1.0, chem_flag=False):
     r"""Compute k_stoc from k_det.
 
