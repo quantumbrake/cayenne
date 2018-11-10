@@ -11,15 +11,15 @@ Na = 6.023e23  # Avogadro's constant
 
 @njit(nogil=True, cache=True)
 def direct_naive(
-        V_r: np.ndarray,
-        V_p: np.ndarray,
-        X0: np.ndarray,
-        k_det,
-        max_t: float = 1.0,
-        max_iter: int = 100,
-        volume: float = 1.0,
-        chem_flag: bool = False,
-        seed: int = 0,
+    V_r: np.ndarray,
+    V_p: np.ndarray,
+    X0: np.ndarray,
+    k_det,
+    max_t: float = 1.0,
+    max_iter: int = 100,
+    volume: float = 1.0,
+    chem_flag: bool = False,
+    seed: int = 0,
 ) -> Tuple[float, np.ndarray, int]:
     """Naive implementation of the Direct method.
 
@@ -100,26 +100,28 @@ def direct_naive(
     ns = V_r.shape[1]  # Number of species
 
     if (nr != V_p.shape[0]) or (ns != V_p.shape[1]):
-        raise ValueError('V_r and V_p should be the same shape.')
+        raise ValueError("V_r and V_p should be the same shape.")
 
-    if (nr != k_det.shape[0]):
-        raise ValueError('Number of elements in k_det must equal\
-         number of rows in V_r.')
+    if nr != k_det.shape[0]:
+        raise ValueError(
+            "Number of elements in k_det must equal\
+         number of rows in V_r."
+        )
 
     if np.any(V_r < 0):
-        raise ValueError('V_r cannot have negative elements.')
+        raise ValueError("V_r cannot have negative elements.")
 
     if np.any(V_p < 0):
-        raise ValueError('V_p cannot have negative elements.')
+        raise ValueError("V_p cannot have negative elements.")
 
     if np.any(X0 < 0):
-        raise ValueError('Initial numbers in X0 can\'t be negative.')
+        raise ValueError("Initial numbers in X0 can't be negative.")
 
     if np.any(k_det < 0):
-        raise ValueError('Rate constant(s) can\'t be negative.')
+        raise ValueError("Rate constant(s) can't be negative.")
 
     if chem_flag not in (True, False):
-        raise ValueError('chem_flag must be a boolean True or False.')
+        raise ValueError("chem_flag must be a boolean True or False.")
 
     V = V_p - V_r  # nr x ns
     Xt = np.copy(X0)  # Number of species at time t
@@ -129,7 +131,7 @@ def direct_naive(
     np.random.seed(seed)  # Set the seed
 
     if np.max(orders) > 3:
-        raise ValueError('Order greater than 3 detected.')
+        raise ValueError("Order greater than 3 detected.")
 
     # Determine kstoc from kdet and the highest order or reactions
     prop = np.copy(get_kstoc(k_det, V_r, volume, chem_flag))  # Vector of propensities

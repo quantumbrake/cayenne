@@ -10,7 +10,6 @@ from pyssa.pyssa import get_kstoc, Na
 
 @pytest.mark.usefixtures("setup_system")
 class TestKstoc:
-
     def test_100(self, setup_system):
         k_det, volume = setup_system
         V_r = np.array([[1, 0, 0]])

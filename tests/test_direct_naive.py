@@ -10,12 +10,12 @@ from pyssa.pyssa import direct_naive
 
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestSanitize:
-
     def test_null(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         k = np.array([0, 0])
-        [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=10, max_iter=100,
-                                      chem_flag=True)
+        [_, _, status] = direct_naive(
+            V_r, V_p, X0, k, max_t=10, max_iter=100, chem_flag=True
+        )
         assert status == -2
 
     def test_too_high_order(self, setup_basic):
@@ -28,15 +28,17 @@ class TestSanitize:
         V_r, V_p, X0, k = setup_basic
         V_p = np.array([[0, 0, 0], [0, 0, 1]])
         X0 = np.array([10, 0, 0])
-        [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=10, max_iter=100,
-                                      chem_flag=True)
+        [_, _, status] = direct_naive(
+            V_r, V_p, X0, k, max_t=10, max_iter=100, chem_flag=True
+        )
         assert status == 3
 
     def test_status_2(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         X0 = np.array([10, 0, 0])
-        [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100,
-                                      chem_flag=True)
+        [_, _, status] = direct_naive(
+            V_r, V_p, X0, k, max_t=1, max_iter=100, chem_flag=True
+        )
         assert status == 2
 
     def test_neg_k(self, setup_large):
@@ -78,24 +80,10 @@ class TestSanitize:
     def test_reproduce(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         [t1, Xt1, status1] = direct_naive(
-            V_r,
-            V_p,
-            X0,
-            k,
-            max_t=1,
-            max_iter=100,
-            seed=0,
-            chem_flag=True
+            V_r, V_p, X0, k, max_t=1, max_iter=100, seed=0, chem_flag=True
         )
         [t2, Xt2, status2] = direct_naive(
-            V_r,
-            V_p,
-            X0,
-            k,
-            max_t=1,
-            max_iter=100,
-            seed=0,
-            chem_flag=True
+            V_r, V_p, X0, k, max_t=1, max_iter=100, seed=0, chem_flag=True
         )
         assert t1 == t2
         assert Xt1.all() == Xt2.all()
@@ -103,24 +91,8 @@ class TestSanitize:
 
     def test_reproduce_fail(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
-        [t1, _, _] = direct_naive(
-            V_r,
-            V_p,
-            X0,
-            k,
-            max_t=1,
-            max_iter=100,
-            seed=0
-        )
-        [t2, _, _] = direct_naive(
-            V_r,
-            V_p,
-            X0,
-            k,
-            max_t=1,
-            max_iter=100,
-            seed=1
-        )
+        [t1, _, _] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100, seed=0)
+        [t2, _, _] = direct_naive(V_r, V_p, X0, k, max_t=1, max_iter=100, seed=1)
         assert t1 != t2
 
 
@@ -131,16 +103,11 @@ def test_bifurcation(setup_bifurcation):
     deviation_tolerance = 0.05
     for ind in range(n_runs):
         _, Xt, _ = direct_naive(
-            V_r,
-            V_p,
-            X0,
-            k,
-            max_t=150,
-            max_iter=1000,
-            seed=ind,
-            chem_flag=True
+            V_r, V_p, X0, k, max_t=150, max_iter=1000, seed=ind, chem_flag=True
         )
-        assert np.all(Xt - np.array([0, 11, 0, 0]) == 0) or np.all(Xt - np.array([0, 0, 1, 10]) == 0)
+        assert np.all(Xt - np.array([0, 11, 0, 0]) == 0) or np.all(
+            Xt - np.array([0, 0, 1, 10]) == 0
+        )
         if np.all(Xt - np.array([0, 11, 0, 0]) == 0):
             count_excitation += 1
     assert np.abs(count_excitation / n_runs - 0.5) < deviation_tolerance
@@ -149,13 +116,7 @@ def test_bifurcation(setup_bifurcation):
 def test_long(setup_long):
     V_r, V_p, k, X0 = setup_long
     _, Xt, status = direct_naive(
-        V_r,
-        V_p,
-        X0,
-        k,
-        max_t=1e5,
-        max_iter=1e8,
-        chem_flag=False
+        V_r, V_p, X0, k, max_t=1e5, max_iter=1e8, chem_flag=False
     )
     X_output = np.array([0, 0, X0[0]])
     assert status == -2
