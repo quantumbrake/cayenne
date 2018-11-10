@@ -2,9 +2,7 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
-from setuptools.extension import Extension
 
-from Cython.Build import cythonize, build_ext
 import numpy
 
 with open('README.rst') as readme_file:
@@ -15,27 +13,16 @@ with open('HISTORY.rst') as history_file:
 
 requirements = [
     'numpy',
-    'cython',
+    'numba',
 ]
 
 setup_requirements = [
-    'numpy',
-    'numba',
-    'cython',
 ]
 
 test_requirements = [
     'pytest',
     'pytest-runner',
     'pytest-benchmark',
-]
-
-extensions = [
-    Extension(
-        "pyssa.pyssa_cython",
-        ["pyssa/pyssa_cython.pyx"],
-        include_dirs=[numpy.get_include()],
-    ),
 ]
 
 setup(
@@ -59,8 +46,6 @@ setup(
     keywords='pyssa',
     name='pyssa',
     packages=find_packages(include=['pyssa']),
-    ext_modules=cythonize(extensions),
-    cmdclass={'build_ext': build_ext},
     setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements,
