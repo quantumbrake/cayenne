@@ -109,3 +109,6 @@ tags
 
 # Profiling files
 *.prof
+
+# VS code options
+.vscode/
