@@ -10,7 +10,7 @@ Na = 6.023e23  # Avogadro's constant
 
 
 @njit(nogil=True, cache=True)
-def numba_direct_naive(
+def direct_naive(
         V_r: np.ndarray,
         V_p: np.ndarray,
         X0: np.ndarray,
