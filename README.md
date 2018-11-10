@@ -4,6 +4,8 @@
 [![Updates](https://pyup.io/repos/github/dileep-kishore/pyssa/shield.svg)](https://pyup.io/repos/github/dileep-kishore/pyssa/)
 [![Documentation Status](https://readthedocs.org/projects/pyssa/badge/?version=latest)](https://pyssa.readthedocs.io/en/latest/?badge=latest)
 [![Pyup](https://img.shields.io/pypi/v/pyssa.svg)](https://pypi.python.org/pypi/pyssa)
+![License](https://img.shields.io/badge/license-Apache%202-blue.svg)
+![CodeStyle](https://img.shields.io/badge/code--style-black-black.svg)
 
 Python package for stochastic simulations
 
