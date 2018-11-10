@@ -5,7 +5,7 @@
 import numpy as np
 import pytest
 
-from pyssa.pyssa import direct_naive, Na
+from pyssa.pyssa import direct_naive
 
 
 @pytest.mark.usefixtures("setup_basic", "setup_large")
@@ -130,7 +130,7 @@ def test_bifurcation(setup_bifurcation):
     n_runs = 1000
     deviation_tolerance = 0.05
     for ind in range(n_runs):
-        t, Xt, status = direct_naive(
+        _, Xt, _ = direct_naive(
             V_r,
             V_p,
             X0,
@@ -148,7 +148,7 @@ def test_bifurcation(setup_bifurcation):
 
 def test_long(setup_long):
     V_r, V_p, k, X0 = setup_long
-    t, Xt, status = direct_naive(
+    _, Xt, status = direct_naive(
         V_r,
         V_p,
         X0,
