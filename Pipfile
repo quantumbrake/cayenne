@@ -5,7 +5,6 @@ name = "pypi"
 
 [packages]
 numpy = "*"
-cython = "*"
 numba = "*"
 
 [dev-packages]

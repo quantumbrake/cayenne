@@ -1,5 +1,4 @@
 -i https://pypi.org/simple
-cython==0.29
 llvmlite==0.25.0
 numba==0.40.1
-numpy==1.15.3
+numpy==1.15.4
