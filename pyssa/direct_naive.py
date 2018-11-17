@@ -27,7 +27,7 @@ def direct_naive(
     np.random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
     prop = np.copy(
-        get_kstoc(react_stoic, prod_stoic, k_det, volume, chem_flag)
+        get_kstoc(react_stoic, k_det, volume, chem_flag)
     )  # Vector of propensities
     kstoc = prop.copy()  # Stochastic rate constants
     while ite < max_iter:

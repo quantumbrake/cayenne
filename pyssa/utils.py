@@ -12,11 +12,7 @@ Na = 6.023e23  # Avogadro's constant
 
 @njit(nogil=True, cache=False)
 def get_kstoc(
-    react_stoic: np.ndarray,
-    prod_stoic: np.ndarray,
-    k_det: np.ndarray,
-    volume: float,
-    chem_flag: bool,
+    react_stoic: np.ndarray, k_det: np.ndarray, volume: float, chem_flag: bool
 ) -> np.ndarray:
     """Compute k_stoc from k_det.
 
@@ -26,7 +22,6 @@ def get_kstoc(
     Parameters
     ----------
     react_stoic : np.ndarray
-    prod_stoic : np.ndarray
     k_det : np.ndarray
     volume : float
     chem_flag: bool
