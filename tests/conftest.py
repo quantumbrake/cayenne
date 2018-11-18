@@ -5,7 +5,7 @@
 import numpy as np
 import pytest
 
-from pyssa.simulation import Na
+from pyssa.utils import Na
 
 
 @pytest.fixture
