@@ -9,11 +9,11 @@ def direct_naive(
     prod_stoic: np.ndarray,
     init_state: np.ndarray,
     k_det: np.ndarray,
-    max_t: float = 1.0,
-    max_iter: int = 100,
-    volume: float = 1.0,
-    seed: int = 0,
-    chem_flag: bool = False,
+    max_t: float,
+    max_iter: int,
+    volume: float,
+    seed: int,
+    chem_flag: bool,
 ):
     ite = 1  # Iteration counter
     t = 0  # Time in seconds
