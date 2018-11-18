@@ -16,12 +16,13 @@ def direct_naive(
     chem_flag: bool,
 ):
     ite = 1  # Iteration counter
-    t = 0  # Time in seconds
+    t_curr = 0  # Time in seconds
     nr = react_stoic.shape[0]
     ns = react_stoic.shape[1]
     v = prod_stoic - react_stoic  # nr x ns
-    xt = init_state.copy()  # Number of species at time t
+    xt = init_state.copy()  # Number of species at time t_curr
     x = np.zeros((max_iter, ns))
+    t = np.zeros((max_iter))
     xtemp = init_state.copy()  # Temporary X for updating
     status = 0
     np.random.seed(seed)  # Set the seed
@@ -37,26 +38,27 @@ def direct_naive(
                 # prop = kstoc * product of (number raised to order)
                 prop[ind1] *= np.power(xt[ind2], react_stoic[ind1, ind2])
         # Roulette wheel
-        [choice, status] = roulette_selection(prop, xt)
+        choice, status = roulette_selection(prop, xt)
         if status == 0:
             xtemp = xt + v[choice, :]
         else:
-            return t, x[:ite, :], status
+            return t[:ite], x[:ite, :], status
 
         # If negative species produced, reject step
         if np.min(xtemp) < 0:
             continue
-        # Update xt and t
+        # Update xt and t_curr
         else:
             xt = xtemp
             r2 = np.random.rand()
-            t += 1 / np.sum(prop) * np.log(1 / r2)
-            if t > max_t:
+            t_curr += 1 / np.sum(prop) * np.log(1 / r2)
+            if t_curr > max_t:
                 status = 2
-                print("Reached maximum time (t = )", t)
-                return t, x[:ite, :], status
+                print("Reached maximum time (t_curr = )", t_curr)
+                return t[:ite], x[:ite, :], status
         prop = np.copy(kstoc)
         x[ite - 1, :] = xt
+        t[ite - 1] = t_curr
         ite += 1
     status = 1
-    return t, x[:ite, :], status
+    return t[:ite], x[:ite, :], status
