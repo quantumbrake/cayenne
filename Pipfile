@@ -23,6 +23,7 @@ pytest-cov = "*"
 ipython = "*"
 pytest-benchmark = {version = "*", extras = ["histogram"]}
 black = "*"
+pre-commit = "*"
 
 [requires]
 python_version = "3.6"
