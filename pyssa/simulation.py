@@ -143,7 +143,7 @@ class Simulation:
             -1 : Failure, order greater than 3 detected.
             -2 : Failure, propensity zero without extinction.
         """
-        tlist = [0.0]
+        tlist = []
         xlist = []
         status_list = []
         if algorithm == "direct_naive":
