@@ -138,7 +138,7 @@ class Simulation:
         status : int
             Indicates the status of the simulation at exit.
             1 : Succesful completion, terminated when `max_iter` iterations reached.
-            2 : Succesful completion, terminated when `max_t` croosed.
+            2 : Succesful completion, terminated when `max_t` crossed.
             3 : Succesful completion, terminated when all species went extinct.
             -1 : Failure, order greater than 3 detected.
             -2 : Failure, propensity zero without extinction.
