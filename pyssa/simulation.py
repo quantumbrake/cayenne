@@ -6,6 +6,7 @@ import numpy as np
 from numba import njit
 from typing import Tuple
 from .direct_naive import direct_naive
+from .results import Results
 
 
 class Simulation:
@@ -162,6 +163,6 @@ class Simulation:
                 tlist.append(t)
                 xlist.append(X)
                 status_list.append(status)
+            self.results = Results(tlist, xlist, status_list, algorithm, seed)
         else:
             raise ValueError("Requested algorithm not supported")
-
