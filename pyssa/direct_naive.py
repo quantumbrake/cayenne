@@ -19,7 +19,7 @@ def direct_naive(
     t = 0  # Time in seconds
     nr = react_stoic.shape[0]
     ns = react_stoic.shape[1]
-    v = react_stoic - prod_stoic  # nr x ns
+    v = prod_stoic - react_stoic  # nr x ns
     xt = init_state.copy()  # Number of species at time t
     x = np.zeros((max_iter, ns))
     xtemp = init_state.copy()  # Temporary X for updating
