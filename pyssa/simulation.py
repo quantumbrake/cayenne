@@ -101,6 +101,8 @@ class Simulation:
             raise ValueError("Initial numbers in X0 can't be negative.")
         if np.any(self._k_det < 0):
             raise ValueError("Rate constant(s) can't be negative.")
+        if self._k_det.shape[0] != self._nr:
+            raise ValueError("Number of rate constants must equal number of reactions")
         if self._chem_flag not in (True, False):
             raise ValueError("chem_flag must be a boolean True or False.")
         if np.max(self._orders) > 3:
