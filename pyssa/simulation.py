@@ -110,8 +110,8 @@ class Simulation:
 
     def simulate(
         self,
-        max_t: float = 1.0,
-        max_iter: int = 100,
+        max_t: float = 10.0,
+        max_iter: int = 1000,
         volume: float = 1.0,
         seed: int = 0,
         n_rep: int = 1,
