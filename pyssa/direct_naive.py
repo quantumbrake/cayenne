@@ -23,6 +23,7 @@ def direct_naive(
     xt = init_state.copy()  # Number of species at time t_curr
     x = np.zeros((max_iter, ns))
     t = np.zeros((max_iter))
+    x[0,:] = init_state.copy()
     xtemp = init_state.copy()  # Temporary X for updating
     status = 0
     np.random.seed(seed)  # Set the seed
@@ -57,8 +58,8 @@ def direct_naive(
                 print("Reached maximum time (t_curr = )", t_curr)
                 return t[:ite], x[:ite, :], status
         prop = np.copy(kstoc)
-        x[ite - 1, :] = xt
-        t[ite - 1] = t_curr
+        x[ite, :] = xt
+        t[ite] = t_curr
         ite += 1
     status = 1
     return t[:ite], x[:ite, :], status

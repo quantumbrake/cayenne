@@ -95,7 +95,7 @@ class TestSanitize:
         sim1 = Simulation(V_r, V_p, X0, k)
         sim2 = Simulation(V_r, V_p, X0, k)
         sim1.simulate()
-        sim2.simulate(seed=[1,])
+        sim2.simulate(seed=[1])
         assert not (
             all(
                 (i == j).all() for i, j in zip(sim1.results.t_list, sim2.results.t_list)
@@ -112,25 +112,22 @@ class TestSanitize:
 
 
 # TODO: Implement a seed list and then use these tests
-# def test_bifurcation(setup_bifurcation):
-#     V_r, V_p, k, X0 = setup_bifurcation
-#     count_excitation = 0
-#     n_runs = 1000
-#     deviation_tolerance = 0.05
-#     sim1 = Simulation(V_r, V_p, X0, k)
-#     sim2 = Simulation(V_r, V_p, X0, k)
-#     sim1.simulate(max_t=150, max_iter=1000, chem_flag=True, )
-#     sim2.simulate()
-# for ind in range(n_runs):
-#     _, Xt, _ = direct_naive(
-#         V_r, V_p, X0, k, max_t=150, max_iter=1000, seed=ind, chem_flag=True
-#     )
-#     assert np.all(Xt - np.array([0, 11, 0, 0]) == 0) or np.all(
-#         Xt - np.array([0, 0, 1, 10]) == 0
-#     )
-#     if np.all(Xt - np.array([0, 11, 0, 0]) == 0):
-#         count_excitation += 1
-# assert np.abs(count_excitation / n_runs - 0.5) < deviation_tolerance
+def test_bifurcation(setup_bifurcation):
+    V_r, V_p, k, X0 = setup_bifurcation
+    count_excitation = 0
+    n_runs = 100
+    deviation_tolerance = 0.05
+    sim1 = Simulation(V_r, V_p, X0, k)
+    sim1.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=n_runs)
+    for ind in range(n_runs):
+        x = sim1.results.x_list[ind]
+        xt = x[-1, :]
+        assert np.all(xt - np.array([0, 11, 0, 0]) == 0) or np.all(
+            xt - np.array([0, 0, 1, 10]) == 0
+        )
+        if np.all(xt - np.array([0, 11, 0, 0]) == 0):
+            count_excitation += 1
+    assert np.abs(count_excitation / n_runs - 0.5) < deviation_tolerance
 
 
 # def test_long(setup_long):
