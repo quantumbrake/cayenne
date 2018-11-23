@@ -7,7 +7,7 @@ from warnings import warn
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
+import matplotlib.lines as mlines
 
 from .direct_naive import direct_naive
 from .results import Results
@@ -213,15 +213,20 @@ class Simulation:
         else:
             prop_cycle = plt.rcParams["axes.prop_cycle"]
             colors = prop_cycle.by_key()["color"]
-
+            fig, ax = plt.subplots()
             res = self._results
+            legend_handlers = [0] * self._ns
+            names = [0] * self._ns
             for index1 in range(self._ns):
+                legend_handlers[index1] = mlines.Line2D([], [], color=colors[index1])
+                names[index1] = "x" + str(index1)
                 for index2 in range(len(res.status_list)):
-                    plt.plot(
+                    ax.plot(
                         res.t_list[index2],
                         res.x_list[index2][:, index1],
                         color=colors[index1],
                     )
+            fig.legend(legend_handlers, names)
             if disp:
                 plt.show()
-            return plt.gca()
+            return (fig, ax)
