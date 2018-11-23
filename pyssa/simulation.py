@@ -6,6 +6,7 @@ from typing import List, Optional
 from warnings import warn
 
 import numpy as np
+import matplotlib.pyplot as plt
 
 from .direct_naive import direct_naive
 from .results import Results
@@ -204,3 +205,13 @@ class Simulation:
             self._results = Results(tlist, xlist, status_list, algorithm, seed)
         else:
             raise ValueError("Requested algorithm not supported")
+
+    def plot(self, disp: bool = True):
+        if self._results is None:
+            raise ValueError("Simulate not run.")
+        else:
+            res = self._results
+            for ind in range(len(res.status_list)):
+                plt.plot(res.t_list[ind], res.x_list[ind])
+            if disp:
+                plt.show()
