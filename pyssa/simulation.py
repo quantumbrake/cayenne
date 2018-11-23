@@ -211,12 +211,17 @@ class Simulation:
         if self._results is None:
             raise ValueError("Simulate not run.")
         else:
-            prop_cycle = plt.rcParams['axes.prop_cycle']
-            colors = prop_cycle.by_key()['color']
+            prop_cycle = plt.rcParams["axes.prop_cycle"]
+            colors = prop_cycle.by_key()["color"]
 
             res = self._results
             for index1 in range(self._ns):
                 for index2 in range(len(res.status_list)):
-                    plt.plot(res.t_list[index2], res.x_list[index2][:, index1], color=colors[index1])
+                    plt.plot(
+                        res.t_list[index2],
+                        res.x_list[index2][:, index1],
+                        color=colors[index1],
+                    )
             if disp:
                 plt.show()
+            return plt.gca()
