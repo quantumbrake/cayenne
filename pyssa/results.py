@@ -18,7 +18,7 @@ class Results(Collection):
         x_list : List[np.ndarray]
         status_list : List[int]
         algorithm : str
-        seed: int
+        seed: List[int]
 
         Other Parameters
         ----------------
