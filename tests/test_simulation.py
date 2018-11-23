@@ -113,7 +113,7 @@ class TestSanitize:
 
 # TODO: Implement a seed list and then use these tests
 # def test_bifurcation(setup_bifurcation):
-#     V_r, V_p, k, X0 = setup_bifurcation
+#     V_r, V_p, X0, k = setup_bifurcation
 #     count_excitation = 0
 #     n_runs = 1000
 #     deviation_tolerance = 0.05
@@ -134,7 +134,7 @@ class TestSanitize:
 
 
 # def test_long(setup_long):
-#     V_r, V_p, k, X0 = setup_long
+#     V_r, V_p, X0, k = setup_long
 #     _, Xt, status = direct_naive(
 #         V_r, V_p, X0, k, max_t=1e5, max_iter=1e8, chem_flag=False
 #     )
