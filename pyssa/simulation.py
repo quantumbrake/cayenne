@@ -114,7 +114,7 @@ class Simulation:
         max_t: float = 10.0,
         max_iter: int = 1000,
         volume: float = 1.0,
-        seed: int = 0,
+        seed: list = [None, ],
         n_rep: int = 1,
         algorithm: str = "direct_naive",
         **kwargs,
@@ -147,8 +147,15 @@ class Simulation:
         tlist = []
         xlist = []
         status_list = []
+
+        if seed[0] is not None:
+            if n_rep != len(seed):
+                raise ValueError("Seed should be as long as n_rep or not be provided")
+        else:
+            seed = [index for index in range(n_rep)]
+
         if algorithm == "direct_naive":
-            for _ in range(n_rep):
+            for index in range(n_rep):
                 t, X, status = direct_naive(
                     self._react_stoic,
                     self._prod_stoic,
@@ -157,7 +164,7 @@ class Simulation:
                     max_t,
                     max_iter,
                     volume,
-                    seed,
+                    seed[index],
                     self._chem_flag,
                 )
                 tlist.append(t)

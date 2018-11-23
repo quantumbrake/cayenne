@@ -95,12 +95,20 @@ class TestSanitize:
         sim1 = Simulation(V_r, V_p, X0, k)
         sim2 = Simulation(V_r, V_p, X0, k)
         sim1.simulate()
-        sim2.simulate(seed=1)
+        sim2.simulate(seed=[1,])
         assert not (
             all(
                 (i == j).all() for i, j in zip(sim1.results.t_list, sim2.results.t_list)
             )
         )
+
+    def test_incorrect_seed(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        sim1 = Simulation(V_r, V_p, X0, k)
+        with pytest.raises(ValueError):
+            sim1.simulate(n_rep=2, seed=[1])
+        with pytest.raises(ValueError):
+            sim1.simulate(n_rep=2, seed=[1, 2, 3])
 
 
 # TODO: Implement a seed list and then use these tests
