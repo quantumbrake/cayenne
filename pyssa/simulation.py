@@ -2,9 +2,11 @@
     Naive implementation of the Gillespie algorithm (direct method) in Numba
 """
 
+from typing import List, Optional
+from warnings import warn
+
 import numpy as np
-from numba import njit
-from typing import Tuple
+
 from .direct_naive import direct_naive
 from .results import Results
 
@@ -65,7 +67,7 @@ class Simulation:
         >>> [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t = 1, max_iter = 100)
     """
 
-    results = None
+    _results: Optional[Results] = None
 
     def __init__(
         self,
@@ -109,12 +111,27 @@ class Simulation:
         if np.max(self._orders) > 3:
             raise ValueError("Order greater than 3 not suppported.")
 
+    @property
+    def results(self) -> Optional[Results]:
+        """
+            The ``Results`` instance of the simulation
+
+            Returns
+            -------
+            Optional[Results]
+        """
+        if self._results is None:
+            warn("Run `Simulation.simulate` before requesting the results object")
+            return self._results
+        else:
+            return self._results
+
     def simulate(
         self,
         max_t: float = 10.0,
         max_iter: int = 1000,
         volume: float = 1.0,
-        seed: list = [None, ],
+        seed: Optional[List[int]] = None,
         n_rep: int = 1,
         algorithm: str = "direct_naive",
         **kwargs,
@@ -125,10 +142,24 @@ class Simulation:
         Parameters
         ----------
         max_t : float, optional
-            The end time of the simulation. The default is `max_t`=1.0 units.
+            The end time of the simulation
+            The default is 10.0
         max_iter : int, optional
             The maximum number of iterations of the simulation loop. The
-            default is 100 iterations.
+            The default is 1000 iterations.
+        volume : float, optional
+            The volume of the system
+            The default value is 1.0
+        seed : List[int], optional
+            The list of seeds for the simulations
+            The length of this list should be equal to `n_rep`
+            The default value is None
+        n_rep : int, optional
+            The number of repetitions of the simulation required
+            The default value is 1
+        algorithm : str, optional
+            The algorithm to be used to run the simulation
+            The default value is "direct_naive"
 
         Returns
         -------
@@ -148,9 +179,9 @@ class Simulation:
         xlist = []
         status_list = []
 
-        if seed[0] is not None:
+        if seed is not None:
             if n_rep != len(seed):
-                raise ValueError("Seed should be as long as n_rep or not be provided")
+                raise ValueError("Seed should be as long as n_rep")
         else:
             seed = [index for index in range(n_rep)]
 
@@ -170,6 +201,6 @@ class Simulation:
                 tlist.append(t)
                 xlist.append(X)
                 status_list.append(status)
-            self.results = Results(tlist, xlist, status_list, algorithm, seed)
+            self._results = Results(tlist, xlist, status_list, algorithm, seed)
         else:
             raise ValueError("Requested algorithm not supported")

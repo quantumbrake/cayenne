@@ -21,7 +21,7 @@ class TestSanitize:
         V_r, V_p, X0, k = setup_basic
         V_r = np.array([[2, 2, 0], [0, 1, 0]])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_status_3(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
@@ -42,37 +42,37 @@ class TestSanitize:
         V_r, V_p, X0, k = setup_large
         k = np.array([1, 1, -1, 1, -1])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_Vp_Vr_shape(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         V_p = np.array([[0, 1, 0]])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_kdet_Vr_shape(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         k = np.array([1, 1, 1])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_Vp_neg(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         V_p = np.array([[0, -1, 0], [0, 0, 1]])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_Vr_neg(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         V_r = np.array([[-1, 0, 0], [0, 1, 0]])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_X0_neg(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         X0 = np.array([-10, 0, 0])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_reproduce(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
@@ -113,7 +113,7 @@ class TestSanitize:
 
 # TODO: Implement a seed list and then use these tests
 def test_bifurcation(setup_bifurcation):
-    V_r, V_p, k, X0 = setup_bifurcation
+    V_r, V_p, X0, k = setup_bifurcation
     count_excitation = 0
     n_runs = 100
     deviation_tolerance = 0.05
@@ -131,7 +131,7 @@ def test_bifurcation(setup_bifurcation):
 
 
 # def test_long(setup_long):
-#     V_r, V_p, k, X0 = setup_long
+#     V_r, V_p, X0, k = setup_long
 #     _, Xt, status = direct_naive(
 #         V_r, V_p, X0, k, max_t=1e5, max_iter=1e8, chem_flag=False
 #     )
