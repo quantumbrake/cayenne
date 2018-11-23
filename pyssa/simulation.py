@@ -211,16 +211,12 @@ class Simulation:
         if self._results is None:
             raise ValueError("Simulate not run.")
         else:
-            # colmap = cm.get_cmap("Pastel1")
-            # print(colmap)
-            # cols = plt.cm.Pastel1
             prop_cycle = plt.rcParams['axes.prop_cycle']
             colors = prop_cycle.by_key()['color']
-            print(colors)
 
             res = self._results
-            for ind in range(len(res.status_list)):
-                for index2 in range(self._ns):
-                    plt.plot(res.t_list[ind], res.x_list[ind][:, index2], color=colors[index2])
+            for index1 in range(self._ns):
+                for index2 in range(len(res.status_list)):
+                    plt.plot(res.t_list[index2], res.x_list[index2][:, index1], color=colors[index1])
             if disp:
                 plt.show()
