@@ -3,6 +3,7 @@
 """
 
 from typing import List, Optional
+from warnings import warn
 
 import numpy as np
 
@@ -66,7 +67,7 @@ class Simulation:
         >>> [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t = 1, max_iter = 100)
     """
 
-    results = None
+    _results: Optional[Results] = None
 
     def __init__(
         self,
@@ -109,6 +110,21 @@ class Simulation:
             raise ValueError("chem_flag must be a boolean True or False.")
         if np.max(self._orders) > 3:
             raise ValueError("Order greater than 3 not suppported.")
+
+    @property
+    def results(self) -> Optional[Results]:
+        """
+            The ``Results`` instance of the simulation
+
+            Returns
+            -------
+            Optional[Results]
+        """
+        if self._results is None:
+            warn("Run `Simulation.simulate` before requesting the results object")
+            return self._results
+        else:
+            return self._results
 
     def simulate(
         self,
@@ -185,6 +201,6 @@ class Simulation:
                 tlist.append(t)
                 xlist.append(X)
                 status_list.append(status)
-            self.results = Results(tlist, xlist, status_list, algorithm, seed)
+            self._results = Results(tlist, xlist, status_list, algorithm, seed)
         else:
             raise ValueError("Requested algorithm not supported")
