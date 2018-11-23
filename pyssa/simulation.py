@@ -125,10 +125,24 @@ class Simulation:
         Parameters
         ----------
         max_t : float, optional
-            The end time of the simulation. The default is `max_t`=1.0 units.
+            The end time of the simulation
+            The default is 10.0
         max_iter : int, optional
             The maximum number of iterations of the simulation loop. The
-            default is 100 iterations.
+            The default is 1000 iterations.
+        volume : float, optional
+            The volume of the system
+            The default value is 1.0
+        seed : List[int], optional
+            The list of seeds for the simulations
+            The length of this list should be equal to `n_rep`
+            The default value is None
+        n_rep : int, optional
+            The number of repetitions of the simulation required
+            The default value is 1
+        algorithm : str, optional
+            The algorithm to be used to run the simulation
+            The default value is "direct_naive"
 
         Returns
         -------
