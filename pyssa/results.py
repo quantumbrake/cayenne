@@ -33,7 +33,7 @@ class Results(Collection):
         x_list: List[np.ndarray],
         status_list: List[int],
         algorithm: str,
-        seed: int,
+        seed: List[int],
         **kwargs,
     ) -> None:
         self.x_list = x_list
@@ -82,4 +82,3 @@ class Results(Collection):
             return self[ind]
         else:
             raise ValueError(f"{ind} out of bounds")
-

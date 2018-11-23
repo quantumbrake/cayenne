@@ -114,7 +114,7 @@ class Simulation:
         max_t: float = 10.0,
         max_iter: int = 1000,
         volume: float = 1.0,
-        seed: list = [None, ],
+        seed: Optional[List[int]] = None,
         n_rep: int = 1,
         algorithm: str = "direct_naive",
         **kwargs,
@@ -148,9 +148,9 @@ class Simulation:
         xlist = []
         status_list = []
 
-        if seed[0] is not None:
+        if seed is not None:
             if n_rep != len(seed):
-                raise ValueError("Seed should be as long as n_rep or not be provided")
+                raise ValueError("Seed should be as long as n_rep")
         else:
             seed = [index for index in range(n_rep)]
 
