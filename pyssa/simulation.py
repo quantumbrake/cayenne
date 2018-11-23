@@ -7,6 +7,7 @@ from warnings import warn
 
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib import cm
 
 from .direct_naive import direct_naive
 from .results import Results
@@ -210,8 +211,16 @@ class Simulation:
         if self._results is None:
             raise ValueError("Simulate not run.")
         else:
+            # colmap = cm.get_cmap("Pastel1")
+            # print(colmap)
+            # cols = plt.cm.Pastel1
+            prop_cycle = plt.rcParams['axes.prop_cycle']
+            colors = prop_cycle.by_key()['color']
+            print(colors)
+
             res = self._results
             for ind in range(len(res.status_list)):
-                plt.plot(res.t_list[ind], res.x_list[ind])
+                for index2 in range(self._ns):
+                    plt.plot(res.t_list[ind], res.x_list[ind][:, index2], color=colors[index2])
             if disp:
                 plt.show()
