@@ -55,7 +55,7 @@ def setup_bifurcation():
     V_p = np.array([[0, 1, 0, 0], [0, 2, 0, 0], [0, 0, 1, 0]])
     k = np.array([1.0, 0.01 * Na, 1.0])
     X0 = np.array([1, 0, 0, 10])
-    return V_r, V_p, k, X0
+    return V_r, V_p, X0, k
 
 
 @pytest.fixture
