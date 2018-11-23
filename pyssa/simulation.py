@@ -2,9 +2,10 @@
     Naive implementation of the Gillespie algorithm (direct method) in Numba
 """
 
+from typing import List, Optional
+
 import numpy as np
-from numba import njit
-from typing import Tuple
+
 from .direct_naive import direct_naive
 from .results import Results
 
