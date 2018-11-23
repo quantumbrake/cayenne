@@ -3,7 +3,7 @@ alabaster==0.7.12
 appdirs==1.4.3
 argh==0.26.2
 aspy.yaml==1.1.1
-astroid==2.1.0.dev0
+astroid==2.0.4
 atomicwrites==1.2.1; python_version >= '2.7'
 attrs==18.2.0
 babel==2.6.0
@@ -15,7 +15,7 @@ certifi==2018.10.15
 cfgv==1.1.0
 chardet==3.0.4
 click==7.0; python_version >= '2.7'
-coverage==5.0a3
+coverage==4.5.2
 decorator==4.3.0
 docutils==0.14
 filelock==3.0.10
@@ -24,7 +24,7 @@ identify==1.1.7
 idna==2.7
 imagesize==1.1.0; python_version >= '2.7'
 importlib-metadata==0.6; python_version != '3.3'
-importlib-resources==1.0.2; python_version != '3.3'
+importlib-resources==1.0.2; python_version < '3.7'
 ipython-genutils==0.2.0
 ipython==7.1.1
 isort==4.3.4; python_version != '3.2.*'
@@ -60,7 +60,7 @@ pytest-cov==2.6.0
 pytest-runner==4.2
 pytest==4.0.0
 pytz==2018.7
-pyyaml==4.2b4
+pyyaml==3.13
 requests==2.20.1
 six==1.11.0
 snowballstemmer==1.2.1
@@ -74,5 +74,5 @@ urllib3==1.24.1; python_version != '3.3.*'
 virtualenv==16.1.0; python_version != '3.1.*'
 watchdog==0.9.0
 wcwidth==0.1.7
-wheel==0.32.2
+wheel==0.32.3
 wrapt==1.10.11
