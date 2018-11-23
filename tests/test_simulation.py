@@ -21,7 +21,7 @@ class TestSanitize:
         V_r, V_p, X0, k = setup_basic
         V_r = np.array([[2, 2, 0], [0, 1, 0]])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_status_3(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
@@ -42,37 +42,37 @@ class TestSanitize:
         V_r, V_p, X0, k = setup_large
         k = np.array([1, 1, -1, 1, -1])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_Vp_Vr_shape(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         V_p = np.array([[0, 1, 0]])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_kdet_Vr_shape(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         k = np.array([1, 1, 1])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_Vp_neg(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         V_p = np.array([[0, -1, 0], [0, 0, 1]])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_Vr_neg(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         V_r = np.array([[-1, 0, 0], [0, 1, 0]])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_X0_neg(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         X0 = np.array([-10, 0, 0])
         with pytest.raises(ValueError):
-            _ = Simulation(V_r, V_p, X0, k)
+            Simulation(V_r, V_p, X0, k)
 
     def test_reproduce(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
@@ -95,7 +95,7 @@ class TestSanitize:
         sim1 = Simulation(V_r, V_p, X0, k)
         sim2 = Simulation(V_r, V_p, X0, k)
         sim1.simulate()
-        sim2.simulate(seed=[1,])
+        sim2.simulate(seed=[1])
         assert not (
             all(
                 (i == j).all() for i, j in zip(sim1.results.t_list, sim2.results.t_list)
