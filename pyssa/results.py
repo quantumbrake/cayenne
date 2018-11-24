@@ -79,6 +79,6 @@ class Results(Collection):
 
     def __getitem__(self, ind: int):
         if ind in self:
-            return self[ind]
+            return self.x_list[ind], self.t_list[ind], self.status_list[ind]
         else:
             raise ValueError(f"{ind} out of bounds")
