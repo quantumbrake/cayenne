@@ -23,7 +23,7 @@ def direct_naive(
     xt = init_state.copy()  # Number of species at time t_curr
     x = np.zeros((max_iter, ns))
     t = np.zeros((max_iter))
-    x[0,:] = init_state.copy()
+    x[0, :] = init_state.copy()
     xtemp = init_state.copy()  # Temporary X for updating
     status = 0
     np.random.seed(seed)  # Set the seed

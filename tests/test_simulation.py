@@ -111,7 +111,6 @@ class TestSanitize:
             sim1.simulate(n_rep=2, seed=[1, 2, 3])
 
 
-# TODO: Implement a seed list and then use these tests
 def test_bifurcation(setup_bifurcation):
     V_r, V_p, X0, k = setup_bifurcation
     count_excitation = 0
