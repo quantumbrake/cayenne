@@ -54,7 +54,12 @@ class Results(Collection):
                 True if results are consistent
                 False otherwise
         """
-        if len(self.x_list) == len(self.t_list) == len(self.status_list):
+        if (
+            len(self.x_list)
+            == len(self.t_list)
+            == len(self.status_list)
+            == len(self.seed)
+        ):
             pass
         else:
             return False
