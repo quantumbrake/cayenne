@@ -7,7 +7,7 @@ from warnings import warn
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
+import matplotlib.lines as mlines
 
 from .direct_naive import direct_naive
 from .results import Results
@@ -210,20 +210,31 @@ class Simulation:
         else:
             raise ValueError("Requested algorithm not supported")
 
-    def plot(self, disp: bool = True):
+    def plot(self, plot_indices: list = None, disp: bool = True):
         if self._results is None:
             raise ValueError("Simulate not run.")
         else:
-            # colmap = cm.get_cmap("Pastel1")
-            # print(colmap)
-            # cols = plt.cm.Pastel1
-            prop_cycle = plt.rcParams['axes.prop_cycle']
-            colors = prop_cycle.by_key()['color']
-            print(colors)
-
+            if plot_indices is None:
+                plot_indices = [i for i in range(self._ns)]
+            elif np.any(np.array(plot_indices) < 0):
+                raise ValueError("Negative indexing not supported")
+            n_indices = len(plot_indices)
+            prop_cycle = plt.rcParams["axes.prop_cycle"]
+            colors = prop_cycle.by_key()["color"]
+            fig, ax = plt.subplots()
             res = self._results
-            for ind in range(len(res.status_list)):
-                for index2 in range(self._ns):
-                    plt.plot(res.t_list[ind], res.x_list[ind][:, index2], color=colors[index2])
+            legend_handlers = [0] * n_indices
+            names = [0] * n_indices
+            for index1 in range(n_indices):
+                legend_handlers[index1] = mlines.Line2D([], [], color=colors[index1])
+                names[index1] = "x" + str(plot_indices[index1])
+                for index2 in range(len(res.status_list)):
+                    ax.plot(
+                        res.t_list[index2],
+                        res.x_list[index2][:, plot_indices[index1]],
+                        color=colors[index1],
+                    )
+            fig.legend(legend_handlers, names)
             if disp:
                 plt.show()
+            return (fig, ax)
