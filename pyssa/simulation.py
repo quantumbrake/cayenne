@@ -123,7 +123,10 @@ class Simulation:
             Optional[Results]
         """
         if self._results is None:
-            warn("Run `Simulation.simulate` before requesting the results object")
+            warn(
+                "Run `Simulation.simulate` before requesting the results object",
+                Warning,
+            )
             return self._results
         else:
             return self._results
