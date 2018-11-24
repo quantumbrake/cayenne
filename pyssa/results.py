@@ -3,7 +3,7 @@
 """
 
 from collections.abc import Collection
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 
@@ -87,3 +87,17 @@ class Results(Collection):
             return self.x_list[ind], self.t_list[ind], self.status_list[ind]
         else:
             raise ValueError(f"{ind} out of bounds")
+
+    @property
+    def final(self) -> Tuple[np.ndarray, np.ndarray]:
+        """
+            Returns the final times and states of the system in the simulations
+
+            Returns
+            -------
+            Tuple[np.ndarray, np.ndarray]
+                The final times and states of the sytem
+        """
+        final_times = np.array([v[1][-1] for v in self])
+        final_states = np.array([v[0][-1, :] for v in self])
+        return final_times, final_states
