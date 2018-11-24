@@ -86,7 +86,7 @@ class Results(Collection):
         if ind in self:
             return self.x_list[ind], self.t_list[ind], self.status_list[ind]
         else:
-            raise ValueError(f"{ind} out of bounds")
+            raise IndexError(f"{ind} out of bounds")
 
     @property
     def final(self) -> Tuple[np.ndarray, np.ndarray]:
