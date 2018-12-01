@@ -7,7 +7,7 @@ Welcome to Stochastic Simulation Algorithms in Python's documentation!
 
    readme
    installation
-   usage
+   tutorial
    modules
    contributing
    authors
