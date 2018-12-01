@@ -43,7 +43,7 @@ def direct_naive(
         Returns
         -------
         t : ndarray
-            Numpy array of the times. 
+            Numpy array of the times.
         x : ndarray
             Numpy array of the states of the system at times in in `t`.
         status : int

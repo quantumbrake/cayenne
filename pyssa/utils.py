@@ -3,7 +3,6 @@
 """
 
 from typing import Tuple
-
 import numpy as np
 from numba import njit
 
@@ -24,7 +23,7 @@ def get_kstoc(
     react_stoic : np.ndarray
     k_det : np.ndarray
     volume : float
-    chem_flag: bool
+    chem_flag : bool
 
     Returns
     -------
