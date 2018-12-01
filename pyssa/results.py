@@ -70,6 +70,14 @@ class Results(Collection):
                 return False
         return True
 
+    def __repr__(self) -> str:
+        return (
+            f"<Results n_rep={len(self)} algorithm={self.algorithm} seed={self.seed}>"
+        )
+
+    def __str__(self) -> str:
+        return self.__repr__()
+
     def __iter__(self):
         return zip(self.x_list, self.t_list, self.status_list)
 
