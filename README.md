@@ -10,7 +10,7 @@
 
 ## Introduction
 
-`pyssa` is a Python package for stochastic simulations. It offers a simple api to define models, perform stochastic simulations on them and visualize the results in a convinient manner.
+`pyssa` is a Python package for stochastic simulations. It offers a simple api to define models, perform stochastic simulations on them and visualize the results in a convenient manner.
 
 
 ## Install
@@ -41,6 +41,8 @@ sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
 ```python
 sim.plot()
 ```
+
+![Plot of species A, B and C](/docs/images/plot_basic.png)
 
 ### Acessing the results
 
