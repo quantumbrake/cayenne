@@ -44,7 +44,7 @@ sim.plot()
 
 ![Plot of species A, B and C](/docs/images/plot_basic.png)
 
-### Acessing the results
+### Accessing the results
 
 ```python
 results = sim.results
