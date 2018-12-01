@@ -1,9 +1,9 @@
 -i https://pypi.org/simple
 cycler==0.10.0
 kiwisolver==1.0.1; python_version != '3.0.*'
-llvmlite==0.25.0
+llvmlite==0.26.0
 matplotlib==3.0.2
-numba==0.40.1
+numba==0.41.0
 numpy==1.15.4
 pyparsing==2.3.0; python_version != '3.1.*'
 python-dateutil==2.7.5
