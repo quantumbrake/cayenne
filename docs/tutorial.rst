@@ -54,7 +54,7 @@ To plot only A and B, we use the species indices (``[0,1]``) ::
 
     sim.plot(plot_indices = [0, 1])
 
-.. image:: ../docs/images/plot_AB.png
+.. image:: ../docs/images/plot_ab.png
     :scale: 70%
     :align: center
     :alt: Plot of A and B species over time.
