@@ -1,5 +1,5 @@
 """
-    Naive implementation of the Gillespie algorithm (direct method) in Numba
+    The main class for running stochastic simulation
 """
 
 from typing import List, Optional
