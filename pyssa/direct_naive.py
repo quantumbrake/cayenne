@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Tuple
 from numba import njit
 from .utils import get_kstoc, roulette_selection
 
@@ -14,7 +15,46 @@ def direct_naive(
     volume: float,
     seed: int,
     chem_flag: bool,
-):
+) -> Tuple[np.ndarray, np.ndarray, int]:
+    """
+        Parameters
+        ---------
+        react_stoic : (nr, ns) ndarray
+            A 2D array of the stoichiometric coefficients of the reactants.
+            Reactions are rows and species are columns.
+        prod_stoic : (nr, ns) ndarray
+            A 2D array of the stoichiometric coefficients of the products.
+            Reactions are rows and species are columns.
+        init_state : (ns,) ndarray
+            A 1D array representing the initial state of the system.
+        k_det : (nr,) ndarray
+            A 1D array representing the deterministic rate constants of the
+            system.
+        volume : float
+            The volume of the reactor vessel which is important for second
+            and higher order reactions. Defaults to 1 arbitrary units.
+        seed : int
+            The seed for the numpy random generator used for the current run
+            of the algorithm.
+        chem_flag : bool
+            If True, divide by Na while calculating stochastic rate constants.
+            Defaults to False.
+
+        Returns
+        -------
+        t : ndarray
+            Numpy array of the times. 
+        x : ndarray
+            Numpy array of the states of the system at times in in `t`.
+        status : int
+            Indicates the status of the simulation at exit.
+            1 : Succesful completion, terminated when `max_iter` iterations reached.
+            2 : Succesful completion, terminated when `max_t` crossed.
+            3 : Succesful completion, terminated when all species went extinct.
+            -1 : Failure, order greater than 3 detected.
+            -2 : Failure, propensity zero without extinction.
+    """
+
     ite = 1  # Iteration counter
     t_curr = 0  # Time in seconds
     nr = react_stoic.shape[0]
