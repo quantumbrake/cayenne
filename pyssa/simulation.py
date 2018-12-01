@@ -245,7 +245,7 @@ class Simulation:
             fig, ax = plt.subplots()
             res = self._results
             legend_handlers = [0] * n_indices
-            names = [0] * n_indices
+            names = [""] * n_indices
             for index1 in range(n_indices):
                 legend_handlers[index1] = mlines.Line2D([], [], color=colors[index1])
                 names[index1] = "x" + str(plot_indices[index1])
