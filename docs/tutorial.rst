@@ -45,9 +45,19 @@ To plot the results on the screen, we simply have ::
 
     sim.plot()
 
+.. image:: ../docs/images/plot_basic.png
+    :scale: 70%
+    :align: center
+    :alt: Plot of A, B and C species over time.
+
 To plot only A and B, we use the species indices (``[0,1]``) ::
 
     sim.plot(plot_indices = [0, 1])
+
+.. image:: ../docs/images/plot_AB.png
+    :scale: 70%
+    :align: center
+    :alt: Plot of A and B species over time.
 
 To not display the plot on the screen and retrieve the figure and axis objects, we have ::
 
