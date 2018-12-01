@@ -1,11 +1,12 @@
 # Stochastic Simulation Algorithms in Python
 
-[![Build Status](https://travis-ci.com/dileep-kishore/pyssa.svg?token=qCMKydrUTvcJ87J6czex&branch=master)](https://travis-ci.com/dileep-kishore/pyssa)
-[![Updates](https://pyup.io/repos/github/dileep-kishore/pyssa/shield.svg)](https://pyup.io/repos/github/dileep-kishore/pyssa/)
+[![Build Status](https://travis-ci.com/Heuro-labs/pyssa.svg?token=qCMKydrUTvcJ87J6czex&branch=master)](https://travis-ci.com/Heuro-labs/pyssa)
+[![Updates](https://pyup.io/repos/github/Heuro-labs/pyssa/shield.svg)](https://pyup.io/repos/github/Heuro-labs/pyssa/)
 [![Documentation Status](https://readthedocs.org/projects/pyssa/badge/?version=latest)](https://pyssa.readthedocs.io/en/latest/?badge=latest)
-[![Pyup](https://img.shields.io/pypi/v/pyssa.svg)](https://pypi.python.org/pypi/pyssa)
+[![pypi](https://img.shields.io/pypi/v/pyssa.svg)](https://pypi.python.org/pypi/pyssa)
 ![License](https://img.shields.io/badge/license-Apache%202-blue.svg)
-![CodeStyle](https://img.shields.io/badge/code--style-black-black.svg)
+[![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+
 
 
 ## Introduction
