@@ -32,8 +32,8 @@ Suppose we want to run 10 runs of the system for earlier of 1000 time steps / 15
 
     from pyssa.simulation import Simulation
 
-    sim1 = Simulation(V_r, V_p, X0, k)
-    sim1.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
+    sim = Simulation(V_r, V_p, X0, k)
+    sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
 
 Note that the ``chem_flag`` is set to ``True`` since we are dealing with a chemical system.
 
@@ -43,15 +43,15 @@ Plotting
 
 To plot the results on the screen, we simply have ::
 
-    sim1.plot()
+    sim.plot()
 
 To plot only A and B, we use the species indices (``[0,1]``) ::
 
-    sim1.plot(plot_indices = [0, 1])
+    sim.plot(plot_indices = [0, 1])
 
 To not display the plot on the screen and retrieve the figure and axis objects, we have ::
 
-    fig, ax = sim1.plot(disp = False)
+    fig, ax = sim.plot(disp = False)
 
 
 =====================
@@ -60,4 +60,17 @@ Accessing the results
 
 The results of the simulation can be retrieved by accessing the ``Results`` object as ::
 
-    res = sim.results()
+    results = sim.results
+
+The ``Results`` object provides abstractions for easy retrieval and iteration over the simulation results. For example you can iterate over every run of the simulation using ::
+
+    for x, t, status in results:
+        pass
+
+You can access the results of the ``n`` th run by ::
+
+    nth_result = results[n]
+
+You can also access the final states of all the simulation runs by ::
+
+    final_times, final_states = results.final
