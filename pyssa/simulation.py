@@ -258,4 +258,4 @@ class Simulation:
             fig.legend(legend_handlers, names)
             if disp:
                 plt.show()
-            return (fig, ax)
+            return fig, ax
