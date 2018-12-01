@@ -1,6 +1,12 @@
-import numpy as np
+"""
+    Naive implementation of the Gillespie algorithm (direct method) in Numba
+"""
+
 from typing import Tuple
+
 from numba import njit
+import numpy as np
+
 from .utils import get_kstoc, roulette_selection
 
 
