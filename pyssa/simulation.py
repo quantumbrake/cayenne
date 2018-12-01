@@ -250,7 +250,7 @@ class Simulation:
                 legend_handlers[index1] = mlines.Line2D([], [], color=colors[index1])
                 names[index1] = "x" + str(plot_indices[index1])
                 for index2 in range(len(res.status_list)):
-                    ax.plot(
+                    ax.step(
                         res.t_list[index2],
                         res.x_list[index2][:, plot_indices[index1]],
                         color=colors[index1],
