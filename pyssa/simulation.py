@@ -66,7 +66,8 @@ class Simulation:
         >>> V_p = np.array([[0,1,0],[0,0,1]])
         >>> X0 = np.array([10,0,0])
         >>> k = np.array([1,1])
-        >>> [_, _, status] = direct_naive(V_r, V_p, X0, k, max_t = 1, max_iter = 100)
+        >>> sim = Simulation(V_r, V_p, X0, k)
+        >>> sim1.simulate(max_t=10, max_iter=100, n_rep=n_runs)
     """
 
     _results: Optional[Results] = None
@@ -150,8 +151,8 @@ class Simulation:
             The end time of the simulation
             The default is 10.0
         max_iter : int, optional
-            The maximum number of iterations of the simulation loop. The
-            The default is 1000 iterations.
+            The maximum number of iterations of the simulation loop
+            The default is 1000 iterations
         volume : float, optional
             The volume of the system
             The default value is 1.0
@@ -211,6 +212,26 @@ class Simulation:
             raise ValueError("Requested algorithm not supported")
 
     def plot(self, plot_indices: list = None, disp: bool = True):
+        """
+        Plot the simulation
+
+        Parameters
+        ----------
+        plot_indices : list, optional
+            The indices of the species to be plotted.
+            The default is `[i for i in range(self._ns)]` plots all species.
+        disp : bool, optional
+            If `True`, the plot is displayed.
+            The default shows the plot.
+
+        Returns
+        -------
+        fig : class 'matplotlib.figure.Figure'
+            Figure object of the generated plot.
+        ax : class 'matplotlib.axes._subplots.AxesSubplot
+            Axis objected of the generated plot.
+        """
+
         if self._results is None:
             raise ValueError("Simulate not run.")
         else:
