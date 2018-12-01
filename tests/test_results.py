@@ -2,7 +2,6 @@
     Tests for the `Results` class
 """
 
-import numpy as np
 import pytest
 
 from pyssa.simulation import Simulation

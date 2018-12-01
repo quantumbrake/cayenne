@@ -2,8 +2,6 @@
     Tests for direct_naive function
 """
 
-import numpy as np
-import pytest
 
 from pyssa.simulation import Simulation
 
