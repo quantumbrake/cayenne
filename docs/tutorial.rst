@@ -1,6 +1,9 @@
-==============
+========
+Tutorial
+========
+
 Model Building
-==============
+++++++++++++++
 
 
 Consider a simple system of chemical reactions given by:
@@ -24,9 +27,8 @@ Then to build the model we have the following variable definitions::
     k = np.array([k1, k2])
 
 
-===================
 Running Simulations
-===================
++++++++++++++++++++
 
 Suppose we want to run 10 runs of the system for earlier of 1000 time steps / 150 time units each, we have ::
 
@@ -37,9 +39,8 @@ Suppose we want to run 10 runs of the system for earlier of 1000 time steps / 15
 
 Note that the ``chem_flag`` is set to ``True`` since we are dealing with a chemical system.
 
-========
 Plotting
-========
+++++++++
 
 To plot the results on the screen, we simply have ::
 
@@ -64,9 +65,8 @@ To not display the plot on the screen and retrieve the figure and axis objects, 
     fig, ax = sim.plot(disp = False)
 
 
-=====================
 Accessing the results
-=====================
++++++++++++++++++++++
 
 The results of the simulation can be retrieved by accessing the ``Results`` object as ::
 
@@ -91,10 +91,10 @@ You can also access the final states of all the simulation runs by ::
 
 .. code-block:: python
 
-    final_times
+    #final_times
     array([ 7.59679567,  6.370443  ,  8.62018373,  6.44826162,  6.42278186,
         4.66472231,  6.15595516,  5.87319502,  9.13955542, 11.12529717])
-    final_states
+    #final_states
     array([[  0.,   0., 100.],
        [  0.,   0., 100.],
        [  0.,   0., 100.],
