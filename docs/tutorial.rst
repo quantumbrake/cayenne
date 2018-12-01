@@ -62,6 +62,10 @@ The results of the simulation can be retrieved by accessing the ``Results`` obje
 
     results = sim.results
 
+.. code-block:: python
+
+    <Results n_rep=10 algorithm=direct_naive seed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]>
+
 The ``Results`` object provides abstractions for easy retrieval and iteration over the simulation results. For example you can iterate over every run of the simulation using ::
 
     for x, t, status in results:
@@ -74,3 +78,21 @@ You can access the results of the ``n`` th run by ::
 You can also access the final states of all the simulation runs by ::
 
     final_times, final_states = results.final
+
+.. code-block:: python
+
+    final_times
+    array([ 7.59679567,  6.370443  ,  8.62018373,  6.44826162,  6.42278186,
+        4.66472231,  6.15595516,  5.87319502,  9.13955542, 11.12529717])
+    final_states
+    array([[  0.,   0., 100.],
+       [  0.,   0., 100.],
+       [  0.,   0., 100.],
+       [  0.,   0., 100.],
+       [  0.,   0., 100.],
+       [  0.,   0., 100.],
+       [  0.,   0., 100.],
+       [  0.,   0., 100.],
+       [  0.,   0., 100.],
+       [  0.,   0., 100.]])
+
