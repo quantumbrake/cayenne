@@ -27,6 +27,7 @@ black = "==18.9b0"
 pre-commit = "*"
 sphinx-rtd-theme = "*"
 numpydoc = "*"
+codecov = "*"
 
 [requires]
 python_version = "3.6"

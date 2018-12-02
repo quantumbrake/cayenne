@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a3b2ed8642bd3645daf025589fa553939645a99f960bfc44629c5acd731226f5"
+            "sha256": "bb5694eeb44570235681869f25534bbb0f12608055f7a96226803a3856af7c7c"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -303,6 +303,14 @@
             "markers": "python_version != '3.2.*' and python_version != '3.0.*' and python_version != '3.3.*' and python_version != '3.1.*' and python_version >= '2.7'",
             "version": "==7.0"
         },
+        "codecov": {
+            "hashes": [
+                "sha256:8ed8b7c6791010d359baed66f84f061bba5bd41174bf324c31311e8737602788",
+                "sha256:ae00d68e18d8a20e9c3288ba3875ae03db3a8e892115bf9b83ef20507732bed4"
+            ],
+            "index": "pypi",
+            "version": "==2.0.15"
+        },
         "coverage": {
             "hashes": [
                 "sha256:09e47c529ff77bf042ecfe858fb55c3e3eb97aac2c87f0349ab5a7efd6b3939f",
@@ -405,7 +413,7 @@
                 "sha256:6e2783b2538bd5a14678284a3962b0660c715e5a0f10243fd5e00a4b5974f50b",
                 "sha256:d3279fd0f6f847cced9f7acc19bd3e5df54d34f93a2e7bb5f238f81545787078"
             ],
-            "markers": "python_version < '3.7'",
+            "markers": "python_version >= '2.7' and python_version != '3.2' and python_version != '3.1' and python_version != '3.0' and python_version != '3.3'",
             "version": "==1.0.2"
         },
         "ipython": {
@@ -843,11 +851,11 @@
         },
         "urllib3": {
             "hashes": [
-                "sha256:61bf29cada3fc2fbefad4fdf059ea4bd1b4a86d2b6d15e1c7c0b582b9752fe39",
-                "sha256:de9529817c93f27c8ccbfead6985011db27bd0ddfcdb2d86f3f663385c6a9c22"
+                "sha256:a68ac5e15e76e7e5dd2b8f94007233e01effe3e50e8daddf69acfd81cb686baf",
+                "sha256:b5725a0bd4ba422ab0e66e89e030c806576753ea3ee08554382c14e685d117b5"
             ],
-            "markers": "python_version < '4' and python_version >= '2.7' and python_version != '3.2.*' and python_version != '3.1.*' and python_version != '3.0.*' and python_version != '3.3.*'",
-            "version": "==1.24.1"
+            "markers": "python_version < '4' and python_version != '3.0.*' and python_version >= '2.6' and python_version != '3.1.*' and python_version != '3.3.*' and python_version != '3.2.*'",
+            "version": "==1.23"
         },
         "virtualenv": {
             "hashes": [
