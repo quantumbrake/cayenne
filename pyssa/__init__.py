@@ -4,6 +4,6 @@
 
 __author__ = """Dileep Kishore, Srikiran Chandrasekaran"""
 __email__ = "k.dileep1994@gmail.com"
-__version__ = "0.5.3"
+__version__ = "0.5.4"
 
 from .simulation import Simulation
