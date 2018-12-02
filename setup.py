@@ -8,9 +8,6 @@ import numpy
 with open("README.md") as readme_file:
     readme = readme_file.read()
 
-with open("HISTORY.rst") as history_file:
-    history = history_file.read()
-
 requirements = ["numpy", "numba", "matplotlib"]
 
 setup_requirements = []
@@ -32,7 +29,7 @@ setup(
     description="Python package for stochastic simulations",
     install_requires=requirements,
     license="Apache Software License 2.0",
-    long_description=readme + "\n\n" + history,
+    long_description=readme + "\n\n",
     long_description_content_type="text/markdown",
     include_package_data=True,
     keywords="pyssa stochastic gillepsie simulation numba",
