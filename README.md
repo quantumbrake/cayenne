@@ -43,7 +43,7 @@ sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
 sim.plot()
 ```
 
-![Plot of species A, B and C](/docs/images/plot_basic.png)
+![Plot of species A, B and C](https://raw.githubusercontent.com/Heuro-labs/pyssa/master/docs/images/plot_basic.png)
 
 ### Accessing the results
 
