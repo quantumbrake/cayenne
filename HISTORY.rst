@@ -2,6 +2,19 @@
 History
 =======
 
+0.5.3 (2018-12-02)
+------------------
+
+Added
++++++
+- plot to pypi
+
+Changed
++++++++
+- fix bumpversion/black issue
+- remove history from package long_description
+
+
 0.5.0 (2018-12-01)
 ------------------
 
@@ -9,7 +22,7 @@ First public release!!
 
 Added
 +++++
-- pypi deployment
+- testpypi deployment
 - pyup security checking
 - readthedocs deployment
 - Tutorials and documentation
