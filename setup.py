@@ -35,7 +35,7 @@ setup(
     long_description=readme + "\n\n" + history,
     long_description_content_type="text/markdown",
     include_package_data=True,
-    keywords="pyssa",
+    keywords="pyssa stochastic gillepsie simulation numba",
     name="pyssa",
     packages=find_packages(include=["pyssa"]),
     setup_requires=setup_requirements,
