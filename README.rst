@@ -42,7 +42,7 @@ Plotting
 
    sim.plot()
 
-.. figure:: /docs/images/plot_basic.png
+.. image:: /docs/images/plot_basic.png
    :alt: Plot of species A, B and C
 
    Plot of species A, B and C
