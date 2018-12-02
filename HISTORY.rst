@@ -2,6 +2,29 @@
 History
 =======
 
+0.5.0 (2018-12-01)
+------------------
+
+First public release!!
+
+Added
++++++
+- pypi deployment
+- pyup security checking
+- readthedocs deployment
+- Tutorials and documentation
+- Plotting functionality through ``Simulation.plot``
+
+Changed
++++++++
+- ``Simulation.results`` is now a property
+- Updated tests to support the new api changes
+
+Chore
++++++
+- Updated the README
+
+
 0.4.0 (2018-11-23)
 ------------------
 
