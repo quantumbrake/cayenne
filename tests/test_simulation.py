@@ -97,11 +97,14 @@ class TestSanitize:
         sim2 = Simulation(V_r, V_p, X0, k)
         sim1.simulate(algorithm=algorithm)
         sim2.simulate(algorithm=algorithm, seed=[1])
-        assert not (
-            all(
-                (i == j).all() for i, j in zip(sim1.results.t_list, sim2.results.t_list)
-            )
-        )
+        for i, j in zip(sim1.results.t_list, sim2.results.t_list):
+            if i.shape[0] == j.shape[0]:
+                assert not (
+                    all(
+                        (i == j).all()
+                        for i, j in zip(sim1.results.t_list, sim2.results.t_list)
+                    )
+                )
 
     def test_incorrect_seed(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
