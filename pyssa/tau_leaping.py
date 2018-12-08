@@ -85,6 +85,11 @@ def tau_leaping(
     )  # Vector of propensities
     kstoc = prop.copy()  # Stochastic rate constants
 
+    if np.sum(prop) < 1e-30:
+        if np.sum(xt) > 1e-30:
+            status = -2
+            return t[:ite], x[:ite, :], status
+
     while ite < max_iter:
         # Calculate the event rates
         for ind1 in range(n_r):
@@ -104,5 +109,5 @@ def tau_leaping(
         t[ite] = t_curr
         t_curr += tau
         ite += 1
-    status = 1
+    status = 2
     return t[:ite], x[:ite, :], status
