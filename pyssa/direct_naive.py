@@ -36,6 +36,10 @@ def direct_naive(
         k_det : (nr,) ndarray
             A 1D array representing the deterministic rate constants of the
             system.
+        max_t : float
+            The maximum simulation time to run the simulation for.
+        max_iter : int
+            The maximum number of iterations to run the simulation for.
         volume : float
             The volume of the reactor vessel which is important for second
             and higher order reactions. Defaults to 1 arbitrary units.
