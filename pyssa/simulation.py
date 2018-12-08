@@ -192,6 +192,9 @@ class Simulation:
         else:
             seed = [index for index in range(n_rep)]
 
+        if not isinstance(max_iter, int):
+            raise TypeError("max_iter should be of type int")
+
         if algorithm == "direct_naive":
             for index in range(n_rep):
                 t, X, status = direct_naive(

@@ -110,6 +110,12 @@ class TestSanitize:
         with pytest.raises(ValueError):
             sim1.simulate(n_rep=2, seed=[1, 2, 3])
 
+    def test_maxiter_type(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        sim1 = Simulation(V_r, V_p, X0, k)
+        with pytest.raises(TypeError):
+            sim1.simulate(max_iter=100.0)
+
     def test_tau(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         sim = Simulation(V_r, V_p, X0, k)
