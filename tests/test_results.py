@@ -8,20 +8,21 @@ from pyssa.simulation import Simulation
 from pyssa.results import Results
 
 
+@pytest.mark.parametrize("algorithm", ["direct_naive", "tau_leaping"])
 @pytest.mark.usefixtures("setup_large")
 class TestResults:
-    def test_init_good(self, setup_large):
+    def test_init_good(self, algorithm, setup_large):
         V_r, V_p, X0, k = setup_large
         sim = Simulation(V_r, V_p, X0, k)
         with pytest.warns(Warning):
             sim.results
-        sim.simulate()
+        sim.simulate(algorithm=algorithm)
         assert sim.results
 
-    def test_init_bad(self, setup_large):
+    def test_init_bad(self, algorithm, setup_large):
         V_r, V_p, X0, k = setup_large
         sim = Simulation(V_r, V_p, X0, k)
-        sim.simulate()
+        sim.simulate(algorithm=algorithm)
         results = sim.results
         t_list = results.t_list
         x_list = results.x_list
@@ -40,22 +41,22 @@ class TestResults:
             status_list[-1] = "fail"
             Results(t_list, x_list, status_list, algorithm, seed)
 
-    def test_iter_len(self, setup_large):
+    def test_iter_len(self, algorithm, setup_large):
         V_r, V_p, X0, k = setup_large
         n_rep = 10
         sim = Simulation(V_r, V_p, X0, k)
-        sim.simulate(n_rep=n_rep)
+        sim.simulate(algorithm=algorithm, n_rep=n_rep)
         results = sim.results
         assert len(results) == n_rep
         for x, t, s in results:
             assert x.shape[0] == t.shape[0]
             assert s
 
-    def test_contains_getitem(self, setup_large):
+    def test_contains_getitem(self, algorithm, setup_large):
         V_r, V_p, X0, k = setup_large
         n_rep = 10
         sim = Simulation(V_r, V_p, X0, k)
-        sim.simulate(n_rep=n_rep)
+        sim.simulate(algorithm=algorithm, n_rep=n_rep)
         results = sim.results
         assert 9 in results
         x, t, s = results[9]
@@ -64,13 +65,13 @@ class TestResults:
         with pytest.raises(IndexError):
             results[100]
 
-    def test_final(self, setup_large):
+    def test_final(self, algorithm, setup_large):
         V_r, V_p, X0, k = setup_large
         n_rep = 3
         max_t = 1e5
         max_iter = 100
         sim = Simulation(V_r, V_p, X0, k)
-        sim.simulate(max_t=max_t, max_iter=max_iter, n_rep=n_rep)
+        sim.simulate(algorithm=algorithm, max_t=max_t, max_iter=max_iter, n_rep=n_rep)
         results = sim.results
         final_times, final_states = results.final
         assert final_times.shape[0] == final_states.shape[0]
