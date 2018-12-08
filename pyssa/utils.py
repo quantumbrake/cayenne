@@ -3,6 +3,7 @@
 """
 
 from typing import Tuple
+
 import numpy as np
 from numba import njit
 
@@ -77,8 +78,8 @@ def roulette_selection(prop_list: np.ndarray, Xt: np.ndarray) -> Tuple[int, int]
     """
     prop0 = np.sum(prop_list)  # Sum of propensities
     # choice = 0
-    if np.isclose(prop0, 0):
-        if np.sum(Xt) == 0:
+    if prop0 < 1e-30:
+        if np.sum(Xt) < 1e-30:
             status = 3
             return -1, status
         else:
