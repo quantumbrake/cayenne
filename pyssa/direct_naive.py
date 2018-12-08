@@ -74,16 +74,14 @@ def direct_naive(
     status = 0
     np.random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
-    prop = np.copy(
-        get_kstoc(react_stoic, k_det, volume, chem_flag)
-    )  # Vector of propensities
+    prop = get_kstoc(react_stoic, k_det, volume, chem_flag)  # Vector of propensities
     kstoc = prop.copy()  # Stochastic rate constants
     while ite < max_iter:
         # Calculate propensities
         for ind1 in range(nr):
             for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= np.power(xt[ind2], react_stoic[ind1, ind2])
+                prop[ind1] *= xt[ind2] ** react_stoic[ind1, ind2]
         # Roulette wheel
         choice, status = roulette_selection(prop, xt)
         if status == 0:
