@@ -110,6 +110,15 @@ class TestSanitize:
         with pytest.raises(ValueError):
             sim1.simulate(n_rep=2, seed=[1, 2, 3])
 
+    def test_tau(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        sim = Simulation(V_r, V_p, X0, k)
+        sim.simulate(algorithm="tau_leaping", n_rep=1)
+        results = sim.results
+        for x, t, s in results:
+            print(s, x)
+        assert 1 == 1
+
 
 def test_bifurcation(setup_bifurcation):
     V_r, V_p, X0, k = setup_bifurcation
