@@ -89,9 +89,5 @@ def roulette_selection(prop_list: np.ndarray, Xt: np.ndarray) -> Tuple[int, int]
     probs = np.cumsum(prop_norm)
     r1 = np.random.rand()  # Roll the wheel
     # Identify where it lands and update that reaction VERIFY MAY BE WRONG
-    for ind1 in range(len(probs)):
-        # print(ind1, probs[ind1], r1)
-        if r1 <= probs[ind1]:
-            choice = ind1
-            # print(ind1, r1, prop_list, probs, "got here", choice)
-            return choice, 0
+    choice = np.searchsorted(probs, r1)
+    return choice, 0
