@@ -2,3 +2,4 @@ coverage:
     ignore:
         - "pyssa/direct_naive.py"
         - "pyssa/utils.py"
+        - "pyssa/tau_leaping.py"
