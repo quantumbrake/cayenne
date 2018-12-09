@@ -77,7 +77,6 @@ def tau_leaping(
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
     n_events = np.zeros((n_r,), dtype=np.int32)
-    # print(n_events.dtype, xt.dtype)
     np.random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
     prop = np.copy(
