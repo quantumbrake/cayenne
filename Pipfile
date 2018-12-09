@@ -7,6 +7,7 @@ name = "pypi"
 numpy = "*"
 numba = "*"
 matplotlib = "*"
+numpydoc = "*"
 
 [dev-packages]
 bumpversion = "*"
@@ -22,11 +23,10 @@ pylint = "*"
 mypy = "*"
 pytest-cov = "*"
 ipython = "*"
-pytest-benchmark = {version = "*", extras = ["histogram"]}
+pytest-benchmark = {version = "*",extras = ["histogram"]}
 black = "==18.9b0"
 pre-commit = "*"
 sphinx-rtd-theme = "*"
-numpydoc = "*"
 codecov = "*"
 
 [requires]
