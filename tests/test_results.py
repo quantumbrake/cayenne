@@ -75,5 +75,6 @@ class TestResults:
         results = sim.results
         final_times, final_states = results.final
         assert final_times.shape[0] == final_states.shape[0]
-        for i in range(final_states.shape[0]):
-            assert (final_states[0, :] == final_states[i, :]).all()
+        if algorithm != "tau_leaping":
+            for i in range(final_states.shape[0]):
+                assert (final_states[0, :] == final_states[i, :]).all()
