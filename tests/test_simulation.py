@@ -130,21 +130,13 @@ class TestSanitize:
         assert 1 == 1
 
 
-@pytest.mark.parametrize("algorithm", ["direct_naive", "tau_leaping"])
-def test_bifurcation(algorithm, setup_bifurcation):
+def test_bifurcation(setup_bifurcation):
     V_r, V_p, X0, k = setup_bifurcation
     count_excitation = 0
-    n_runs = 100
+    n_runs = 10
     deviation_tolerance = 0.05
     sim1 = Simulation(V_r, V_p, X0, k)
-    sim1.simulate(
-        algorithm=algorithm,
-        max_t=150,
-        max_iter=1000,
-        chem_flag=True,
-        n_rep=n_runs,
-        tau=1e-2,
-    )
+    sim1.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=n_runs)
     for ind in range(n_runs):
         x = sim1.results.x_list[ind]
         xt = x[-1, :]
