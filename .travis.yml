@@ -15,5 +15,5 @@ deploy:
   user: heuro-labs
   password:
     secure: Rbqm0+P0oKFLxrxehB78/pdU3XCShh8Au2xv6jO7E/WffPMpyRL38No7BrO8kkx8+wN7ukr8+fG9ov/6Zd/OzK4IQM2itDtDxWJFC11MoGrhGbV8vv1/2diiO93grb0KfIJ/e8qX777h29ZmbB5CSQeVMxziK9228Y0Q6PiXWLPCQhJp5/ZsDzHExb5nKs2WiqZsq8Hm6l1HToIbGm5rMeO7xjDyJgqwuXeMFNQ8Dr8avuYqhiBh6JRaBAhQC9zALtru1H7SnzMslFKZA1PNKTtcp9h+vW79dxN27JCdhbwusvB2AAXhLQsi7ddhEpVvdOVFkArxdJCHxcOpWDX3x3CFY4QM/1C0UmlTHlMi0P47hScgYpj0iAkDVHiezXIu2YguRO9v6357FE2eL4Tb5tXc6r9RrZeJdz7TAw/mnWeFj/g0emiU0ArYJ9Rxm0Lrq2MDVbZKCT/Jx6+rJ0wNqHoQbv6LLXqm7nzzt0p47zXXHby04rjyo1ifGDMcad8++NPwOY8aSwX9inRe/6DywKFpgqsoc2BMOKUvmU4U8x5U3PWxSV34xBcNP2vY8wwRDxMHS5l+EGVrNAcLeCIUnR4KzspM9GK+vfvlM9TPQD4FnYAXLmfkNSii/MKZAZVQdBR4l/NJNGItaedr1OrbnV9QUMGofgW/dn5X74CNcDc=
-    on:
-      tags: true
+  on:
+    tags: true
