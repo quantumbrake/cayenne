@@ -16,4 +16,4 @@ def test_plotting(setup_basic):
     assert 1 == 1
     with pytest.raises(ValueError):
         sim1.plot(plot_indices=[-1], disp=False)
-
+    sim1.plot(plot_indices=[0, 1], names=["Species A", "Species B"], disp=False)
