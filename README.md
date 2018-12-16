@@ -38,6 +38,12 @@ sim = Simulation(V_r, V_p, X0, k)
 sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
 ```
 
+You can change the algorithm used to perform the simulation by changing the `algorithm` flag
+
+```python
+sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, algorithm="tau_leaping")
+```
+
 ### Plotting
 
 ```python
