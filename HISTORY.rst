@@ -2,6 +2,33 @@
 History
 =======
 
+0.6.0 (2018-12-16)
+------------------
+
+Added
++++++
+- Updated ``direct_naive`` docstring
+- Support for the ``tau_leaping`` algorithm
+- Species name support for plotting
+
+Fixed
++++++
+- Check for sum propensities uses threshold instead of equality
+- Add check for type of ``max_iter``
+
+Changed
++++++++
+- Update ``roulette_selection`` to use `np.searchsorted`
+- Minor changes to ``numpy`` style usage
+
+Chore
++++++
+- Add ``codecov``
+- Travis pypi autodepolyment
+- Parameterize tests with algorithm name
+- Add details about ``tau_leaping`` to docs and README
+
+
 0.5.4 (2018-12-02)
 ------------------
 
