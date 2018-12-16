@@ -106,3 +106,17 @@ You can also access the final states of all the simulation runs by ::
        [  0.,   0., 100.],
        [  0.,   0., 100.]])
 
+
+Algorithms
+++++++++++
+
+The ``Simulation`` class currently supports the following algorithms:
+
+1. Direct naive
+2. Tau leaping
+
+You can change the algorithm used to perform a simulation using the ``simulation`` flag
+
+.. code-block:: python
+
+    sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, algorithm="tau_leaping")
