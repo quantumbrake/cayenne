@@ -58,6 +58,12 @@ sim.plot()
 results = sim.results
 ```
 
+You can also access the final states of all the simulation runs by
+
+```python
+final_times, final_states = results.final
+```
+
 ## Benchmarks
 
 We chose `numba` after extensive testing and benchmarking against `python` and `cython` implementations.
