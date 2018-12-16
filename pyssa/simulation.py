@@ -236,7 +236,7 @@ class Simulation:
         else:
             raise ValueError("Requested algorithm not supported")
 
-    def plot(self, plot_indices: list = None, disp: bool = True):
+    def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
         """
         Plot the simulation
 
@@ -248,6 +248,9 @@ class Simulation:
         disp : bool, optional
             If `True`, the plot is displayed.
             The default shows the plot.
+        names : list, optional
+            The names of the species to be plotted.
+            The default is `xi` for species `i`.
 
         Returns
         -------
@@ -264,22 +267,25 @@ class Simulation:
                 plot_indices = [i for i in range(self._ns)]
             elif np.any(np.array(plot_indices) < 0):
                 raise ValueError("Negative indexing not supported")
+
             n_indices = len(plot_indices)
             prop_cycle = plt.rcParams["axes.prop_cycle"]
             colors = prop_cycle.by_key()["color"]
             fig, ax = plt.subplots()
             res = self._results
             legend_handlers = [0] * n_indices
-            names = [""] * n_indices
+            generic_names = [""] * n_indices
             for index1 in range(n_indices):
                 legend_handlers[index1] = mlines.Line2D([], [], color=colors[index1])
-                names[index1] = "x" + str(plot_indices[index1])
+                generic_names[index1] = "x" + str(plot_indices[index1])
                 for index2 in range(len(res.status_list)):
                     ax.step(
                         res.t_list[index2],
                         res.x_list[index2][:, plot_indices[index1]],
                         color=colors[index1],
                     )
+            if names is None:
+                names = generic_names
             fig.legend(legend_handlers, names)
             if disp:
                 plt.show()
