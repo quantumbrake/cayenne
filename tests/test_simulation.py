@@ -129,6 +129,15 @@ class TestSanitize:
             print(s, x)
         assert 1 == 1
 
+    def test_tau_adaptive(self, algorithm, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        sim = Simulation(V_r, V_p, X0, k)
+        sim.simulate(algorithm="tau_adaptive", n_rep=1)
+        results = sim.results
+        for x, t, s in results:
+            print(s, x)
+        assert 1 == 1
+
 
 def test_bifurcation(setup_bifurcation):
     V_r, V_p, X0, k = setup_bifurcation
