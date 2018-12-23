@@ -1,0 +1,32 @@
+"""
+    Tests for tau leaping with adaptive step size selection function
+"""
+
+import numpy as np
+import pytest
+
+from pyssa.tau_adaptive import HOR
+
+
+def test_HOR():
+    # A ->
+    react_stoic = np.array([[1, 0]])
+    assert HOR(react_stoic) == 1
+    # A ->
+    # A ->
+    # A ->
+    react_stoic = np.array([[1, 1, 1], [0, 0, 0]])
+    assert np.all(HOR(react_stoic) == [1, 0])
+    # A + B ->
+    # A ->
+    react_stoic = np.array([[1, 1], [1, 0]])
+    assert np.all(HOR(react_stoic) == [2, 2])
+    # A + B ->
+    # C ->
+    react_stoic = np.array([[1, 0], [1, 0], [0, 1]])
+    assert np.all(HOR(react_stoic) == [2, 2, 1])
+    # A + A ->
+    # A ->
+    # B ->
+    react_stoic = np.array([[2, 1, 0], [0, 0, 1]])
+    assert np.all(HOR(react_stoic)==[-2, 1])
