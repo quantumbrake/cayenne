@@ -29,4 +29,18 @@ def test_HOR():
     # A ->
     # B ->
     react_stoic = np.array([[2, 1, 0], [0, 0, 1]])
-    assert np.all(HOR(react_stoic)==[-2, 1])
+    assert np.all(HOR(react_stoic) == [-2, 1])
+    # A + A + B ->
+    # A + B ->
+    # B ->
+    react_stoic = np.array([[2, 1, 0], [1, 1, 1]])
+    assert np.all(HOR(react_stoic) == [-32, 3])
+    # A + A + B ->
+    # A + B + B ->
+    react_stoic = np.array([[2, 1], [1, 2]])
+    assert np.all(HOR(react_stoic) == [-32, -32])
+    # A + A + A ->
+    # A + A + B ->
+    # A + B ->
+    react_stoic = np.array([[3, 2, 1], [0, 1, 1]])
+    assert np.all(HOR(react_stoic) == [-3, 3])
