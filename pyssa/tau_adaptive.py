@@ -3,11 +3,9 @@
 """
 
 from typing import Tuple
-
 from numba import njit
 import numpy as np
-
-from utils import get_kstoc
+from .utils import get_kstoc
 
 HIGH = 1e20
 
@@ -33,10 +31,12 @@ def HOR(react_stoic: np.ndarray):
         HOR[ind] = np.max(this_orders)
         if react_stoic[ind, np.argmax(this_orders)] == 2 and HOR[ind] == 2:
             HOR[ind] = -2  # g_i should be (2 + 1/(x_i-1))
-        elif react_stoic[ind, np.argmax(this_orders)] == 2 and HOR[ind] == 3:
+        elif (
+            HOR[ind] == 3 and np.max(react_stoic[ind, np.where(this_orders == 3)]) == 2
+        ):
             HOR[ind] = -32  # g_i should be (3/2 * (2 + 1/(x_i-1)))
         elif react_stoic[ind, np.argmax(this_orders)] == 3:
-            HOR[ind] = -3
+            HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
     return HOR
 
 
@@ -96,7 +96,7 @@ def tau_adaptive(
             -2 : Failure, propensity zero without extinction.
             -3 : Negative species count encountered
     """
-
+    epsilon = 0.03
     ite = 1  # Iteration counter
     t_curr = 0.0  # Time in seconds
     n_r = react_stoic.shape[0]
@@ -117,6 +117,20 @@ def tau_adaptive(
     )  # Vector of propensities
     kstoc = prop.copy()  # Stochastic rate constants
 
+    # Determine the HOR vector. HOR(i) is the highest order of reaction
+    # in which species S_i appears as a reactant.
+    HOR = np.zeros([n_s])
+    orders = np.sum(react_stoic, axis=0)
+    for ind in range(n_s):
+        this_orders = orders[np.where(react_stoic[ind, :] > 0)]
+        HOR[ind] = np.max(this_orders)
+        if react_stoic[ind, np.argmax(this_orders)] == 2 and HOR[ind] == 2:
+            HOR[ind] = -2  # g_i should be (2 + 1/(x_i-1))
+        elif react_stoic[ind, np.argmax(this_orders)] == 2 and HOR[ind] == 3:
+            HOR[ind] = -32  # g_i should be (3/2 * (2 + 1/(x_i-1)))
+        elif react_stoic[ind, np.argmax(this_orders)] == 3:
+            HOR[ind] = -3
+
     if np.sum(prop) < 1e-30:
         if np.sum(xt) > 1e-30:
             status = -2
@@ -126,7 +140,8 @@ def tau_adaptive(
     N = n_s
     L = np.zeros(M)
     vis = np.zeros(M)
-    react_species = np.where(np.sum(react_stoic, axis=1) > 0)
+    react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
+    n_react_species = react_species.shape[0]
     mup = np.zeros(N)
     sigp = np.zeros(N)
 
@@ -149,11 +164,17 @@ def tau_adaptive(
             taup = HIGH
         else:
             # Compute mu from eqn 32a and sig from eqn 32b
+            for ind, species_index in enumerate(react_species):
+                temp = v[species_index, not_crit] * prop[not_crit]
+                mup[ind] = np.sum(temp)
+                sigp[ind] = np.sum(v[species_index, not_crit] * temp)
+                if HOR[species_index] > 0:
+                    g = HOR[species_index]
+                elif HOR[species_index] == -2:
+                    g = 1 + 2 / (xt[species_index] - 1)
+                mup_list[ind] = max(epsilon * xt[species_index], 1)
 
-            for ind in react_species:
-                temp = v[ind, not_crit] * prop[not_crit]
-                mup[ind] = np.sum(v[ind, not_crit] * prop[not_crit])
-                sigp[ind] = np.sum(v[ind, not_crit] * temp)
+            taup = 2
         # 3. For small taup, do SSA
 
         # 4. Generate second candidate taupp
