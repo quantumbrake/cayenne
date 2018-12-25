@@ -35,7 +35,9 @@ def HOR(react_stoic: np.ndarray):
             HOR[ind] == 3 and np.max(react_stoic[ind, np.where(this_orders == 3)]) == 2
         ):
             HOR[ind] = -32  # g_i should be (3/2 * (2 + 1/(x_i-1)))
-        elif react_stoic[ind, np.argmax(this_orders)] == 3:
+        elif (
+            HOR[ind] == 3 and np.max(react_stoic[ind, np.where(this_orders == 3)]) == 3
+        ):
             HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
     return HOR
 
