@@ -44,3 +44,10 @@ def test_HOR():
     # A + B ->
     react_stoic = np.array([[3, 2, 1], [0, 1, 1]])
     assert np.all(HOR(react_stoic) == [-3, 3])
+    # A + A + A ->
+    # B + B + B ->
+    # A + A + B ->
+    # A + B + B ->
+    # A + B + C ->
+    react_stoic = np.array([[3, 0, 2, 1, 1], [0, 3, 1, 2, 1], [0, 0, 0, 0, 1]])
+    assert np.all(HOR(react_stoic) == [-3, -3, 3])
