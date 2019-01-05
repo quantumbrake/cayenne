@@ -10,7 +10,7 @@ from .utils import get_kstoc
 HIGH = 1e20
 
 
-def HOR(react_stoic: np.ndarray):
+def get_HOR(react_stoic: np.ndarray):
     """
     Determine the HOR vector. HOR(i) is the highest order of reaction
     in which species S_i appears as a reactant.
@@ -128,17 +128,7 @@ def tau_adaptive(
 
     # Determine the HOR vector. HOR(i) is the highest order of reaction
     # in which species S_i appears as a reactant.
-    HOR = np.zeros([n_s])
-    orders = np.sum(react_stoic, axis=0)
-    for ind in range(n_s):
-        this_orders = orders[np.where(react_stoic[ind, :] > 0)]
-        HOR[ind] = np.max(this_orders)
-        if react_stoic[ind, np.argmax(this_orders)] == 2 and HOR[ind] == 2:
-            HOR[ind] = -2  # g_i should be (2 + 1/(x_i-1))
-        elif react_stoic[ind, np.argmax(this_orders)] == 2 and HOR[ind] == 3:
-            HOR[ind] = -32  # g_i should be (3/2 * (2 + 1/(x_i-1)))
-        elif react_stoic[ind, np.argmax(this_orders)] == 3:
-            HOR[ind] = -3
+    HOR = get_HOR(react_stoic)
 
     if np.sum(prop) < 1e-30:
         if np.sum(xt) > 1e-30:
