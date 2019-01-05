@@ -156,12 +156,12 @@ def tau_adaptive(
         for ind in range(M):
             vis = react_stoic[:, ind]
             L[ind] = np.nanmin(x[ite - 1, :] / vis)
-        # A reaction j is critical if Lj <nc. However criticality is 
-        # considered only for reactions with propensity greater than 
-        # 0 (`prop > 0`). 
+        # A reaction j is critical if Lj <nc. However criticality is
+        # considered only for reactions with propensity greater than
+        # 0 (`prop > 0`).
         crit = (L < nc) * (prop > 0)
         # To get the non-critical reactions, we use the bitwise not operator.
-        not_crit = ~ crit
+        not_crit = ~crit
         # 2. Generate candidate taup
         if np.sum(not_crit) == 0:
             taup = HIGH
