@@ -63,8 +63,8 @@ class Simulation:
 
         Examples
         --------
-        >>> V_r = np.array([[1,0,0],[0,1,0]])
-        >>> V_p = np.array([[0,1,0],[0,0,1]])
+        >>> V_r = np.array([[1,0],[0,1],[0,0]])
+        >>> V_p = np.array([[0,0],[1,0],[0,1]])
         >>> X0 = np.array([10,0,0])
         >>> k = np.array([1,1])
         >>> sim = Simulation(V_r, V_p, X0, k)
@@ -87,17 +87,17 @@ class Simulation:
         self._init_state = init_state
         self._k_det = k_det
         self._chem_flag = chem_flag
-        self._nr = self._react_stoic.shape[0]
-        self._ns = self._react_stoic.shape[1]
+        self._ns = self._react_stoic.shape[0]
+        self._nr = self._react_stoic.shape[1]
         self._volume = volume
         self._orders = np.sum(
-            self._react_stoic, 1
+            self._react_stoic, axis=0
         )  # Order of rxn = number of reactants
         self._check_consistency()
 
     def _check_consistency(self):
-        if (self._nr != self._prod_stoic.shape[0]) or (
-            self._ns != self._prod_stoic.shape[1]
+        if (self._ns != self._prod_stoic.shape[0]) or (
+            self._nr != self._prod_stoic.shape[1]
         ):
             raise ValueError("react_stoic and prod_stoic should be the same shape.")
         if np.any(self._react_stoic < 0):

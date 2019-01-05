@@ -20,13 +20,13 @@ class TestSanitize:
 
     def test_too_high_order(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
-        V_r = np.array([[2, 2, 0], [0, 1, 0]])
+        V_r = np.array([[2, 0], [2, 1], [0, 0]])
         with pytest.raises(ValueError):
             Simulation(V_r, V_p, X0, k)
 
     def test_status_3(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
-        V_p = np.array([[0, 0, 0], [0, 0, 1]])
+        V_p = np.array([[0, 0], [0, 0], [0, 1]])
         X0 = np.array([10, 0, 0])
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=10, max_iter=100, chem_flag=True)
@@ -47,7 +47,7 @@ class TestSanitize:
 
     def test_Vp_Vr_shape(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
-        V_p = np.array([[0, 1, 0]])
+        V_p = np.array([[0], [1], [0]])
         with pytest.raises(ValueError):
             Simulation(V_r, V_p, X0, k)
 
@@ -59,13 +59,13 @@ class TestSanitize:
 
     def test_Vp_neg(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
-        V_p = np.array([[0, -1, 0], [0, 0, 1]])
+        V_p = np.array([[0, 0], [-1, 0], [0, 1]])
         with pytest.raises(ValueError):
             Simulation(V_r, V_p, X0, k)
 
     def test_Vr_neg(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
-        V_r = np.array([[-1, 0, 0], [0, 1, 0]])
+        V_r = np.array([[-1, 0], [0, 1], [0, 0]])
         with pytest.raises(ValueError):
             Simulation(V_r, V_p, X0, k)
 
@@ -120,7 +120,7 @@ class TestSanitize:
         with pytest.raises(TypeError):
             sim1.simulate(algorithm=algorithm, max_iter=100.0)
 
-    def test_tau(self, algorithm, setup_basic):
+    def test_tau_leaping(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(algorithm="tau_leaping", n_rep=1)

@@ -25,15 +25,15 @@ def tau_leaping(
     """
         Parameters
         ---------
-        react_stoic : (n_r, ns) ndarray
+        react_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
-            Reactions are rows and species are columns.
-        prod_stoic : (n_r, ns) ndarray
+            Species are rows and reactions are columns.
+        prod_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
-            Reactions are rows and species are columns.
+            Species are rows and reactions are columns.
         init_state : (ns,) ndarray
             A 1D array representing the initial state of the system.
-        k_det : (n_r,) ndarray
+        k_det : (nr,) ndarray
             A 1D array representing the deterministic rate constants of the
             system.
         tau : float
@@ -68,15 +68,15 @@ def tau_leaping(
 
     ite = 1  # Iteration counter
     t_curr = 0.0  # Time in seconds
-    n_r = react_stoic.shape[0]
-    ns = react_stoic.shape[1]
-    v = prod_stoic - react_stoic  # n_r x ns
+    ns = react_stoic.shape[0]
+    nr = react_stoic.shape[1]
+    v = prod_stoic - react_stoic  # ns x nr
     xt = init_state.copy()  # Number of species at time t_curr
     max_iter = np.int(max_t / tau) + 1
     x = np.zeros((max_iter, ns))
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
-    n_events = np.zeros((n_r,), dtype=np.int32)
+    n_events = np.zeros((nr,), dtype=np.int32)
     np.random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
     prop = np.copy(
@@ -91,16 +91,16 @@ def tau_leaping(
 
     while ite < max_iter:
         # Calculate the event rates
-        for ind1 in range(n_r):
+        for ind1 in range(nr):
             for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= np.power(xt[ind2], react_stoic[ind1, ind2])
-            n_events[ind1] = np.random.poisson(prop[ind1] * tau)  # 1 x n_r
+                prop[ind1] *= np.power(xt[ind1], react_stoic[ind2, ind1])
+            n_events[ind1] = np.random.poisson(prop[ind1] * tau)  # 1 x nr
         if np.all(prop == 0):
             status = 3
             return t[:ite], x[:ite,], status
-        for ind1 in range(n_r):
-            xt += n_events[ind1] * v[ind1, :]
+        for ind1 in range(nr):
+            xt += n_events[ind1] * v[:, ind1]
         if np.any(xt < 0):
             return t[:ite], x[:ite, :], -3
         prop = np.copy(kstoc)
