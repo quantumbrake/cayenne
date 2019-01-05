@@ -154,8 +154,8 @@ def tau_adaptive(
                 prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
 
         for ind in range(M):
-            vis = react_stoic[:, ind]
-            L[ind] = np.nanmin(x[ite - 1, :] / vis)
+            vis = v[:, ind]
+            L[ind] = np.nanmin(x[ite - 1, vis < 0] / abs(vis[vis < 0]))
         # A reaction j is critical if Lj <nc. However criticality is
         # considered only for reactions with propensity greater than
         # 0 (`prop > 0`).
