@@ -20,10 +20,10 @@ class Simulation:
 
         Parameters
         ---------
-        react_stoic : (nr, ns) ndarray
+        react_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
             Reactions are rows and species are columns.
-        prod_stoic : (nr, ns) ndarray
+        prod_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
             Reactions are rows and species are columns.
         init_state : (ns,) ndarray
@@ -68,7 +68,7 @@ class Simulation:
         >>> X0 = np.array([10,0,0])
         >>> k = np.array([1,1])
         >>> sim = Simulation(V_r, V_p, X0, k)
-        >>> sim1.simulate(max_t=10, max_iter=100, n_rep=n_runs)
+        >>> sim.simulate(max_t=10, max_iter=100, n_rep=n_runs)
     """
 
     _results: Optional[Results] = None
