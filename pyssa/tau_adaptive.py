@@ -32,7 +32,6 @@ def HOR(react_stoic: np.ndarray):
         if HOR[ind] == 1:
             continue
         order_2_indices = np.where(orders == 2)
-        # if react_stoic[ind, np.argmax(this_orders)] == 2 and HOR[ind] == 2:
         if order_2_indices[0].size > 0:
             if np.max(react_stoic[ind, np.where(orders == 2)]) == 2 and HOR[ind] == 2:
                 HOR[ind] = -2  # g_i should be (2 + 1/(x_i-1))
