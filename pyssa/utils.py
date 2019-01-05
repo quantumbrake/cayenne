@@ -39,8 +39,8 @@ def get_kstoc(
     reactions. J. Comput. Phys. 22, 403–434.
     doi:10.1016/0021-9991(76)90041-3.
     """
-    nr = react_stoic.shape[0]
-    orders = np.sum(react_stoic, 1)  # Order of rxn = number of reactants
+    nr = react_stoic.shape[1]
+    orders = np.sum(react_stoic, axis=0)  # Order of rxn = number of reactants
     k_stoc = k_det.copy()
     if chem_flag:
         factor = Na
@@ -48,9 +48,9 @@ def get_kstoc(
         factor = 1.0
     for ind in range(nr):
         # If highest order is 3
-        if react_stoic[ind, :].max() == 3:
+        if react_stoic[:, ind].max() == 3:
             k_stoc[ind] = k_det[ind] * 6 / np.power(factor * volume, 2)
-        elif react_stoic[ind, :].max() == 2:  # Highest order is 2
+        elif react_stoic[:, ind].max() == 2:  # Highest order is 2
             k_stoc[ind] = k_det[ind] * 2 / np.power(factor * volume, orders[ind] - 1)
         else:
             k_stoc[ind] = k_det[ind] / np.power(factor * volume, orders[ind] - 1)
