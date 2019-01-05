@@ -21,10 +21,17 @@ def get_kstoc(
 
     Parameters
     ----------
-    react_stoic : np.ndarray
-    k_det : np.ndarray
+    react_stoic : (ns, nr) ndarray
+        A 2D array of the stoichiometric coefficients of the reactants.
+        Reactions are rows and species are columns.
+    k_det : (nr,) ndarray
+        A 1D array representing the deterministic rate constants of the
+        system.
     volume : float
+        The volume of the reactor vessel which is important for second
+        and higher order reactions
     chem_flag : bool
+        If True, divide by Na while calculating stochastic rate constants.
 
     Returns
     -------
