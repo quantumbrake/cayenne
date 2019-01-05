@@ -141,8 +141,9 @@ def tau_adaptive(
     vis = np.zeros(M)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
     n_react_species = react_species.shape[0]
-    mup = np.zeros(N)
-    sigp = np.zeros(N)
+    mup = np.zeros(n_react_species)
+    sigp = np.zeros(n_react_species)
+    tau_num = np.zeros(n_react_species)
 
     while ite < max_iter:
         # 1. Determine critical reactions
@@ -192,9 +193,10 @@ def tau_adaptive(
                         g = 3 / 2 * (2 + 1 / (xt[species_index] - 1))
                     else:
                         g = 3
-                mup_list[ind] = max(epsilon * xt[species_index], 1)
-
-            taup = 2
+                tau_num[ind] = max(epsilon * xt[species_index] / g, 1)
+            taup = np.nanmin(
+                np.concatenate([tau_num / abs(mup), np.power(tau_num, 2) / abs(sigp)])
+            )
         # 3. For small taup, do SSA
 
         # 4. Generate second candidate taupp
