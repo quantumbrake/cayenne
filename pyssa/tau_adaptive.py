@@ -184,7 +184,24 @@ def tau_adaptive(
                 if HOR[species_index] > 0:
                     g = HOR[species_index]
                 elif HOR[species_index] == -2:
-                    g = 1 + 2 / (xt[species_index] - 1)
+                    if xt[species_index] is not 1:
+                        g = 1 + 2 / (xt[species_index] - 1)
+                    else:
+                        g = 2
+                elif HOR[species_index] == -3:
+                    if xt[species_index] not in [1, 2]:
+                        g = (
+                            3
+                            + 1 / (xt[species_index] - 1)
+                            + 2 / (xt[species_index] - 2)
+                        )
+                    else:
+                        g = 3
+                elif HOR[species_index] == -32:
+                    if xt[species_index] is not 1:
+                        g = 3 / 2 * (2 + 1 / (xt[species_index] - 1))
+                    else:
+                        g = 3
                 mup_list[ind] = max(epsilon * xt[species_index], 1)
 
             taup = 2
