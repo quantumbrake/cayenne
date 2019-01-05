@@ -29,16 +29,24 @@ def HOR(react_stoic: np.ndarray):
             HOR[ind] = 0
             continue
         HOR[ind] = np.max(this_orders)
-        if react_stoic[ind, np.argmax(this_orders)] == 2 and HOR[ind] == 2:
-            HOR[ind] = -2  # g_i should be (2 + 1/(x_i-1))
-        elif (
-            HOR[ind] == 3 and np.max(react_stoic[ind, np.where(this_orders == 3)]) == 2
-        ):
-            HOR[ind] = -32  # g_i should be (3/2 * (2 + 1/(x_i-1)))
-        elif (
-            HOR[ind] == 3 and np.max(react_stoic[ind, np.where(this_orders == 3)]) == 3
-        ):
-            HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
+        if HOR[ind] == 1:
+            continue
+        order_2_indices = np.where(orders == 2)
+        # if react_stoic[ind, np.argmax(this_orders)] == 2 and HOR[ind] == 2:
+        if order_2_indices[0].size > 0:
+            if np.max(react_stoic[ind, np.where(orders == 2)]) == 2 and HOR[ind] == 2:
+                HOR[ind] = -2  # g_i should be (2 + 1/(x_i-1))
+        if np.where(orders == 3):
+            if (
+                HOR[ind] == 3
+                and np.max(react_stoic[ind, np.where(this_orders == 3)]) == 2
+            ):
+                HOR[ind] = -32  # g_i should be (3/2 * (2 + 1/(x_i-1)))
+            elif (
+                HOR[ind] == 3
+                and np.max(react_stoic[ind, np.where(this_orders == 3)]) == 3
+            ):
+                HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
     return HOR
 
 
