@@ -6,6 +6,7 @@ from typing import Tuple
 from numba import njit
 import numpy as np
 from .utils import get_kstoc
+from .direct_naive import direct_naive
 
 HIGH = 1e20
 
