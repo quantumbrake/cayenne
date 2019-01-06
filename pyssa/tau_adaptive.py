@@ -125,6 +125,7 @@ def tau_adaptive(
         get_kstoc(react_stoic, k_det, volume, chem_flag)
     )  # Vector of propensities
     kstoc = prop.copy()  # Stochastic rate constants
+    prop_sum = np.sum(prop)
 
     # Determine the HOR vector. HOR(i) is the highest order of reaction
     # in which species S_i appears as a reactant.
@@ -153,7 +154,7 @@ def tau_adaptive(
             for ind2 in range(n_s):
                 # prop = kstoc * product of (number raised to order)
                 prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
-
+        prop_sum = np.sum(prop)
         for ind in range(M):
             vis = v[:, ind]
             L[ind] = np.nanmin(x[ite - 1, vis < 0] / abs(vis[vis < 0]))
@@ -197,7 +198,24 @@ def tau_adaptive(
             taup = np.nanmin(
                 np.concatenate([tau_num / abs(mup), np.power(tau_num, 2) / abs(sigp)])
             )
+
         # 3. For small taup, do SSA
+        if taup < 10 / prop_sum:
+            t_ssa, x_ssa, status = direct_naive(
+                react_stoic,
+                prod_stoic,
+                xt,
+                k_det,
+                max_t=max_t - t[ite - 1],
+                max_iter=100,
+                volume=volume,
+                seed=seed,
+                chem_flag=chem_flag,
+            )
+            t[ite : ite + 100] = t_ssa
+            x[ite : ite + 100, :] = x_ssa
+            if status == 3 or status == 2:
+                return t, x, status
 
         # 4. Generate second candidate taupp
 
