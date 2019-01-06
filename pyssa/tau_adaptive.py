@@ -38,10 +38,10 @@ def get_HOR(react_stoic: np.ndarray):
         Efficient step size selection for the tau-leaping simulation
         method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
     """
-    n_s = react_stoic.shape[0]
-    HOR = np.zeros([n_s])
+    ns = react_stoic.shape[0]
+    HOR = np.zeros([ns])
     orders = np.sum(react_stoic, axis=0)
-    for ind in range(n_s):
+    for ind in range(ns):
         this_orders = orders[np.where(react_stoic[ind, :] > 0)]
         if len(this_orders) == 0:
             HOR[ind] = 0
