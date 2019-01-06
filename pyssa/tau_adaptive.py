@@ -148,8 +148,8 @@ def tau_adaptive(
         # 1. Determine critical reactions
 
         # Calculate the propensities
-        for ind1 in range(n_r):
-            for ind2 in range(n_s):
+        for ind1 in range(nr):
+            for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
                 prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
         prop_sum = np.sum(prop)
