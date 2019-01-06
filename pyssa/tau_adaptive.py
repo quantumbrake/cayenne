@@ -65,15 +65,15 @@ def tau_adaptive(
     """
         Parameters
         ---------
-        react_stoic : (n_r, n_s) ndarray
+        react_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
             Reactions are rows and species are columns.
-        prod_stoic : (n_r, n_s) ndarray
+        prod_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
             Reactions are rows and species are columns.
-        init_state : (n_s,) ndarray
+        init_state : (ns,) ndarray
             A 1D array representing the initial state of the system.
-        k_det : (n_r,) ndarray
+        k_det : (nr,) ndarray
             A 1D array representing the deterministic rate constants of the
             system.
         tau : float
@@ -108,17 +108,15 @@ def tau_adaptive(
     epsilon = 0.03
     ite = 1  # Iteration counter
     t_curr = 0.0  # Time in seconds
-    n_r = react_stoic.shape[0]
-    n_s = react_stoic.shape[1]
-    prod_stoic = np.transpose(prod_stoic)
-    react_stoic = np.transpose(react_stoic)
-    v = prod_stoic - react_stoic  # n_s x n_r
+    nr = react_stoic.shape[0]
+    ns = react_stoic.shape[1]
+    v = prod_stoic - react_stoic  # ns x nr
     xt = init_state.copy()  # Number of species at time t_curr
     max_iter = 10
-    x = np.zeros((max_iter, n_s))
+    x = np.zeros((max_iter, ns))
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
-    n_events = np.zeros((n_r,), dtype=np.int32)
+    n_events = np.zeros((nr,), dtype=np.int32)
     np.random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
     prop = np.copy(
@@ -136,8 +134,8 @@ def tau_adaptive(
             status = -2
             return t[:ite], x[:ite, :], status
 
-    M = n_r
-    N = n_s
+    M = nr
+    N = ns
     L = np.zeros(M)
     vis = np.zeros(M)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
