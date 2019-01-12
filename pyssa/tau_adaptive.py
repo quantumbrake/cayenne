@@ -5,7 +5,7 @@
 from typing import Tuple
 from numba import njit
 import numpy as np
-from .utils import get_kstoc
+from .utils import get_kstoc, roulette_selection
 from .direct_naive import direct_naive
 
 HIGH = 1e20
@@ -77,6 +77,7 @@ def tau_adaptive(
     nc: int,
     eps: float,
     max_t: float,
+    max_iter: int,
     volume: float,
     seed: int,
     chem_flag: bool,
@@ -127,11 +128,9 @@ def tau_adaptive(
     epsilon = 0.03
     ite = 1  # Iteration counter
     t_curr = 0.0  # Time in seconds
-    nr = react_stoic.shape[0]
-    ns = react_stoic.shape[1]
+    ns = react_stoic.shape[0]
+    nr = react_stoic.shape[1]
     v = prod_stoic - react_stoic  # ns x nr
-    xt = init_state.copy()  # Number of species at time t_curr
-    max_iter = 10
     x = np.zeros((max_iter, ns))
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
@@ -149,13 +148,14 @@ def tau_adaptive(
     HOR = get_HOR(react_stoic)
 
     if np.sum(prop) < 1e-30:
-        if np.sum(xt) > 1e-30:
+        if np.sum(x[ite - 1, :]) > 1e-30:
             status = -2
             return t[:ite], x[:ite, :], status
 
     M = nr
     N = ns
     L = np.zeros(M)
+    K = np.zeros(M)
     vis = np.zeros(M)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
     n_react_species = react_species.shape[0]
@@ -167,11 +167,15 @@ def tau_adaptive(
         # 1. Determine critical reactions
 
         # Calculate the propensities
+        prop = np.copy(kstoc)
         for ind1 in range(nr):
             for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
+                prop[ind1] *= np.power(x[ite - 1, ind2], react_stoic[ind2, ind1])
         prop_sum = np.sum(prop)
+        if prop_sum < 1e-30:
+            status = 3
+            return t[:ite], x[:ite, :], status
         for ind in range(M):
             vis = v[:, ind]
             L[ind] = np.nanmin(x[ite - 1, vis < 0] / abs(vis[vis < 0]))
@@ -193,81 +197,86 @@ def tau_adaptive(
                 if HOR[species_index] > 0:
                     g = HOR[species_index]
                 elif HOR[species_index] == -2:
-                    if xt[species_index] is not 1:
-                        g = 1 + 2 / (xt[species_index] - 1)
+                    if x[ite - 1, species_index] is not 1:
+                        g = 1 + 2 / (x[ite - 1, species_index] - 1)
                     else:
                         g = 2
                 elif HOR[species_index] == -3:
-                    if xt[species_index] not in [1, 2]:
+                    if x[ite - 1, species_index] not in [1, 2]:
                         g = (
                             3
-                            + 1 / (xt[species_index] - 1)
-                            + 2 / (xt[species_index] - 2)
+                            + 1 / (x[ite - 1, species_index] - 1)
+                            + 2 / (x[ite - 1, species_index] - 2)
                         )
                     else:
                         g = 3
                 elif HOR[species_index] == -32:
-                    if xt[species_index] is not 1:
-                        g = 3 / 2 * (2 + 1 / (xt[species_index] - 1))
+                    if x[ite - 1, species_index] is not 1:
+                        g = 3 / 2 * (2 + 1 / (x[ite - 1, species_index] - 1))
                     else:
                         g = 3
-                tau_num[ind] = max(epsilon * xt[species_index] / g, 1)
+                tau_num[ind] = max(epsilon * x[ite - 1, species_index] / g, 1)
             taup = np.nanmin(
                 np.concatenate([tau_num / abs(mup), np.power(tau_num, 2) / abs(sigp)])
             )
-
         # 3. For small taup, do SSA
         if taup < 10 / prop_sum:
             t_ssa, x_ssa, status = direct_naive(
                 react_stoic,
                 prod_stoic,
-                xt,
+                x[ite - 1, :],
                 k_det,
                 max_t=max_t - t[ite - 1],
-                max_iter=100,
+                max_iter=min(100, max_iter - ite),
                 volume=volume,
                 seed=seed,
                 chem_flag=chem_flag,
             )
-            t[ite : ite + 100] = t_ssa
-            x[ite : ite + 100, :] = x_ssa
+            len_simulation = len(t_ssa)
+            t[ite : ite + len_simulation] = t_ssa
+            x[ite : ite + len_simulation, :] = x_ssa
+            ite += len_simulation
             if status == 3 or status == 2:
                 return t, x, status
+            continue
 
         # 4. Generate second candidate taupp
+        taupp = 1 / prop_sum * np.log(1 / np.random.rand())
 
         # 5. Leap
+        if taup < taupp:
+            tau = taup
+            for ind in range(M):
+                if not_crit[ind]:
+                    K[ind] = np.random.poisson(prop[ind] * tau)
+                else:
+                    K[ind] = 0
+        else:
+            tau = taupp
+            # Identify the only critical reaction to fire
+            # Send in xt to match signature of roulette_selection
+            temp = prop.copy()
+            temp[not_crit] = 0
+            j_crit, _ = roulette_selection(temp, x[ite - 1, :])
+            for ind in range(M):
+                if not_crit[ind]:
+                    K[ind] = np.random.poisson(prop[ind] * tau)
+                elif ind == j_crit:
+                    K[ind] = 1
+                else:
+                    K[ind] = 0
 
         # 6. Handle negatives
 
-        # Calculate the event rates
-        for ind1 in range(n_r):
-            for ind2 in range(n_s):
-                # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= np.power(xt[ind2], react_stoic[ind1, ind2])
-            n_events[ind1] = np.random.poisson(prop[ind1] * tau)  # 1 x n_r
-        if np.all(prop == 0):
-            status = 3
-            return t[:ite], x[:ite,], status
-        for ind1 in range(n_r):
-            xt += n_events[ind1] * v[ind1, :]
-        if np.any(xt < 0):
-            return t[:ite], x[:ite, :], -3
-        prop = np.copy(kstoc)
-        x[ite, :] = xt
-        t[ite] = t_curr
-        t_curr += tau
+        # K.shape = M
+        # v.shape = N, M
+        x[ite, :] = x[ite - 1, :] + np.dot(v, K)
+        t[ite] = t[ite - 1] + tau
         ite += 1
-    status = 2
+
+        # Exit conditions
+        if t[ite] > max_t:
+            status = 2
+            return t[:ite], x[:ite, :], status
+    status = 1
     return t[:ite], x[:ite, :], status
-
-
-if __name__ == "__main__":
-    V_r = np.array([[1, 0, 0], [0, 1, 0]])
-    V_p = np.array([[0, 1, 0], [0, 0, 1]])
-    X0 = np.array([100, 0, 0])
-    k = np.array([1.0, 1.0])
-    tau_adaptive(
-        V_r, V_p, X0, k, nc=10, eps=0.03, max_t=10, volume=1, seed=0, chem_flag=False
-    )
-
