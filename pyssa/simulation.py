@@ -11,6 +11,7 @@ import matplotlib.lines as mlines
 
 from .direct_naive import direct_naive
 from .tau_leaping import tau_leaping
+from .tau_adaptive import tau_adaptive
 from .results import Results
 
 
@@ -225,6 +226,33 @@ class Simulation:
                     self._k_det,
                     tau,
                     max_t,
+                    volume,
+                    seed[index],
+                    self._chem_flag,
+                )
+                tlist.append(t)
+                xlist.append(X)
+                status_list.append(status)
+            self._results = Results(tlist, xlist, status_list, algorithm, seed)
+        elif algorithm == "tau_adaptive":
+            if "eps" in kwargs.keys():
+                eps = kwargs["tau"]
+            else:
+                eps = 0.03
+            if "nc" in kwargs.keys():
+                nc = kwargs["nc"]
+            else:
+                nc = 10
+            for index in range(n_rep):
+                t, X, status = tau_adaptive(
+                    self._react_stoic,
+                    self._prod_stoic,
+                    self._init_state,
+                    self._k_det,
+                    nc,
+                    eps,
+                    max_t,
+                    max_iter,
                     volume,
                     seed[index],
                     self._chem_flag,
