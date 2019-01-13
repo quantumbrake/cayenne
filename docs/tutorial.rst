@@ -21,8 +21,8 @@ Suppose k\ :sub:`1` = 1, k\ :sub:`2` 1 and there are initiall 100 units of A. Th
 Then to build the model we have the following variable definitions::
 
     import numpy as np
-    V_r = np.array([[1, 0, 0], [0, 1, 0]])
-    V_p = np.array([[0, 1, 0], [0, 0, 1]])
+    V_r = np.array([[1, 0], [0, 1], [0, 0]])
+    V_p = np.array([[0, 0], [1, 0], [0, 1]])
     X0 = np.array([A0, B0, C0])
     k = np.array([k1, k2])
 
