@@ -63,7 +63,7 @@ def tau_leaping(
             3 : Succesful completion, terminated when all species went extinct.
             -1 : Failure, order greater than 3 detected.
             -2 : Failure, propensity zero without extinction.
-            -3 : Negative species count encountered
+            -3 : Negative species count encountered.
     """
 
     ite = 1  # Iteration counter

@@ -23,8 +23,10 @@ def direct_naive(
     chem_flag: bool,
 ) -> Tuple[np.ndarray, np.ndarray, int]:
     """
+        Runs the Direct Stochastic Simulation Algorithm.
+
         Parameters
-        ---------
+        ----------
         react_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
             Reactions are rows and species are columns.
@@ -63,6 +65,13 @@ def direct_naive(
             3 : Succesful completion, terminated when all species went extinct.
             -1 : Failure, order greater than 3 detected.
             -2 : Failure, propensity zero without extinction.
+
+        References
+        ----------
+        .. [1] Gillespie, D.T., 1976. A general method for numerically
+        simulating the stochastic time evolution of coupled chemical
+        reactions. J. Comput. Phys. 22, 403–434.
+        doi:10.1016/0021-9991(76)90041-3.
     """
 
     ite = 1  # Iteration counter

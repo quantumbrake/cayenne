@@ -17,10 +17,10 @@ from .results import Results
 
 class Simulation:
     """
-        A main class for running simulations
+        A main class for running simulations.
 
         Parameters
-        ---------
+        ----------
         react_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
             Reactions are rows and species are columns.
@@ -40,7 +40,7 @@ class Simulation:
             Defaults to False.
 
         Attributes
-        ---------
+        ----------
         results : Results
             The results instance
 
@@ -48,19 +48,6 @@ class Simulation:
         ------
         ValueError
             If supplied with order > 3.
-
-        References
-        ----------
-        1. Gillespie, D.T., 1976. A general method for numerically
-        simulating the stochastic time evolution of coupled chemical
-        reactions. J. Comput. Phys. 22, 403–434.
-        doi:10.1016/0021-9991(76)90041-3.
-        2. Cao, Y., Gillespie, D.T., Petzold, L.R., 2006.
-        Efficient step size selection for the tau-leaping simulation
-        method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
-        3. Gupta, A., 2013. Parameter estimation in deterministic
-        and stochastic models of biological systems. University of
-        Wisconsin-Madison.
 
         Examples
         --------
