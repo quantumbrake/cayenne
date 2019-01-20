@@ -7,7 +7,7 @@ from typing import Tuple
 from numba import njit
 import numpy as np
 
-from .utils import get_kstoc
+from .utils import get_kstoc, TINY
 
 
 @njit(nogil=True, cache=False)
@@ -84,8 +84,8 @@ def tau_leaping(
     )  # Vector of propensities
     kstoc = prop.copy()  # Stochastic rate constants
 
-    if np.sum(prop) < 1e-30:
-        if np.sum(xt) > 1e-30:
+    if np.sum(prop) < TINY:
+        if np.sum(xt) > TINY:
             status = -2
             return t[:ite], x[:ite, :], status
 
