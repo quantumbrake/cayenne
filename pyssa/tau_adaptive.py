@@ -5,10 +5,8 @@
 from typing import Tuple
 from numba import njit
 import numpy as np
-from .utils import get_kstoc, roulette_selection
+from .utils import get_kstoc, roulette_selection, HIGH, TINY
 from .direct_naive import direct_naive
-
-HIGH = 1e20
 
 
 def get_HOR(react_stoic: np.ndarray):
@@ -75,7 +73,7 @@ def tau_adaptive(
     init_state: np.ndarray,
     k_det: np.ndarray,
     nc: int,
-    eps: float,
+    epsilon: float,
     max_t: float,
     max_iter: int,
     volume: float,
@@ -87,19 +85,25 @@ def tau_adaptive(
         ---------
         react_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
-            Reactions are rows and species are columns.
+            Reactions are columns and species are rows.
         prod_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
-            Reactions are rows and species are columns.
+            Reactions are columns and species are rows.
         init_state : (ns,) ndarray
             A 1D array representing the initial state of the system.
         k_det : (nr,) ndarray
             A 1D array representing the deterministic rate constants of the
             system.
-        tau : float
-            The constant time step used to tau leaping.
+        nc : int
+            The criticality threshold. Reactions with that cannot fire more than
+            nc times are deemed critical.
+        epsilon : float
+            The epsilon used in tau-leaping, measure of the bound on relative
+            change in propensity.
         max_t : float
             The maximum simulation time to run the simulation for.
+        max_iter : int
+            The maximum number of iterations to run the simulation for.
         volume : float
             The volume of the reactor vessel which is important for second
             and higher order reactions. Defaults to 1 arbitrary units.
@@ -125,7 +129,7 @@ def tau_adaptive(
             -2 : Failure, propensity zero without extinction.
             -3 : Negative species count encountered
     """
-    epsilon = 0.03
+
     ite = 1  # Iteration counter
     t_curr = 0.0  # Time in seconds
     ns = react_stoic.shape[0]
@@ -162,64 +166,77 @@ def tau_adaptive(
     mup = np.zeros(n_react_species)
     sigp = np.zeros(n_react_species)
     tau_num = np.zeros(n_react_species)
+    skip_flag = False
 
     while ite < max_iter:
-        # 1. Determine critical reactions
 
-        # Calculate the propensities
-        prop = np.copy(kstoc)
-        for ind1 in range(nr):
-            for ind2 in range(ns):
-                # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= np.power(x[ite - 1, ind2], react_stoic[ind2, ind1])
-        prop_sum = np.sum(prop)
-        if prop_sum < 1e-30:
-            status = 3
-            return t[:ite], x[:ite, :], status
-        for ind in range(M):
-            vis = v[:, ind]
-            L[ind] = np.nanmin(x[ite - 1, vis < 0] / abs(vis[vis < 0]))
-        # A reaction j is critical if Lj <nc. However criticality is
-        # considered only for reactions with propensity greater than
-        # 0 (`prop > 0`).
-        crit = (L < nc) * (prop > 0)
-        # To get the non-critical reactions, we use the bitwise not operator.
-        not_crit = ~crit
-        # 2. Generate candidate taup
-        if np.sum(not_crit) == 0:
-            taup = HIGH
-        else:
-            # Compute mu from eqn 32a and sig from eqn 32b
-            for ind, species_index in enumerate(react_species):
-                temp = v[species_index, not_crit] * prop[not_crit]
-                mup[ind] = np.sum(temp)
-                sigp[ind] = np.sum(v[species_index, not_crit] * temp)
-                if HOR[species_index] > 0:
-                    g = HOR[species_index]
-                elif HOR[species_index] == -2:
-                    if x[ite - 1, species_index] is not 1:
-                        g = 1 + 2 / (x[ite - 1, species_index] - 1)
-                    else:
-                        g = 2
-                elif HOR[species_index] == -3:
-                    if x[ite - 1, species_index] not in [1, 2]:
-                        g = (
-                            3
-                            + 1 / (x[ite - 1, species_index] - 1)
-                            + 2 / (x[ite - 1, species_index] - 2)
-                        )
-                    else:
-                        g = 3
-                elif HOR[species_index] == -32:
-                    if x[ite - 1, species_index] is not 1:
-                        g = 3 / 2 * (2 + 1 / (x[ite - 1, species_index] - 1))
-                    else:
-                        g = 3
-                tau_num[ind] = max(epsilon * x[ite - 1, species_index] / g, 1)
-            taup = np.nanmin(
-                np.concatenate([tau_num / abs(mup), np.power(tau_num, 2) / abs(sigp)])
-            )
+        # If negatives are not detected in step 6, perform steps 1 and 2.
+        # Else skip to step 3.
+        if not skip_flag:
+
+            # 1. Determine critical reactions
+            # -------------------------------
+            # Calculate the propensities
+            prop = np.copy(kstoc)
+            for ind1 in range(nr):
+                for ind2 in range(ns):
+                    # prop = kstoc * product of (number raised to order)
+                    prop[ind1] *= np.power(x[ite - 1, ind2], react_stoic[ind2, ind1])
+            prop_sum = np.sum(prop)
+            if prop_sum < 1e-30:
+                status = 3
+                return t[:ite], x[:ite, :], status
+            for ind in range(M):
+                vis = v[:, ind]
+                L[ind] = np.nanmin(x[ite - 1, vis < 0] / abs(vis[vis < 0]))
+            # A reaction j is critical if Lj <nc. However criticality is
+            # considered only for reactions with propensity greater than
+            # 0 (`prop > 0`).
+            crit = (L < nc) * (prop > 0)
+            # To get the non-critical reactions, we use the bitwise not operator.
+            not_crit = ~crit
+
+            # 2. Generate candidate taup
+            # --------------------------
+            if np.sum(not_crit) == 0:
+                taup = HIGH
+            else:
+                # Compute mu from eqn 32a and sig from eqn 32b
+                for ind, species_index in enumerate(react_species):
+                    temp = v[species_index, not_crit] * prop[not_crit]
+                    mup[ind] = np.sum(temp)
+                    sigp[ind] = np.sum(v[species_index, not_crit] * temp)
+                    if mup[ind] == 0:
+                        mup[ind] = TINY
+                    if HOR[species_index] > 0:
+                        g = HOR[species_index]
+                    elif HOR[species_index] == -2:
+                        if x[ite - 1, species_index] is not 1:
+                            g = 1 + 2 / (x[ite - 1, species_index] - 1)
+                        else:
+                            g = 2
+                    elif HOR[species_index] == -3:
+                        if x[ite - 1, species_index] not in [1, 2]:
+                            g = (
+                                3
+                                + 1 / (x[ite - 1, species_index] - 1)
+                                + 2 / (x[ite - 1, species_index] - 2)
+                            )
+                        else:
+                            g = 3
+                    elif HOR[species_index] == -32:
+                        if x[ite - 1, species_index] is not 1:
+                            g = 3 / 2 * (2 + 1 / (x[ite - 1, species_index] - 1))
+                        else:
+                            g = 3
+                    tau_num[ind] = max(epsilon * x[ite - 1, species_index] / g, 1)
+                taup = np.nanmin(
+                    np.concatenate([tau_num / abs(mup), np.power(tau_num, 2) / abs(sigp)])
+                )
+
         # 3. For small taup, do SSA
+        # -------------------------
+        skip_flag = False
         if taup < 10 / prop_sum:
             t_ssa, x_ssa, status = direct_naive(
                 react_stoic,
@@ -241,9 +258,14 @@ def tau_adaptive(
             continue
 
         # 4. Generate second candidate taupp
-        taupp = 1 / prop_sum * np.log(1 / np.random.rand())
+        # ----------------------------------
+        if sum(prop[crit]) == 0:
+            taupp = HIGH
+        else:
+            taupp = 1 / sum(prop[crit]) * np.log(1 / np.random.rand())
 
         # 5. Leap
+        # -------
         if taup < taupp:
             tau = taup
             for ind in range(M):
@@ -266,17 +288,22 @@ def tau_adaptive(
                 else:
                     K[ind] = 0
 
-        # 6. Handle negatives
+        # 6. Handle negatives, update and exit conditions
+        # -----------------------------------------------
+        x_new = x[ite - 1, :] + np.dot(v, K)
+        if np.any(x_new < 0):
+            taup = taup / 2
+            skip_flag = True
 
-        # K.shape = M
-        # v.shape = N, M
+        # Update states if nothing is negative
         x[ite, :] = x[ite - 1, :] + np.dot(v, K)
         t[ite] = t[ite - 1] + tau
         ite += 1
 
         # Exit conditions
-        if t[ite] > max_t:
+        if t[ite-1] > max_t:
             status = 2
             return t[:ite], x[:ite, :], status
+
     status = 1
     return t[:ite], x[:ite, :], status
