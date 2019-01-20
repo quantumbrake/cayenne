@@ -8,7 +8,7 @@ import pytest
 from pyssa.simulation import Simulation
 
 
-@pytest.mark.parametrize("algorithm", ["direct_naive", "tau_leaping"])
+@pytest.mark.parametrize("algorithm", ["direct_naive", "tau_leaping", "tau_adaptive"])
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestSanitize:
     def test_null(self, algorithm, setup_basic):
@@ -119,24 +119,6 @@ class TestSanitize:
         sim1 = Simulation(V_r, V_p, X0, k)
         with pytest.raises(TypeError):
             sim1.simulate(algorithm=algorithm, max_iter=100.0)
-
-    def test_tau_leaping(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        sim = Simulation(V_r, V_p, X0, k)
-        sim.simulate(algorithm="tau_leaping", n_rep=1)
-        results = sim.results
-        for x, t, s in results:
-            print(s, x)
-        assert 1 == 1
-
-    def test_tau_adaptive(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        sim = Simulation(V_r, V_p, X0, k)
-        sim.simulate(algorithm="tau_adaptive", n_rep=1)
-        results = sim.results
-        for x, t, s in results:
-            print(s, x)
-        assert 1 == 1
 
 
 def test_bifurcation(setup_bifurcation):
