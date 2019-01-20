@@ -23,10 +23,10 @@ class Simulation:
         ----------
         react_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
-            Reactions are rows and species are columns.
+            Reactions are columns and species are rows.
         prod_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
-            Reactions are rows and species are columns.
+            Reactions are columns and species are rows.
         init_state : (ns,) ndarray
             A 1D array representing the initial state of the system.
         k_det : (nr,) ndarray
@@ -222,10 +222,10 @@ class Simulation:
                 status_list.append(status)
             self._results = Results(tlist, xlist, status_list, algorithm, seed)
         elif algorithm == "tau_adaptive":
-            if "eps" in kwargs.keys():
-                eps = kwargs["tau"]
+            if "epsilon" in kwargs.keys():
+                epsilon = kwargs["epsilon"]
             else:
-                eps = 0.03
+                epsilon = 0.03
             if "nc" in kwargs.keys():
                 nc = kwargs["nc"]
             else:
@@ -237,7 +237,7 @@ class Simulation:
                     self._init_state,
                     self._k_det,
                     nc,
-                    eps,
+                    epsilon,
                     max_t,
                     max_iter,
                     volume,
