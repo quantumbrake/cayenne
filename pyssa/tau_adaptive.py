@@ -9,6 +9,7 @@ from .utils import get_kstoc, roulette_selection, HIGH, TINY
 from .direct_naive import direct_naive
 
 
+@njit(nogil=True)
 def get_HOR(react_stoic: np.ndarray):
     """ Determine the HOR vector. HOR(i) is the highest order of reaction
         in which species S_i appears as a reactant.
@@ -38,10 +39,10 @@ def get_HOR(react_stoic: np.ndarray):
         method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
     """
     ns = react_stoic.shape[0]
-    HOR = np.zeros([ns])
+    HOR = np.zeros(ns, dtype=np.int32)
     orders = np.sum(react_stoic, axis=0)
     for ind in range(ns):
-        this_orders = orders[np.where(react_stoic[ind, :] > 0)]
+        this_orders = orders[np.where(react_stoic[ind, :] > 0)[0]]
         if len(this_orders) == 0:
             HOR[ind] = 0
             continue
@@ -49,18 +50,20 @@ def get_HOR(react_stoic: np.ndarray):
         if HOR[ind] == 1:
             continue
         order_2_indices = np.where(orders == 2)
+        this_react_stoic = react_stoic[ind, :]
         if order_2_indices[0].size > 0:
-            if np.max(react_stoic[ind, np.where(orders == 2)]) == 2 and HOR[ind] == 2:
+            this_react_stoic[np.array([0], dtype=np.int32)]
+            if np.max(this_react_stoic[order_2_indices[0]]) == 2 and HOR[ind] == 2:
                 HOR[ind] = -2  # g_i should be (2 + 1/(x_i-1))
         if np.where(orders == 3):
             if (
                 HOR[ind] == 3
-                and np.max(react_stoic[ind, np.where(this_orders == 3)]) == 2
+                and np.max(this_react_stoic[np.where(this_orders == 3)[0]]) == 2
             ):
                 HOR[ind] = -32  # g_i should be (3/2 * (2 + 1/(x_i-1)))
             elif (
                 HOR[ind] == 3
-                and np.max(react_stoic[ind, np.where(this_orders == 3)]) == 3
+                and np.max(this_react_stoic[np.where(this_orders == 3)[0]]) == 3
             ):
                 HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
     return HOR
