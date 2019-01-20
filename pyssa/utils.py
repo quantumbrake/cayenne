@@ -8,6 +8,8 @@ import numpy as np
 from numba import njit
 
 Na = 6.023e23  # Avogadro's constant
+HIGH = 1e20
+TINY = 1e-20
 
 
 @njit(nogil=True, cache=False)
@@ -23,7 +25,7 @@ def get_kstoc(
     ----------
     react_stoic : (ns, nr) ndarray
         A 2D array of the stoichiometric coefficients of the reactants.
-        Reactions are rows and species are columns.
+        Reactions are columns and species are rows.
     k_det : (nr,) ndarray
         A 1D array representing the deterministic rate constants of the
         system.
