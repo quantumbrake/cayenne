@@ -39,7 +39,7 @@ def get_HOR(react_stoic: np.ndarray):
         method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
     """
     ns = react_stoic.shape[0]
-    HOR = np.zeros(ns, dtype=np.int32)
+    HOR = np.zeros(ns, dtype=np.int64)
     orders = np.sum(react_stoic, axis=0)
     for ind in range(ns):
         this_orders = orders[np.where(react_stoic[ind, :] > 0)[0]]
@@ -52,7 +52,6 @@ def get_HOR(react_stoic: np.ndarray):
         order_2_indices = np.where(orders == 2)
         this_react_stoic = react_stoic[ind, :]
         if order_2_indices[0].size > 0:
-            this_react_stoic[np.array([0], dtype=np.int32)]
             if np.max(this_react_stoic[order_2_indices[0]]) == 2 and HOR[ind] == 2:
                 HOR[ind] = -2  # g_i should be (2 + 1/(x_i-1))
         if np.where(orders == 3):
@@ -142,7 +141,7 @@ def tau_adaptive(
     xt = np.zeros(ns)
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
-    n_events = np.zeros((nr,), dtype=np.int32)
+    n_events = np.zeros((nr,), dtype=np.int64)
     np.random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
     prop = np.copy(
@@ -162,9 +161,9 @@ def tau_adaptive(
 
     M = nr
     N = ns
-    L = np.zeros(M, dtype=np.int32)
-    K = np.zeros(M, dtype=np.int32)
-    vis = np.zeros(M, dtype=np.int32)
+    L = np.zeros(M, dtype=np.int64)
+    K = np.zeros(M, dtype=np.int64)
+    vis = np.zeros(M, dtype=np.int64)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
     n_react_species = react_species.shape[0]
     mup = np.zeros(n_react_species, dtype=np.float64)
@@ -178,7 +177,7 @@ def tau_adaptive(
         # Else skip to step 3.
         if not skip_flag:
 
-            xt = x[ite-1, :]
+            xt = x[ite - 1, :]
             # 1. Determine critical reactions
             # -------------------------------
             # Calculate the propensities
@@ -214,6 +213,8 @@ def tau_adaptive(
                     sigp[ind] = np.sum(this_v[not_crit] * temp)
                     if mup[ind] == 0:
                         mup[ind] = TINY
+                    if sigp[ind] == 0:
+                        sigp[ind] = TINY
                     if HOR[species_index] > 0:
                         g = HOR[species_index]
                     elif HOR[species_index] == -2:
@@ -300,7 +301,7 @@ def tau_adaptive(
         # -----------------------------------------------
         # v = ns, nr
         # K = nr
-        vdotK = np.zeros((ns,), dtype=np.int32)
+        vdotK = np.zeros((ns,), dtype=np.int64)
         for ind1 in range(ns):
             for ind2 in range(nr):
                 vdotK[ind1] += v[ind1, ind2] * K[ind2]
