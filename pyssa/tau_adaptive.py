@@ -3,13 +3,13 @@
 """
 
 from typing import Tuple
-from numba import njit
+from numba import njit, jit
 import numpy as np
 from .utils import get_kstoc, roulette_selection, HIGH, TINY
 from .direct_naive import direct_naive
 
 
-@njit(nogil=True)
+@njit(nogil=True, cache=True)
 def get_HOR(react_stoic: np.ndarray):
     """ Determine the HOR vector. HOR(i) is the highest order of reaction
         in which species S_i appears as a reactant.
@@ -69,7 +69,7 @@ def get_HOR(react_stoic: np.ndarray):
     return HOR
 
 
-# @njit(nogil=True, cache=False)
+@njit(nogil=True, cache=True)
 def tau_adaptive(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
@@ -139,6 +139,7 @@ def tau_adaptive(
     nr = react_stoic.shape[1]
     v = prod_stoic - react_stoic  # ns x nr
     x = np.zeros((max_iter, ns))
+    xt = np.zeros(ns)
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
     n_events = np.zeros((nr,), dtype=np.int32)
@@ -154,21 +155,21 @@ def tau_adaptive(
     # in which species S_i appears as a reactant.
     HOR = get_HOR(react_stoic)
 
-    if np.sum(prop) < 1e-30:
-        if np.sum(x[ite - 1, :]) > 1e-30:
+    if np.sum(prop) < TINY:
+        if np.sum(x[ite - 1, :]) > TINY:
             status = -2
             return t[:ite], x[:ite, :], status
 
     M = nr
     N = ns
-    L = np.zeros(M)
-    K = np.zeros(M)
-    vis = np.zeros(M)
+    L = np.zeros(M, dtype=np.int32)
+    K = np.zeros(M, dtype=np.int32)
+    vis = np.zeros(M, dtype=np.int32)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
     n_react_species = react_species.shape[0]
-    mup = np.zeros(n_react_species)
-    sigp = np.zeros(n_react_species)
-    tau_num = np.zeros(n_react_species)
+    mup = np.zeros(n_react_species, dtype=np.float64)
+    sigp = np.zeros(n_react_species, dtype=np.float64)
+    tau_num = np.zeros(n_react_species, dtype=np.float64)
     skip_flag = False
 
     while ite < max_iter:
@@ -177,6 +178,7 @@ def tau_adaptive(
         # Else skip to step 3.
         if not skip_flag:
 
+            xt = x[ite-1, :]
             # 1. Determine critical reactions
             # -------------------------------
             # Calculate the propensities
@@ -191,7 +193,7 @@ def tau_adaptive(
                 return t[:ite], x[:ite, :], status
             for ind in range(M):
                 vis = v[:, ind]
-                L[ind] = np.nanmin(x[ite - 1, vis < 0] / abs(vis[vis < 0]))
+                L[ind] = np.nanmin(xt[vis < 0] / np.abs(vis[vis < 0]))
             # A reaction j is critical if Lj <nc. However criticality is
             # considered only for reactions with propensity greater than
             # 0 (`prop > 0`).
@@ -206,35 +208,38 @@ def tau_adaptive(
             else:
                 # Compute mu from eqn 32a and sig from eqn 32b
                 for ind, species_index in enumerate(react_species):
-                    temp = v[species_index, not_crit] * prop[not_crit]
+                    this_v = v[species_index, :]
+                    temp = this_v[not_crit] * prop[not_crit]
                     mup[ind] = np.sum(temp)
-                    sigp[ind] = np.sum(v[species_index, not_crit] * temp)
+                    sigp[ind] = np.sum(this_v[not_crit] * temp)
                     if mup[ind] == 0:
                         mup[ind] = TINY
                     if HOR[species_index] > 0:
                         g = HOR[species_index]
                     elif HOR[species_index] == -2:
-                        if x[ite - 1, species_index] is not 1:
-                            g = 1 + 2 / (x[ite - 1, species_index] - 1)
+                        if xt[species_index] is not 1:
+                            g = 1 + 2 / (xt[species_index] - 1)
                         else:
                             g = 2
                     elif HOR[species_index] == -3:
-                        if x[ite - 1, species_index] not in [1, 2]:
+                        if xt[species_index] not in [1, 2]:
                             g = (
                                 3
-                                + 1 / (x[ite - 1, species_index] - 1)
-                                + 2 / (x[ite - 1, species_index] - 2)
+                                + 1 / (xt[species_index] - 1)
+                                + 2 / (xt[species_index] - 2)
                             )
                         else:
                             g = 3
                     elif HOR[species_index] == -32:
-                        if x[ite - 1, species_index] is not 1:
-                            g = 3 / 2 * (2 + 1 / (x[ite - 1, species_index] - 1))
+                        if xt[species_index] is not 1:
+                            g = 3 / 2 * (2 + 1 / (xt[species_index] - 1))
                         else:
                             g = 3
-                    tau_num[ind] = max(epsilon * x[ite - 1, species_index] / g, 1)
+                    tau_num[ind] = max(epsilon * xt[species_index] / g, 1)
                 taup = np.nanmin(
-                    np.concatenate([tau_num / abs(mup), np.power(tau_num, 2) / abs(sigp)])
+                    np.concatenate(
+                        (tau_num / np.abs(mup), np.power(tau_num, 2) / np.abs(sigp))
+                    )
                 )
 
         # 3. For small taup, do SSA
@@ -262,10 +267,10 @@ def tau_adaptive(
 
         # 4. Generate second candidate taupp
         # ----------------------------------
-        if sum(prop[crit]) == 0:
+        if np.sum(prop[crit]) == 0:
             taupp = HIGH
         else:
-            taupp = 1 / sum(prop[crit]) * np.log(1 / np.random.rand())
+            taupp = 1 / np.sum(prop[crit]) * np.log(1 / np.random.rand())
 
         # 5. Leap
         # -------
@@ -293,18 +298,24 @@ def tau_adaptive(
 
         # 6. Handle negatives, update and exit conditions
         # -----------------------------------------------
-        x_new = x[ite - 1, :] + np.dot(v, K)
+        # v = ns, nr
+        # K = nr
+        vdotK = np.zeros((ns,), dtype=np.int32)
+        for ind1 in range(ns):
+            for ind2 in range(nr):
+                vdotK[ind1] += v[ind1, ind2] * K[ind2]
+        x_new = x[ite - 1, :] + vdotK
         if np.any(x_new < 0):
             taup = taup / 2
             skip_flag = True
 
         # Update states if nothing is negative
-        x[ite, :] = x[ite - 1, :] + np.dot(v, K)
+        x[ite, :] = x[ite - 1, :] + vdotK
         t[ite] = t[ite - 1] + tau
         ite += 1
 
         # Exit conditions
-        if t[ite-1] > max_t:
+        if t[ite - 1] > max_t:
             status = 2
             return t[:ite], x[:ite, :], status
 
