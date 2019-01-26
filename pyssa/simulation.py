@@ -2,6 +2,8 @@
     The main class for running stochastic simulation
 """
 
+from functools import partial
+import multiprocessing as mp
 from typing import List, Optional
 from warnings import warn
 
@@ -12,6 +14,10 @@ import matplotlib.lines as mlines
 from .direct_naive import direct_naive
 from .tau_leaping import tau_leaping
 from .results import Results
+
+
+def wrapper(x, func):
+    return func(*x)
 
 
 class Simulation:
@@ -140,6 +146,7 @@ class Simulation:
         volume: float = 1.0,
         seed: Optional[List[int]] = None,
         n_rep: int = 1,
+        n_procs: int = 1,
         algorithm: str = "direct_naive",
         **kwargs,
     ):
@@ -163,6 +170,9 @@ class Simulation:
             The default value is None
         n_rep : int, optional
             The number of repetitions of the simulation required
+            The default value is 1
+        n_procs : int, optional
+            The number of cpu cores to use for the simulation
             The default value is 1
         algorithm : str, optional
             The algorithm to be used to run the simulation
@@ -195,46 +205,53 @@ class Simulation:
         if not isinstance(max_iter, int):
             raise TypeError("max_iter should be of type int")
 
+        algo_args = []
         if algorithm == "direct_naive":
             for index in range(n_rep):
-                t, X, status = direct_naive(
-                    self._react_stoic,
-                    self._prod_stoic,
-                    self._init_state,
-                    self._k_det,
-                    max_t,
-                    max_iter,
-                    volume,
-                    seed[index],
-                    self._chem_flag,
+                algo_args.append(
+                    (
+                        self._react_stoic,
+                        self._prod_stoic,
+                        self._init_state,
+                        self._k_det,
+                        max_t,
+                        max_iter,
+                        volume,
+                        seed[index],
+                        self._chem_flag,
+                    )
                 )
-                tlist.append(t)
-                xlist.append(X)
-                status_list.append(status)
-            self._results = Results(tlist, xlist, status_list, algorithm, seed)
+                algo = direct_naive
         elif algorithm == "tau_leaping":
             if "tau" in kwargs.keys():
                 tau = kwargs["tau"]
             else:
                 tau = 0.1
             for index in range(n_rep):
-                t, X, status = tau_leaping(
-                    self._react_stoic,
-                    self._prod_stoic,
-                    self._init_state,
-                    self._k_det,
-                    tau,
-                    max_t,
-                    volume,
-                    seed[index],
-                    self._chem_flag,
+                algo_args.append(
+                    (
+                        self._react_stoic,
+                        self._prod_stoic,
+                        self._init_state,
+                        self._k_det,
+                        tau,
+                        max_t,
+                        volume,
+                        seed[index],
+                        self._chem_flag,
+                    )
                 )
+                algo = tau_leaping
+        else:
+            raise ValueError("Requested algorithm not supported")
+        algo_func = partial(wrapper, func=algo)
+        with mp.Pool(processes=n_procs) as pool:
+            results = pool.map(algo_func, algo_args)
+            for t, X, status in results:
                 tlist.append(t)
                 xlist.append(X)
                 status_list.append(status)
-            self._results = Results(tlist, xlist, status_list, algorithm, seed)
-        else:
-            raise ValueError("Requested algorithm not supported")
+        self._results = Results(tlist, xlist, status_list, algorithm, seed)
 
     def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
         """
