@@ -85,4 +85,8 @@ Copyright (c) 2018, Dileep Kishore, Srikiran Chandrasekaran. Released under: Apa
 
 ## Credits
 
-This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and the [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage) project template.
+- [Numba](https://numba.pydata.org/)
+- [pytest](https://docs.pytest.org)
+- [Cookiecutter](https://github.com/audreyr/cookiecutter)
+- [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)
+- [black](https://github.com/ambv/black)
