@@ -133,15 +133,13 @@ def tau_adaptive(
     """
 
     ite = 1  # Iteration counter
-    t_curr = 0.0  # Time in seconds
     ns = react_stoic.shape[0]
     nr = react_stoic.shape[1]
     v = prod_stoic - react_stoic  # ns x nr
-    x = np.zeros((max_iter, ns))
-    xt = np.zeros(ns)
+    x = np.zeros((max_iter, ns), dtype=np.int64)
+    xt = np.zeros(ns, dtype=np.int64)
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
-    n_events = np.zeros((nr,), dtype=np.int64)
     np.random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
     prop = np.copy(
@@ -208,9 +206,10 @@ def tau_adaptive(
                 # Compute mu from eqn 32a and sig from eqn 32b
                 for ind, species_index in enumerate(react_species):
                     this_v = v[species_index, :]
-                    temp = this_v[not_crit] * prop[not_crit]
-                    mup[ind] = np.sum(temp)
-                    sigp[ind] = np.sum(this_v[not_crit] * temp)
+                    for i in range(len(not_crit)):
+                        if not_crit[i]:
+                            mup[ind] += this_v[i] * prop[i]
+                            sigp[ind] += this_v[i] * prop[i] * this_v[i]
                     if mup[ind] == 0:
                         mup[ind] = TINY
                     if sigp[ind] == 0:
