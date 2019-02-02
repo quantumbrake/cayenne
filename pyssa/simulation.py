@@ -230,16 +230,6 @@ class Simulation:
                     )
                 )
                 algo = tau_leaping
-        else:
-            raise ValueError("Requested algorithm not supported")
-        algo_func = partial(wrapper, func=algo)
-        with mp.Pool(processes=n_procs) as pool:
-            results = pool.map(algo_func, algo_args)
-            for t, X, status in results:
-                tlist.append(t)
-                xlist.append(X)
-                status_list.append(status)
-            self._results = Results(tlist, xlist, status_list, algorithm, seed)
         elif algorithm == "tau_adaptive":
             if "epsilon" in kwargs.keys():
                 epsilon = kwargs["epsilon"]
@@ -250,26 +240,32 @@ class Simulation:
             else:
                 nc = 10
             for index in range(n_rep):
-                t, X, status = tau_adaptive(
-                    np.int64(self._react_stoic),
-                    np.int64(self._prod_stoic),
-                    np.int64(self._init_state),
-                    np.float64(self._k_det),
-                    nc,
-                    epsilon,
-                    max_t,
-                    max_iter,
-                    volume,
-                    seed[index],
-                    self._chem_flag,
+                algo_args.append(
+                    (
+                        self._react_stoic,
+                        self._prod_stoic,
+                        self._init_state,
+                        self._k_det,
+                        nc,
+                        epsilon,
+                        max_t,
+                        max_iter,
+                        volume,
+                        seed[index],
+                        self._chem_flag,
+                    )
                 )
+                algo = tau_adaptive
+        else:
+            raise ValueError("Requested algorithm not supported")
+        algo_func = partial(wrapper, func=algo)
+        with mp.Pool(processes=n_procs) as pool:
+            results = pool.map(algo_func, algo_args)
+            for t, X, status in results:
                 tlist.append(t)
                 xlist.append(X)
                 status_list.append(status)
             self._results = Results(tlist, xlist, status_list, algorithm, seed)
-        else:
-            raise ValueError("Requested algorithm not supported")
-
 
     def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
         """
