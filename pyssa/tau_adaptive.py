@@ -9,7 +9,7 @@ from .utils import get_kstoc, roulette_selection, HIGH, TINY
 from .direct_naive import direct_naive
 
 
-@njit(nogil=True, cache=True)
+@njit(nogil=True, cache=False)
 def get_HOR(react_stoic: np.ndarray):
     """ Determine the HOR vector. HOR(i) is the highest order of reaction
         in which species S_i appears as a reactant.
@@ -68,7 +68,7 @@ def get_HOR(react_stoic: np.ndarray):
     return HOR
 
 
-@njit(nogil=True, cache=True)
+@njit(nogil=True, cache=False)
 def tau_adaptive(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
