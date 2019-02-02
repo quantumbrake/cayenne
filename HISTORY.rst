@@ -2,6 +2,29 @@
 History
 =======
 
+0.7.0 (2019-02-02)
+------------------
+
+Added
++++++
+- Support for the ``tau_adaptive`` algorithm
+- Support for multiprocessing
+
+Fixed
++++++
+- Transpose stoichiometric matrix
+- Update references in docstrings
+
+Changed
++++++++
+- Use ``TINY`` and ``HIGH`` for status estimation
+- Use ``np.int64`` and ``np.float64`` explicitly
+
+Chore
++++++
+- Update dependencies
+- Add azure pipelines for testing on Windows
+
 0.6.0 (2018-12-16)
 ------------------
 
