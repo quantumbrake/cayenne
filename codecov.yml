@@ -3,3 +3,4 @@ coverage:
         - "pyssa/direct_naive.py"
         - "pyssa/utils.py"
         - "pyssa/tau_leaping.py"
+        - "pyssa/tau_adaptive.py"

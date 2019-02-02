@@ -1,4 +1,4 @@
-# Stochastic Simulation Algorithms in Python
+# pyssa : Python package for stochastic simulations
 
 [![Build Status](https://travis-ci.com/Heuro-labs/pyssa.svg?token=qCMKydrUTvcJ87J6czex&branch=master)](https://travis-ci.com/Heuro-labs/pyssa)
 [![Build Status](https://dev.azure.com/srikiranc/pyssa/_apis/build/status/Heuro-labs.pyssa?branchName=master)](https://dev.azure.com/srikiranc/pyssa/_build/latest?definitionId=1?branchName=master)
@@ -34,8 +34,12 @@ $ pip install pyssa
 
 ```python
 from pyssa.simulation import Simulation
-
-sim = Simulation(V_r, V_p, X0, k)
+V_r = np.array([[1, 0], [0, 1], [0, 0]])  # Reactant matrix
+V_p = np.array([[0, 0], [1, 0], [0, 1]])  # Product matrix
+X0 = np.array([100, 0, 0])  # Initial state
+k = np.array([1.0, 1.0])  # Rate constants
+sim = Simulation(V_r, V_p, X0, k)  # Declare the simulation object
+# Run the simulation
 sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
 ```
 
@@ -81,4 +85,8 @@ Copyright (c) 2018, Dileep Kishore, Srikiran Chandrasekaran. Released under: Apa
 
 ## Credits
 
-This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and the [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage) project template.
+- [Numba](https://numba.pydata.org/)
+- [pytest](https://docs.pytest.org)
+- [Cookiecutter](https://github.com/audreyr/cookiecutter)
+- [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)
+- [black](https://github.com/ambv/black)

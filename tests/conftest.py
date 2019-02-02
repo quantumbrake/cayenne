@@ -10,8 +10,8 @@ from pyssa.utils import Na
 
 @pytest.fixture
 def setup_basic():
-    V_r = np.array([[1, 0, 0], [0, 1, 0]])
-    V_p = np.array([[0, 1, 0], [0, 0, 1]])
+    V_r = np.array([[1, 0], [0, 1], [0, 0]])
+    V_p = np.array([[0, 0], [1, 0], [0, 1]])
     X0 = np.array([100, 0, 0])
     k = np.array([1.0, 1.0])
     return V_r, V_p, X0, k
@@ -30,11 +30,11 @@ def setup_large():
     )
     V_p = np.array(
         [
+            [0, 0, 0, 0, 0],
+            [1, 0, 0, 0, 0],
             [0, 1, 0, 0, 0],
             [0, 0, 1, 0, 0],
             [0, 0, 0, 1, 0],
-            [0, 0, 0, 0, 1],
-            [0, 0, 0, 0, 0],
         ]
     )
     X0 = np.array([10, 0, 0, 0, 0])
@@ -51,8 +51,8 @@ def setup_system():
 
 @pytest.fixture
 def setup_bifurcation():
-    V_r = np.array([[1, 0, 0, 0], [0, 1, 0, 1], [1, 0, 0, 0]])
-    V_p = np.array([[0, 1, 0, 0], [0, 2, 0, 0], [0, 0, 1, 0]])
+    V_r = np.array([[1, 0, 1], [0, 1, 0], [0, 0, 0], [0, 1, 0]])
+    V_p = np.array([[0, 0, 0], [1, 2, 0], [0, 0, 1], [0, 0, 0]])
     k = np.array([1.0, 0.01 * Na, 1.0])
     X0 = np.array([1, 0, 0, 10])
     return V_r, V_p, X0, k
@@ -60,8 +60,8 @@ def setup_bifurcation():
 
 @pytest.fixture
 def setup_long():
-    V_r = np.array([[1, 0, 0], [0, 1, 0]])
-    V_p = np.array([[0, 1, 0], [0, 0, 1]])
+    V_r = np.array([[1, 0], [0, 1], [0, 0]])
+    V_p = np.array([[0, 0], [1, 0], [0, 1]])
     k = np.array([1.0, 1.0])
     X0 = np.array([int(4e5), 0, 0])
     return V_r, V_p, X0, k

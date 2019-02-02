@@ -1,5 +1,5 @@
-Stochastic Simulation Algorithms in Python
-==========================================
+pyssa : Python package for stochastic simulations
+=================================================
 
 |Build Status| |Updates| |Documentation Status| |pypi| |License| |Code
 style: black|
@@ -32,8 +32,13 @@ Usage
 
    from pyssa.simulation import Simulation
 
-   sim = Simulation(V_r, V_p, X0, k)
-   sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
+    V_r = np.array([[1, 0], [0, 1], [0, 0]])  # Reactant matrix
+    V_p = np.array([[0, 0], [1, 0], [0, 1]])  # Product matrix
+    X0 = np.array([100, 0, 0])  # Initial state
+    k = np.array([1.0, 1.0])  # Rate constants
+    sim = Simulation(V_r, V_p, X0, k)  # Declare the simulation object
+    # Run the simulation
+    sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
 
 Plotting
 ~~~~~~~~

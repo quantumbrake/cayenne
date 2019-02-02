@@ -5,6 +5,7 @@
 
 trigger:
 - master
+- tau_adap
 
 jobs:
 

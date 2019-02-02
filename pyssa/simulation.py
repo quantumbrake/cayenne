@@ -13,6 +13,7 @@ import matplotlib.lines as mlines
 
 from .direct_naive import direct_naive
 from .tau_leaping import tau_leaping
+from .tau_adaptive import tau_adaptive
 from .results import Results
 
 
@@ -22,16 +23,16 @@ def wrapper(x, func):
 
 class Simulation:
     """
-        A main class for running simulations
+        A main class for running simulations.
 
         Parameters
-        ---------
-        react_stoic : (nr, ns) ndarray
+        ----------
+        react_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
-            Reactions are rows and species are columns.
-        prod_stoic : (nr, ns) ndarray
+            Reactions are columns and species are rows.
+        prod_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
-            Reactions are rows and species are columns.
+            Reactions are columns and species are rows.
         init_state : (ns,) ndarray
             A 1D array representing the initial state of the system.
         k_det : (nr,) ndarray
@@ -45,7 +46,7 @@ class Simulation:
             Defaults to False.
 
         Attributes
-        ---------
+        ----------
         results : Results
             The results instance
 
@@ -54,27 +55,14 @@ class Simulation:
         ValueError
             If supplied with order > 3.
 
-        References
-        ----------
-        1. Gillespie, D.T., 1976. A general method for numerically
-        simulating the stochastic time evolution of coupled chemical
-        reactions. J. Comput. Phys. 22, 403–434.
-        doi:10.1016/0021-9991(76)90041-3.
-        2. Cao, Y., Gillespie, D.T., Petzold, L.R., 2006.
-        Efficient step size selection for the tau-leaping simulation
-        method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
-        3. Gupta, A., 2013. Parameter estimation in deterministic
-        and stochastic models of biological systems. University of
-        Wisconsin-Madison.
-
         Examples
         --------
-        >>> V_r = np.array([[1,0,0],[0,1,0]])
-        >>> V_p = np.array([[0,1,0],[0,0,1]])
+        >>> V_r = np.array([[1,0],[0,1],[0,0]])
+        >>> V_p = np.array([[0,0],[1,0],[0,1]])
         >>> X0 = np.array([10,0,0])
         >>> k = np.array([1,1])
         >>> sim = Simulation(V_r, V_p, X0, k)
-        >>> sim1.simulate(max_t=10, max_iter=100, n_rep=n_runs)
+        >>> sim.simulate(max_t=10, max_iter=100, n_rep=n_runs)
     """
 
     _results: Optional[Results] = None
@@ -93,17 +81,17 @@ class Simulation:
         self._init_state = init_state
         self._k_det = k_det
         self._chem_flag = chem_flag
-        self._nr = self._react_stoic.shape[0]
-        self._ns = self._react_stoic.shape[1]
+        self._ns = self._react_stoic.shape[0]
+        self._nr = self._react_stoic.shape[1]
         self._volume = volume
         self._orders = np.sum(
-            self._react_stoic, 1
+            self._react_stoic, axis=0
         )  # Order of rxn = number of reactants
         self._check_consistency()
 
     def _check_consistency(self):
-        if (self._nr != self._prod_stoic.shape[0]) or (
-            self._ns != self._prod_stoic.shape[1]
+        if (self._ns != self._prod_stoic.shape[0]) or (
+            self._nr != self._prod_stoic.shape[1]
         ):
             raise ValueError("react_stoic and prod_stoic should be the same shape.")
         if np.any(self._react_stoic < 0):
@@ -251,7 +239,37 @@ class Simulation:
                 tlist.append(t)
                 xlist.append(X)
                 status_list.append(status)
-        self._results = Results(tlist, xlist, status_list, algorithm, seed)
+            self._results = Results(tlist, xlist, status_list, algorithm, seed)
+        elif algorithm == "tau_adaptive":
+            if "epsilon" in kwargs.keys():
+                epsilon = kwargs["epsilon"]
+            else:
+                epsilon = 0.03
+            if "nc" in kwargs.keys():
+                nc = kwargs["nc"]
+            else:
+                nc = 10
+            for index in range(n_rep):
+                t, X, status = tau_adaptive(
+                    np.int64(self._react_stoic),
+                    np.int64(self._prod_stoic),
+                    np.int64(self._init_state),
+                    np.float64(self._k_det),
+                    nc,
+                    epsilon,
+                    max_t,
+                    max_iter,
+                    volume,
+                    seed[index],
+                    self._chem_flag,
+                )
+                tlist.append(t)
+                xlist.append(X)
+                status_list.append(status)
+            self._results = Results(tlist, xlist, status_list, algorithm, seed)
+        else:
+            raise ValueError("Requested algorithm not supported")
+
 
     def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
         """
