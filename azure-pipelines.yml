@@ -5,7 +5,7 @@
 
 trigger:
 - master
-- tau_adap
+- develop
 
 jobs:
 
