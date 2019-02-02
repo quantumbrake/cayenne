@@ -242,8 +242,8 @@ class Simulation:
             for index in range(n_rep):
                 algo_args.append(
                     (
-                        self._react_stoic,
-                        self._prod_stoic,
+                        np.int64(self._react_stoic),
+                        np.int64(self._prod_stoic),
                         self._init_state,
                         self._k_det,
                         nc,
