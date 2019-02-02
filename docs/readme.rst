@@ -141,7 +141,7 @@ We chose ``numba`` after extensive testing and benchmarking against
 License
 -------
 
-Copyright (c) 2018, Dileep Kishore, Srikiran Chandrasekaran. Released
+Copyright (c) 2018-2019, Dileep Kishore, Srikiran Chandrasekaran. Released
 under: Apache Software License 2.0
 
 Credits

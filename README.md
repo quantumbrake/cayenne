@@ -81,7 +81,7 @@ test_py_benchmark |  27,366.3681 (87.11) |  28,417.8333 (82.85) |   27,782.2482 
 
 ## License
 
-Copyright (c) 2018, Dileep Kishore, Srikiran Chandrasekaran. Released under: Apache Software License 2.0
+Copyright (c) 2018-2019, Dileep Kishore, Srikiran Chandrasekaran. Released under: Apache Software License 2.0
 
 ## Credits
 
