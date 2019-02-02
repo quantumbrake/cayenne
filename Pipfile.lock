@@ -521,6 +521,7 @@
                 "sha256:1cf14bc0324d83a742f558051db0c2cbe15d8b9ae1c59dfefbe38935f1d1ee31"
             ],
             "version": "==1.2.1"
+
         },
         "idna": {
             "hashes": [

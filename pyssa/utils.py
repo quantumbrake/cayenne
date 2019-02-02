@@ -8,6 +8,8 @@ import numpy as np
 from numba import njit
 
 Na = 6.023e23  # Avogadro's constant
+HIGH = 1e20
+TINY = 1e-20
 
 
 @njit(nogil=True, cache=False)
@@ -21,10 +23,17 @@ def get_kstoc(
 
     Parameters
     ----------
-    react_stoic : np.ndarray
-    k_det : np.ndarray
+    react_stoic : (ns, nr) ndarray
+        A 2D array of the stoichiometric coefficients of the reactants.
+        Reactions are columns and species are rows.
+    k_det : (nr,) ndarray
+        A 1D array representing the deterministic rate constants of the
+        system.
     volume : float
+        The volume of the reactor vessel which is important for second
+        and higher order reactions
     chem_flag : bool
+        If True, divide by Na while calculating stochastic rate constants.
 
     Returns
     -------
@@ -39,8 +48,8 @@ def get_kstoc(
     reactions. J. Comput. Phys. 22, 403–434.
     doi:10.1016/0021-9991(76)90041-3.
     """
-    nr = react_stoic.shape[0]
-    orders = np.sum(react_stoic, 1)  # Order of rxn = number of reactants
+    nr = react_stoic.shape[1]
+    orders = np.sum(react_stoic, axis=0)  # Order of rxn = number of reactants
     k_stoc = k_det.copy()
     if chem_flag:
         factor = Na
@@ -48,9 +57,9 @@ def get_kstoc(
         factor = 1.0
     for ind in range(nr):
         # If highest order is 3
-        if react_stoic[ind, :].max() == 3:
+        if react_stoic[:, ind].max() == 3:
             k_stoc[ind] = k_det[ind] * 6 / np.power(factor * volume, 2)
-        elif react_stoic[ind, :].max() == 2:  # Highest order is 2
+        elif react_stoic[:, ind].max() == 2:  # Highest order is 2
             k_stoc[ind] = k_det[ind] * 2 / np.power(factor * volume, orders[ind] - 1)
         else:
             k_stoc[ind] = k_det[ind] / np.power(factor * volume, orders[ind] - 1)
@@ -78,8 +87,8 @@ def roulette_selection(prop_list: np.ndarray, Xt: np.ndarray) -> Tuple[int, int]
     """
     prop0 = np.sum(prop_list)  # Sum of propensities
     # choice = 0
-    if prop0 < 1e-30:
-        if np.sum(Xt) < 1e-30:
+    if prop0 < TINY:
+        if np.sum(Xt) < TINY:
             status = 3
             return -1, status
         else:

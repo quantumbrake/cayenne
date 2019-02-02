@@ -23,14 +23,16 @@ def direct_naive(
     chem_flag: bool,
 ) -> Tuple[np.ndarray, np.ndarray, int]:
     """
+        Runs the Direct Stochastic Simulation Algorithm.
+
         Parameters
-        ---------
-        react_stoic : (nr, ns) ndarray
+        ----------
+        react_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
-            Reactions are rows and species are columns.
-        prod_stoic : (nr, ns) ndarray
+            Reactions are columns and species are rows.
+        prod_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
-            Reactions are rows and species are columns.
+            Reactions are columns and species are rows.
         init_state : (ns,) ndarray
             A 1D array representing the initial state of the system.
         k_det : (nr,) ndarray
@@ -63,13 +65,20 @@ def direct_naive(
             3 : Succesful completion, terminated when all species went extinct.
             -1 : Failure, order greater than 3 detected.
             -2 : Failure, propensity zero without extinction.
+
+        References
+        ----------
+        .. [1] Gillespie, D.T., 1976. A general method for numerically
+        simulating the stochastic time evolution of coupled chemical
+        reactions. J. Comput. Phys. 22, 403–434.
+        doi:10.1016/0021-9991(76)90041-3.
     """
 
     ite = 1  # Iteration counter
     t_curr = 0  # Time in seconds
-    nr = react_stoic.shape[0]
-    ns = react_stoic.shape[1]
-    v = prod_stoic - react_stoic  # nr x ns
+    ns = react_stoic.shape[0]
+    nr = react_stoic.shape[1]
+    v = prod_stoic - react_stoic  # ns x nr
     xt = init_state.copy()  # Number of species at time t_curr
     x = np.zeros((max_iter, ns))
     t = np.zeros((max_iter))
@@ -82,14 +91,14 @@ def direct_naive(
     kstoc = prop.copy()  # Stochastic rate constants
     while ite < max_iter:
         # Calculate propensities
-        for ind1 in range(nr):
-            for ind2 in range(ns):
+        for ind1 in range(ns):
+            for ind2 in range(nr):
                 # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= xt[ind2] ** react_stoic[ind1, ind2]
+                prop[ind1] *= xt[ind1] ** react_stoic[ind1, ind2]
         # Roulette wheel
         choice, status = roulette_selection(prop, xt)
         if status == 0:
-            xtemp = xt + v[choice, :]
+            xtemp = xt + v[:, choice]
         else:
             return t[:ite], x[:ite, :], status
 
