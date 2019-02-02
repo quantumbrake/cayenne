@@ -1,5 +1,5 @@
-Stochastic Simulation Algorithms in Python
-==========================================
+pyssa : Python package for stochastic simulations
+=================================================
 
 |Build Status| |Updates| |Documentation Status| |pypi| |License| |Code
 style: black|

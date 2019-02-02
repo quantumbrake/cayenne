@@ -1,4 +1,4 @@
-# Stochastic Simulation Algorithms in Python
+# pyssa : Python package for stochastic simulations
 
 [![Build Status](https://travis-ci.com/Heuro-labs/pyssa.svg?token=qCMKydrUTvcJ87J6czex&branch=master)](https://travis-ci.com/Heuro-labs/pyssa)
 [![Build Status](https://dev.azure.com/srikiranc/pyssa/_apis/build/status/Heuro-labs.pyssa?branchName=master)](https://dev.azure.com/srikiranc/pyssa/_build/latest?definitionId=1?branchName=master)
@@ -85,4 +85,8 @@ Copyright (c) 2018, Dileep Kishore, Srikiran Chandrasekaran. Released under: Apa
 
 ## Credits
 
-This package was created with [Cookiecutter](https://github.com/audreyr/cookiecutter) and the [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage) project template.
+- [Numba](https://numba.pydata.org/)
+- [pytest](https://docs.pytest.org)
+- [Cookiecutter](https://github.com/audreyr/cookiecutter)
+- [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)
+- [black](https://github.com/ambv/black)
