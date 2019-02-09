@@ -258,7 +258,7 @@ def tau_adaptive(
                 chem_flag=chem_flag,
             )
             len_simulation = len(t_ssa)
-            t[ite : ite + len_simulation] = t_ssa
+            t[ite : ite + len_simulation] = t_ssa + t[ite-1]
             x[ite : ite + len_simulation, :] = x_ssa
             ite += len_simulation
             if status == 3 or status == 2:
