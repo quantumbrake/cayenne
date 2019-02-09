@@ -13,7 +13,7 @@ llvmlite==0.27.0
 markupsafe==1.1.0
 matplotlib==3.0.2
 numba==0.42.0
-numpy==1.16.0
+numpy==1.16.1
 numpydoc==0.8.0
 packaging==19.0
 pygments==2.3.1
