@@ -322,11 +322,11 @@ def tau_adaptive(
         if np.any(x_new < 0):
             taup = taup / 2
             skip_flag = True
-
-        # Update states if nothing is negative
-        x[ite, :] = x[ite - 1, :] + vdotK
-        t[ite] = t[ite - 1] + tau
-        ite += 1
+        else:
+            # Update states if nothing is negative
+            x[ite, :] = x[ite - 1, :] + vdotK
+            t[ite] = t[ite - 1] + tau
+            ite += 1
 
         # Exit conditions
         if t[ite - 1] > max_t:
