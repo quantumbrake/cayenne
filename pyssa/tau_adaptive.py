@@ -69,6 +69,29 @@ def get_HOR(react_stoic: np.ndarray):
 
 
 @njit(nogil=True, cache=False)
+def step1(kstoc, xt, react_stoic, v, nc):
+    """ Determine critical reactions """
+    nr = react_stoic.shape[1]
+    ns = react_stoic.shape[0]
+    prop = np.copy(kstoc)
+    L = np.zeros(nr, dtype=np.int64)
+    # Calculate the propensities
+    for ind1 in range(nr):
+        for ind2 in range(ns):
+            # prop = kstoc * product of (number raised to order)
+            prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
+    for ind in range(nr):
+        vis = v[:, ind]
+        L[ind] = np.nanmin(xt[vis < 0] / np.abs(vis[vis < 0]))
+    # A reaction j is critical if Lj <nc. However criticality is
+    # considered only for reactions with propensity greater than
+    # 0 (`prop > 0`).
+    crit = (L < nc) * (prop > 0)
+    # To get the non-critical reactions, we use the bitwise not operator.
+    not_crit = ~crit
+    return prop, crit, not_crit
+
+@njit(nogil=True, cache=False)
 def tau_adaptive(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
@@ -159,13 +182,10 @@ def tau_adaptive(
 
     M = nr
     N = ns
-    L = np.zeros(M, dtype=np.int64)
     K = np.zeros(M, dtype=np.int64)
     vis = np.zeros(M, dtype=np.int64)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
     n_react_species = react_species.shape[0]
-    mup = np.zeros(n_react_species, dtype=np.float64)
-    sigp = np.zeros(n_react_species, dtype=np.float64)
     tau_num = np.zeros(n_react_species, dtype=np.float64)
     skip_flag = False
 
@@ -174,29 +194,14 @@ def tau_adaptive(
         # If negatives are not detected in step 6, perform steps 1 and 2.
         # Else skip to step 3.
         if not skip_flag:
-
             xt = x[ite - 1, :]
-            # 1. Determine critical reactions
-            # -------------------------------
-            # Calculate the propensities
-            prop = np.copy(kstoc)
-            for ind1 in range(nr):
-                for ind2 in range(ns):
-                    # prop = kstoc * product of (number raised to order)
-                    prop[ind1] *= np.power(x[ite - 1, ind2], react_stoic[ind2, ind1])
+
+            # Step 1:
+            prop, crit, not_crit = step1(kstoc, xt, react_stoic, v, nc)
             prop_sum = np.sum(prop)
-            if prop_sum < 1e-30:
+            if prop_sum < TINY:
                 status = 3
                 return t[:ite], x[:ite, :], status
-            for ind in range(M):
-                vis = v[:, ind]
-                L[ind] = np.nanmin(xt[vis < 0] / np.abs(vis[vis < 0]))
-            # A reaction j is critical if Lj <nc. However criticality is
-            # considered only for reactions with propensity greater than
-            # 0 (`prop > 0`).
-            crit = (L < nc) * (prop > 0)
-            # To get the non-critical reactions, we use the bitwise not operator.
-            not_crit = ~crit
 
             # 2. Generate candidate taup
             # --------------------------
