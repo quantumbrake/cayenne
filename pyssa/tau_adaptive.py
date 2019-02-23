@@ -252,49 +252,8 @@ def tau_adaptive(
                 status = 3
                 return t[:ite], x[:ite, :], status
 
-            # 2. Generate candidate taup
-            # --------------------------
-            if np.sum(not_crit) == 0:
-                taup = HIGH
-            else:
-                # Compute mu from eqn 32a and sig from eqn 32b
-                for ind, species_index in enumerate(react_species):
-                    this_v = v[species_index, :]
-                    for i in range(len(not_crit)):
-                        if not_crit[i]:
-                            mup[ind] += this_v[i] * prop[i]
-                            sigp[ind] += this_v[i] * prop[i] * this_v[i]
-                    if mup[ind] == 0:
-                        mup[ind] = TINY
-                    if sigp[ind] == 0:
-                        sigp[ind] = TINY
-                    if HOR[species_index] > 0:
-                        g = HOR[species_index]
-                    elif HOR[species_index] == -2:
-                        if xt[species_index] is not 1:
-                            g = 1 + 2 / (xt[species_index] - 1)
-                        else:
-                            g = 2
-                    elif HOR[species_index] == -3:
-                        if xt[species_index] not in [1, 2]:
-                            g = (
-                                3
-                                + 1 / (xt[species_index] - 1)
-                                + 2 / (xt[species_index] - 2)
-                            )
-                        else:
-                            g = 3
-                    elif HOR[species_index] == -32:
-                        if xt[species_index] is not 1:
-                            g = 3 / 2 * (2 + 1 / (xt[species_index] - 1))
-                        else:
-                            g = 3
-                    tau_num[ind] = max(epsilon * xt[species_index] / g, 1)
-                taup = np.nanmin(
-                    np.concatenate(
-                        (tau_num / np.abs(mup), np.power(tau_num, 2) / np.abs(sigp))
-                    )
-                )
+            # Step 2:
+            taup = step2(not_crit, react_species, v, xt, HOR, prop, epsilon)
 
         # 3. For small taup, do SSA
         # -------------------------
