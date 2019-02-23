@@ -91,7 +91,7 @@ def step1(kstoc, xt, react_stoic, v, nc):
     not_crit = ~crit
     return prop, crit, not_crit
 
-@njit(nogil=True, cache=False)
+
 @njit(nogil=True, cache=False)
 def step2(not_crit, react_species, v, xt, HOR, prop, epsilon):
     """ 2. Generate candidate taup """
@@ -122,11 +122,7 @@ def step2(not_crit, react_species, v, xt, HOR, prop, epsilon):
                     g = 2
             elif HOR[species_index] == -3:
                 if xt[species_index] not in [1, 2]:
-                    g = (
-                        3
-                        + 1 / (xt[species_index] - 1)
-                        + 2 / (xt[species_index] - 2)
-                    )
+                    g = 3 + 1 / (xt[species_index] - 1) + 2 / (xt[species_index] - 2)
                 else:
                     g = 3
             elif HOR[species_index] == -32:
@@ -136,13 +132,39 @@ def step2(not_crit, react_species, v, xt, HOR, prop, epsilon):
                     g = 3
             tau_num[ind] = max(epsilon * xt[species_index] / g, 1)
         taup = np.nanmin(
-            np.concatenate(
-                (tau_num / np.abs(mup), np.power(tau_num, 2) / np.abs(sigp))
-            )
+            np.concatenate((tau_num / np.abs(mup), np.power(tau_num, 2) / np.abs(sigp)))
         )
     return taup
 
 
+@njit(nogil=True, cache=False)
+def step5(taup, taupp, nr, not_crit, prop, xt):
+    K = np.zeros(nr, dtype=np.int64)
+    if taup < taupp:
+        tau = taup
+        for ind in range(nr):
+            if not_crit[ind]:
+                K[ind] = np.random.poisson(prop[ind] * tau)
+            else:
+                K[ind] = 0
+    else:
+        tau = taupp
+        # Identify the only critical reaction to fire
+        # Send in xt to match signature of roulette_selection
+        temp = prop.copy()
+        temp[not_crit] = 0
+        j_crit, _ = roulette_selection(temp, xt)
+        for ind in range(nr):
+            if not_crit[ind]:
+                K[ind] = np.random.poisson(prop[ind] * tau)
+            elif ind == j_crit:
+                K[ind] = 1
+            else:
+                K[ind] = 0
+    return tau, K
+
+
+@njit(nogil=True, cache=False)
 def tau_adaptive(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
@@ -233,7 +255,6 @@ def tau_adaptive(
 
     M = nr
     N = ns
-    K = np.zeros(M, dtype=np.int64)
     vis = np.zeros(M, dtype=np.int64)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
     skip_flag = False
@@ -287,27 +308,7 @@ def tau_adaptive(
 
         # 5. Leap
         # -------
-        if taup < taupp:
-            tau = taup
-            for ind in range(M):
-                if not_crit[ind]:
-                    K[ind] = np.random.poisson(prop[ind] * tau)
-                else:
-                    K[ind] = 0
-        else:
-            tau = taupp
-            # Identify the only critical reaction to fire
-            # Send in xt to match signature of roulette_selection
-            temp = prop.copy()
-            temp[not_crit] = 0
-            j_crit, _ = roulette_selection(temp, x[ite - 1, :])
-            for ind in range(M):
-                if not_crit[ind]:
-                    K[ind] = np.random.poisson(prop[ind] * tau)
-                elif ind == j_crit:
-                    K[ind] = 1
-                else:
-                    K[ind] = 0
+        tau, K = step5(taup, taupp, nr, not_crit, prop, xt)
 
         # 6. Handle negatives, update and exit conditions
         # -----------------------------------------------
