@@ -92,6 +92,57 @@ def step1(kstoc, xt, react_stoic, v, nc):
     return prop, crit, not_crit
 
 @njit(nogil=True, cache=False)
+@njit(nogil=True, cache=False)
+def step2(not_crit, react_species, v, xt, HOR, prop, epsilon):
+    """ 2. Generate candidate taup """
+    n_react_species = react_species.shape[0]
+    mup = np.zeros(n_react_species, dtype=np.float64)
+    sigp = np.zeros(n_react_species, dtype=np.float64)
+    tau_num = np.zeros(n_react_species, dtype=np.float64)
+    if np.sum(not_crit) == 0:
+        taup = HIGH
+    else:
+        # Compute mu from eqn 32a and sig from eqn 32b
+        for ind, species_index in enumerate(react_species):
+            this_v = v[species_index, :]
+            for i in range(len(not_crit)):
+                if not_crit[i]:
+                    mup[ind] += this_v[i] * prop[i]
+                    sigp[ind] += this_v[i] * prop[i] * this_v[i]
+            if mup[ind] == 0:
+                mup[ind] = TINY
+            if sigp[ind] == 0:
+                sigp[ind] = TINY
+            if HOR[species_index] > 0:
+                g = HOR[species_index]
+            elif HOR[species_index] == -2:
+                if xt[species_index] is not 1:
+                    g = 1 + 2 / (xt[species_index] - 1)
+                else:
+                    g = 2
+            elif HOR[species_index] == -3:
+                if xt[species_index] not in [1, 2]:
+                    g = (
+                        3
+                        + 1 / (xt[species_index] - 1)
+                        + 2 / (xt[species_index] - 2)
+                    )
+                else:
+                    g = 3
+            elif HOR[species_index] == -32:
+                if xt[species_index] is not 1:
+                    g = 3 / 2 * (2 + 1 / (xt[species_index] - 1))
+                else:
+                    g = 3
+            tau_num[ind] = max(epsilon * xt[species_index] / g, 1)
+        taup = np.nanmin(
+            np.concatenate(
+                (tau_num / np.abs(mup), np.power(tau_num, 2) / np.abs(sigp))
+            )
+        )
+    return taup
+
+
 def tau_adaptive(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
@@ -185,8 +236,6 @@ def tau_adaptive(
     K = np.zeros(M, dtype=np.int64)
     vis = np.zeros(M, dtype=np.int64)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
-    n_react_species = react_species.shape[0]
-    tau_num = np.zeros(n_react_species, dtype=np.float64)
     skip_flag = False
 
     while ite < max_iter:
