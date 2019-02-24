@@ -127,7 +127,9 @@ class TestSanitize:
 #     n_runs = 10
 #     deviation_tolerance = 0.05
 #     sim1 = Simulation(V_r, V_p, X0, k)
-#     sim1.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=n_runs)
+#     sim1.simulate(
+#         algorithm="tau_adaptive", max_t=150, max_iter=1000, chem_flag=True, n_rep=n_runs
+#     )
 #     for ind in range(n_runs):
 #         x = sim1.results.x_list[ind]
 #         xt = x[-1, :]
@@ -139,11 +141,16 @@ class TestSanitize:
 #     assert np.abs(count_excitation / n_runs - 0.5) < deviation_tolerance
 
 
-# def test_long(setup_long):
-#     V_r, V_p, X0, k = setup_long
-#     _, Xt, status = direct_naive(
-#         V_r, V_p, X0, k, max_t=1e5, max_iter=1e8, chem_flag=False
-#     )
-#     X_output = np.array([0, 0, X0[0]])
-#     assert status == -2
-#     assert Xt.all() == X_output.all()
+def test_long(setup_long):
+    V_r, V_p, X0, k = setup_long
+    sim1 = Simulation(V_r, V_p, X0, k)
+    sim1.simulate(
+        algorithm="direct_naive", max_t=1e5, max_iter=int(1e8), chem_flag=False
+    )
+    sim1.simulate(
+        algorithm="tau_adaptive", max_t=1e5, max_iter=int(1e8), chem_flag=False
+    )
+    status = sim1.results.status_list
+    X_output = np.array([0, 0, X0.sum()])
+    assert status == [3]
+    assert (sim1.results.final[-1] == X_output).all()

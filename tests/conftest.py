@@ -63,5 +63,5 @@ def setup_long():
     V_r = np.array([[1, 0], [0, 1], [0, 0]])
     V_p = np.array([[0, 0], [1, 0], [0, 1]])
     k = np.array([1.0, 1.0])
-    X0 = np.array([int(4e5), 0, 0])
+    X0 = np.array([int(4e5), 1000, 0])
     return V_r, V_p, X0, k
