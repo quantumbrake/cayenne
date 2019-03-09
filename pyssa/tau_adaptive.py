@@ -286,14 +286,16 @@ def tau_adaptive(
                 x[ite - 1, :],
                 k_det,
                 max_t=max_t - t[ite - 1],
-                max_iter=min(100, max_iter - ite),
+                max_iter=min(101, max_iter - ite),
                 volume=volume,
                 seed=seed,
                 chem_flag=chem_flag,
             )
-            len_simulation = len(t_ssa)
-            t[ite : ite + len_simulation] = t_ssa
-            x[ite : ite + len_simulation, :] = x_ssa
+            # t_ssa first element is 0. x_ssa first element is x[ite - 1, :].
+            # Both should be dropped while logging the results.
+            len_simulation = len(t_ssa) - 1  # Since t_ssa[0] is 0
+            t[ite : ite + len_simulation] = t_ssa[1:]
+            x[ite : ite + len_simulation, :] = x_ssa[1:]
             ite += len_simulation
             if status == 3 or status == 2:
                 return t, x, status

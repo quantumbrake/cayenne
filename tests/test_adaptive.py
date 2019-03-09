@@ -66,3 +66,14 @@ def test_HOR():
         ]
     )
     assert np.all(get_HOR(react_stoic) == [-3, -2, 3, 3, 3])
+
+
+def test_len_sim(setup_basic):
+    V_r, V_p, X0, k = setup_basic
+    X0 = X0 = np.array([50, 2, 0])
+    sim = Simulation(V_r, V_p, X0, k)
+    sim.simulate(algorithm="tau_adaptive")
+    x = sim.results.x_list
+    t = sim.results.t_list
+    assert ~np.all(np.array(x[0][0, :]) == np.array(x[0][1, :]))
+    assert ~np.all(np.array(t[0][0]) == np.array(t[0][1]))
