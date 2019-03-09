@@ -5,7 +5,8 @@
 import numpy as np
 import pytest
 
-from pyssa.tau_adaptive import get_HOR
+from pyssa.tau_adaptive import get_HOR, tau_adaptive
+from pyssa.simulation import Simulation
 
 
 def test_HOR():

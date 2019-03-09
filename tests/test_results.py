@@ -8,7 +8,7 @@ from pyssa.simulation import Simulation
 from pyssa.results import Results
 
 
-@pytest.mark.parametrize("algorithm", ["direct_naive", "tau_leaping"])
+@pytest.mark.parametrize("algorithm", ["direct", "tau_leaping"])
 @pytest.mark.usefixtures("setup_large")
 class TestResults:
     def test_init_good(self, algorithm, setup_large):
@@ -27,7 +27,7 @@ class TestResults:
         t_list = results.t_list
         x_list = results.x_list
         status_list = results.status_list
-        algorithm = "direct_naive"
+        algorithm = "direct"
         seed = [0] * len(status_list)
         assert Results(t_list, x_list, status_list, algorithm, seed)
         with pytest.raises(ValueError):

@@ -1,5 +1,5 @@
 """
-    Naive implementation of the Gillespie algorithm (direct method) in Numba
+    Implementation of the direct method.
 """
 
 from typing import Tuple
@@ -11,7 +11,7 @@ from .utils import get_kstoc, roulette_selection
 
 
 @njit(nogil=True, cache=False)
-def direct_naive(
+def direct(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
     init_state: np.ndarray,

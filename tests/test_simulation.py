@@ -1,5 +1,5 @@
 """
-    Tests for direct_naive function
+    Tests for direct function
 """
 
 import numpy as np
@@ -8,7 +8,7 @@ import pytest
 from pyssa.simulation import Simulation
 
 
-@pytest.mark.parametrize("algorithm", ["direct_naive", "tau_leaping", "tau_adaptive"])
+@pytest.mark.parametrize("algorithm", ["direct", "tau_leaping", "tau_adaptive"])
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestSanitize:
     def test_null(self, algorithm, setup_basic):
@@ -144,9 +144,7 @@ class TestSanitize:
 def test_long(setup_long):
     V_r, V_p, X0, k = setup_long
     sim1 = Simulation(V_r, V_p, X0, k)
-    sim1.simulate(
-        algorithm="direct_naive", max_t=1e5, max_iter=int(1e8), chem_flag=False
-    )
+    sim1.simulate(algorithm="direct", max_t=1e5, max_iter=int(1e8), chem_flag=False)
     sim1.simulate(
         algorithm="tau_adaptive", max_t=1e5, max_iter=int(1e8), chem_flag=False
     )

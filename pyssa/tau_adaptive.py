@@ -6,7 +6,7 @@ from typing import Tuple
 from numba import njit, jit
 import numpy as np
 from .utils import get_kstoc, roulette_selection, HIGH, TINY
-from .direct_naive import direct_naive
+from .direct import direct
 
 
 @njit(nogil=True, cache=False)
@@ -280,7 +280,7 @@ def tau_adaptive(
         # -------------------------
         skip_flag = False
         if taup < 10 / prop_sum:
-            t_ssa, x_ssa, status = direct_naive(
+            t_ssa, x_ssa, status = direct(
                 react_stoic,
                 prod_stoic,
                 x[ite - 1, :],
