@@ -89,3 +89,15 @@ def test_tauadaptive_step1(setup_basic):
     assert (prop == [X0[0], X0[1]]).all()
     assert (crit != not_crit).all()
     assert (crit == np.array([False, True])).all()
+
+
+def test_tauadaptive_step2(setup_basic):
+    V_r, V_p, X0, k = setup_basic
+    V = V_p - V_r
+    HOR = get_HOR(V_r)
+    react_species = np.where(np.sum(V_r, axis=1) > 0)[0]
+    assert (react_species == np.array([0, 1])).all()
+    kstoc = get_kstoc(V_r, k, 1.0, False)
+    prop, _, not_crit = step1(kstoc, X0, V_r, V, nc=10)
+    taup = step2(not_crit, react_species, V, X0, HOR, prop, epsilon=0.03)
+    assert taup == 0.01
