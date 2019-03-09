@@ -5,8 +5,8 @@
 import numpy as np
 import pytest
 
-from pyssa.tau_adaptive import get_HOR, tau_adaptive
-from pyssa.simulation import Simulation
+from pyssa.tau_adaptive import get_HOR, tau_adaptive, step1, step2, step5
+from pyssa.utils import get_kstoc
 
 
 def test_HOR():
@@ -78,3 +78,14 @@ def test_len_sim(setup_basic):
     t = sim.results.t_list
     assert ~np.all(np.array(x[0][0, :]) == np.array(x[0][1, :]))
     assert ~np.all(np.array(t[0][0]) == np.array(t[0][1]))
+
+
+def test_tauadaptive_step1(setup_basic):
+    V_r, V_p, X0, k = setup_basic
+    X0 = np.array([100, 9, 0])
+    V = V_p - V_r
+    kstoc = get_kstoc(V_r, k, 1.0, False)
+    prop, crit, not_crit = step1(kstoc, X0, V_r, V, nc=10)
+    assert (prop == [X0[0], X0[1]]).all()
+    assert (crit != not_crit).all()
+    assert (crit == np.array([False, True])).all()
