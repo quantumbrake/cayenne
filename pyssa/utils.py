@@ -12,7 +12,7 @@ HIGH = 1e20
 TINY = 1e-20
 
 
-@njit(nogil=True, cache=False)
+@njit(nogil=True, cache=True)
 def get_kstoc(
     react_stoic: np.ndarray, k_det: np.ndarray, volume: float, chem_flag: bool
 ) -> np.ndarray:
@@ -66,7 +66,7 @@ def get_kstoc(
     return k_stoc
 
 
-@njit(nogil=True, cache=False)
+@njit(nogil=True, cache=True)
 def roulette_selection(prop_list: np.ndarray, Xt: np.ndarray) -> Tuple[int, int]:
     """Perform roulette selection on the list of propensities.
 
