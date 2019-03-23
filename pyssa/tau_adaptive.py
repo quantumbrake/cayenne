@@ -6,7 +6,7 @@ from typing import Tuple
 from numba import njit, jit
 import numpy as np
 from .utils import get_kstoc, roulette_selection, HIGH, TINY
-from .direct_naive import direct_naive
+from .direct import direct
 
 
 @njit(nogil=True, cache=False)
@@ -66,6 +66,102 @@ def get_HOR(react_stoic: np.ndarray):
             ):
                 HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
     return HOR
+
+
+@njit(nogil=True, cache=False)
+def step1(kstoc, xt, react_stoic, v, nc):
+    """ Determine critical reactions """
+    nr = react_stoic.shape[1]
+    ns = react_stoic.shape[0]
+    prop = np.copy(kstoc)
+    L = np.zeros(nr, dtype=np.int64)
+    # Calculate the propensities
+    for ind1 in range(nr):
+        for ind2 in range(ns):
+            # prop = kstoc * product of (number raised to order)
+            prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
+    for ind in range(nr):
+        vis = v[:, ind]
+        L[ind] = np.nanmin(xt[vis < 0] / np.abs(vis[vis < 0]))
+    # A reaction j is critical if Lj <nc. However criticality is
+    # considered only for reactions with propensity greater than
+    # 0 (`prop > 0`).
+    crit = (L < nc) * (prop > 0)
+    # To get the non-critical reactions, we use the bitwise not operator.
+    not_crit = ~crit
+    return prop, crit, not_crit
+
+
+@njit(nogil=True, cache=False)
+def step2(not_crit, react_species, v, xt, HOR, prop, epsilon):
+    """ 2. Generate candidate taup """
+    n_react_species = react_species.shape[0]
+    mup = np.zeros(n_react_species, dtype=np.float64)
+    sigp = np.zeros(n_react_species, dtype=np.float64)
+    tau_num = np.zeros(n_react_species, dtype=np.float64)
+    if np.sum(not_crit) == 0:
+        taup = HIGH
+    else:
+        # Compute mu from eqn 32a and sig from eqn 32b
+        for ind, species_index in enumerate(react_species):
+            this_v = v[species_index, :]
+            for i in range(len(not_crit)):
+                if not_crit[i]:
+                    mup[ind] += this_v[i] * prop[i]
+                    sigp[ind] += this_v[i] * prop[i] * this_v[i]
+            if mup[ind] == 0:
+                mup[ind] = TINY
+            if sigp[ind] == 0:
+                sigp[ind] = TINY
+            if HOR[species_index] > 0:
+                g = HOR[species_index]
+            elif HOR[species_index] == -2:
+                if xt[species_index] is not 1:
+                    g = 1 + 2 / (xt[species_index] - 1)
+                else:
+                    g = 2
+            elif HOR[species_index] == -3:
+                if xt[species_index] not in [1, 2]:
+                    g = 3 + 1 / (xt[species_index] - 1) + 2 / (xt[species_index] - 2)
+                else:
+                    g = 3
+            elif HOR[species_index] == -32:
+                if xt[species_index] is not 1:
+                    g = 3 / 2 * (2 + 1 / (xt[species_index] - 1))
+                else:
+                    g = 3
+            tau_num[ind] = max(epsilon * xt[species_index] / g, 1)
+        taup = np.nanmin(
+            np.concatenate((tau_num / np.abs(mup), np.power(tau_num, 2) / np.abs(sigp)))
+        )
+    return taup
+
+
+@njit(nogil=True, cache=False)
+def step5(taup, taupp, nr, not_crit, prop, xt):
+    K = np.zeros(nr, dtype=np.int64)
+    if taup < taupp:
+        tau = taup
+        for ind in range(nr):
+            if not_crit[ind]:
+                K[ind] = np.random.poisson(prop[ind] * tau)
+            else:
+                K[ind] = 0
+    else:
+        tau = taupp
+        # Identify the only critical reaction to fire
+        # Send in xt to match signature of roulette_selection
+        temp = prop.copy()
+        temp[not_crit] = 0
+        j_crit, _ = roulette_selection(temp, xt)
+        for ind in range(nr):
+            if not_crit[ind]:
+                K[ind] = np.random.poisson(prop[ind] * tau)
+            elif ind == j_crit:
+                K[ind] = 1
+            else:
+                K[ind] = 0
+    return tau, K
 
 
 @njit(nogil=True, cache=False)
@@ -159,14 +255,8 @@ def tau_adaptive(
 
     M = nr
     N = ns
-    L = np.zeros(M, dtype=np.int64)
-    K = np.zeros(M, dtype=np.int64)
     vis = np.zeros(M, dtype=np.int64)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
-    n_react_species = react_species.shape[0]
-    mup = np.zeros(n_react_species, dtype=np.float64)
-    sigp = np.zeros(n_react_species, dtype=np.float64)
-    tau_num = np.zeros(n_react_species, dtype=np.float64)
     skip_flag = False
 
     while ite < max_iter:
@@ -174,92 +264,38 @@ def tau_adaptive(
         # If negatives are not detected in step 6, perform steps 1 and 2.
         # Else skip to step 3.
         if not skip_flag:
-
             xt = x[ite - 1, :]
-            # 1. Determine critical reactions
-            # -------------------------------
-            # Calculate the propensities
-            prop = np.copy(kstoc)
-            for ind1 in range(nr):
-                for ind2 in range(ns):
-                    # prop = kstoc * product of (number raised to order)
-                    prop[ind1] *= np.power(x[ite - 1, ind2], react_stoic[ind2, ind1])
+
+            # Step 1:
+            prop, crit, not_crit = step1(kstoc, xt, react_stoic, v, nc)
             prop_sum = np.sum(prop)
-            if prop_sum < 1e-30:
+            if prop_sum < TINY:
                 status = 3
                 return t[:ite], x[:ite, :], status
-            for ind in range(M):
-                vis = v[:, ind]
-                L[ind] = np.nanmin(xt[vis < 0] / np.abs(vis[vis < 0]))
-            # A reaction j is critical if Lj <nc. However criticality is
-            # considered only for reactions with propensity greater than
-            # 0 (`prop > 0`).
-            crit = (L < nc) * (prop > 0)
-            # To get the non-critical reactions, we use the bitwise not operator.
-            not_crit = ~crit
 
-            # 2. Generate candidate taup
-            # --------------------------
-            if np.sum(not_crit) == 0:
-                taup = HIGH
-            else:
-                # Compute mu from eqn 32a and sig from eqn 32b
-                for ind, species_index in enumerate(react_species):
-                    this_v = v[species_index, :]
-                    for i in range(len(not_crit)):
-                        if not_crit[i]:
-                            mup[ind] += this_v[i] * prop[i]
-                            sigp[ind] += this_v[i] * prop[i] * this_v[i]
-                    if mup[ind] == 0:
-                        mup[ind] = TINY
-                    if sigp[ind] == 0:
-                        sigp[ind] = TINY
-                    if HOR[species_index] > 0:
-                        g = HOR[species_index]
-                    elif HOR[species_index] == -2:
-                        if xt[species_index] is not 1:
-                            g = 1 + 2 / (xt[species_index] - 1)
-                        else:
-                            g = 2
-                    elif HOR[species_index] == -3:
-                        if xt[species_index] not in [1, 2]:
-                            g = (
-                                3
-                                + 1 / (xt[species_index] - 1)
-                                + 2 / (xt[species_index] - 2)
-                            )
-                        else:
-                            g = 3
-                    elif HOR[species_index] == -32:
-                        if xt[species_index] is not 1:
-                            g = 3 / 2 * (2 + 1 / (xt[species_index] - 1))
-                        else:
-                            g = 3
-                    tau_num[ind] = max(epsilon * xt[species_index] / g, 1)
-                taup = np.nanmin(
-                    np.concatenate(
-                        (tau_num / np.abs(mup), np.power(tau_num, 2) / np.abs(sigp))
-                    )
-                )
+            # Step 2:
+            taup = step2(not_crit, react_species, v, xt, HOR, prop, epsilon)
 
         # 3. For small taup, do SSA
         # -------------------------
         skip_flag = False
         if taup < 10 / prop_sum:
-            t_ssa, x_ssa, status = direct_naive(
+            t_ssa, x_ssa, status = direct(
                 react_stoic,
                 prod_stoic,
                 x[ite - 1, :],
                 k_det,
                 max_t=max_t - t[ite - 1],
-                max_iter=min(100, max_iter - ite),
+                max_iter=min(101, max_iter - ite),
                 volume=volume,
                 seed=seed,
                 chem_flag=chem_flag,
             )
-            len_simulation = len(t_ssa)
-            t[ite : ite + len_simulation] = t_ssa + t[ite-1]
-            x[ite : ite + len_simulation, :] = x_ssa
+            # t_ssa first element is 0. x_ssa first element is x[ite - 1, :].
+            # Both should be dropped while logging the results.
+            len_simulation = len(t_ssa) - 1  # Since t_ssa[0] is 0
+            t[ite : ite + len_simulation] = t_ssa[1:] + t[ite-1]
+            x[ite : ite + len_simulation, :] = x_ssa[1:]
             ite += len_simulation
             if status == 3 or status == 2:
                 return t, x, status
@@ -274,27 +310,7 @@ def tau_adaptive(
 
         # 5. Leap
         # -------
-        if taup < taupp:
-            tau = taup
-            for ind in range(M):
-                if not_crit[ind]:
-                    K[ind] = np.random.poisson(prop[ind] * tau)
-                else:
-                    K[ind] = 0
-        else:
-            tau = taupp
-            # Identify the only critical reaction to fire
-            # Send in xt to match signature of roulette_selection
-            temp = prop.copy()
-            temp[not_crit] = 0
-            j_crit, _ = roulette_selection(temp, x[ite - 1, :])
-            for ind in range(M):
-                if not_crit[ind]:
-                    K[ind] = np.random.poisson(prop[ind] * tau)
-                elif ind == j_crit:
-                    K[ind] = 1
-                else:
-                    K[ind] = 0
+        tau, K = step5(taup, taupp, nr, not_crit, prop, xt)
 
         # 6. Handle negatives, update and exit conditions
         # -----------------------------------------------
@@ -308,11 +324,11 @@ def tau_adaptive(
         if np.any(x_new < 0):
             taup = taup / 2
             skip_flag = True
-
-        # Update states if nothing is negative
-        x[ite, :] = x[ite - 1, :] + vdotK
-        t[ite] = t[ite - 1] + tau
-        ite += 1
+        else:
+            # Update states if nothing is negative
+            x[ite, :] = x[ite - 1, :] + vdotK
+            t[ite] = t[ite - 1] + tau
+            ite += 1
 
         # Exit conditions
         if t[ite - 1] > max_t:

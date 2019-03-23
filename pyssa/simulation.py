@@ -11,7 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
-from .direct_naive import direct_naive
+from .direct import direct
 from .tau_leaping import tau_leaping
 from .tau_adaptive import tau_adaptive
 from .results import Results
@@ -135,7 +135,7 @@ class Simulation:
         seed: Optional[List[int]] = None,
         n_rep: int = 1,
         n_procs: int = 1,
-        algorithm: str = "direct_naive",
+        algorithm: str = "direct",
         **kwargs,
     ):
         """
@@ -164,7 +164,7 @@ class Simulation:
             The default value is 1
         algorithm : str, optional
             The algorithm to be used to run the simulation
-            The default value is "direct_naive"
+            The default value is "direct"
 
         Returns
         -------
@@ -194,7 +194,7 @@ class Simulation:
             raise TypeError("max_iter should be of type int")
 
         algo_args = []
-        if algorithm == "direct_naive":
+        if algorithm == "direct":
             for index in range(n_rep):
                 algo_args.append(
                     (
@@ -209,7 +209,7 @@ class Simulation:
                         self._chem_flag,
                     )
                 )
-                algo = direct_naive
+                algo = direct
         elif algorithm == "tau_leaping":
             if "tau" in kwargs.keys():
                 tau = kwargs["tau"]

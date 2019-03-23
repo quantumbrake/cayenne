@@ -74,7 +74,7 @@ The results of the simulation can be retrieved by accessing the ``Results`` obje
 
 .. code-block:: python
 
-    <Results n_rep=10 algorithm=direct_naive seed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]>
+    <Results n_rep=10 algorithm=direct seed=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]>
 
 The ``Results`` object provides abstractions for easy retrieval and iteration over the simulation results. For example you can iterate over every run of the simulation using ::
 
@@ -112,7 +112,7 @@ Algorithms
 
 The ``Simulation`` class currently supports the following algorithms:
 
-1. Direct naive
+1. Direct
 2. Tau leaping
 
 You can change the algorithm used to perform a simulation using the ``simulation`` flag

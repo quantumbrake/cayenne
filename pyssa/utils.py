@@ -83,7 +83,7 @@ def roulette_selection(prop_list: np.ndarray, Xt: np.ndarray) -> Tuple[int, int]
     choice : int
         Index of the chosen reaction.
     status : int
-        Status of the simulation as described in `direct_naive`.
+        Status of the simulation as described in `direct`.
     """
     prop0 = np.sum(prop_list)  # Sum of propensities
     # choice = 0
