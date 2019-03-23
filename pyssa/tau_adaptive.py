@@ -294,7 +294,7 @@ def tau_adaptive(
             # t_ssa first element is 0. x_ssa first element is x[ite - 1, :].
             # Both should be dropped while logging the results.
             len_simulation = len(t_ssa) - 1  # Since t_ssa[0] is 0
-            t[ite : ite + len_simulation] = t_ssa[1:]
+            t[ite : ite + len_simulation] = t_ssa[1:] + t[ite-1]
             x[ite : ite + len_simulation, :] = x_ssa[1:]
             ite += len_simulation
             if status == 3 or status == 2:

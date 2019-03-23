@@ -43,11 +43,18 @@ sim = Simulation(V_r, V_p, X0, k)  # Declare the simulation object
 sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
 ```
 
-You can change the algorithm used to perform the simulation by changing the `algorithm` flag
+You can change the algorithm used to perform the simulation by changing the `algorithm` parameter
 
 ```python
-sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, algorithm="tau_leaping")
+sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, algorithm="tau_adaptive")
 ```
+
+You can run the simulations on multiple cores by specifying the `n_procs` parameter
+
+```python
+sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, n_procs=4)
+```
+
 
 ### Plotting
 
