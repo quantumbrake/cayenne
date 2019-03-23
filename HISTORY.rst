@@ -2,6 +2,19 @@
 History
 =======
 
+0.7.1 (2019-03-23)
+------------------
+
+Changed
++++++++
+- Refactor ``tau_adaptive``
+- Rename ``direct_naive`` to ``direct``
+
+Fixed
++++++
+- SSA part of ``tau_adaptive``
+- Bug in linux compatibility of ``tau_adaptive``
+
 0.7.0 (2019-02-02)
 ------------------
 
