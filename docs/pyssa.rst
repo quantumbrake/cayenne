@@ -11,10 +11,10 @@ Subpackages
 Submodules
 ----------
 
-pyssa.direct\_naive module
---------------------------
+pyssa.direct module
+-------------------
 
-.. automodule:: pyssa.direct_naive
+.. automodule:: pyssa.direct
     :members:
     :undoc-members:
     :show-inheritance:
@@ -31,6 +31,22 @@ pyssa.simulation module
 -----------------------
 
 .. automodule:: pyssa.simulation
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pyssa.tau\_adaptive module
+--------------------------
+
+.. automodule:: pyssa.tau_adaptive
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+pyssa.tau\_leaping module
+-------------------------
+
+.. automodule:: pyssa.tau_leaping
     :members:
     :undoc-members:
     :show-inheritance:
