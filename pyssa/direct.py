@@ -10,7 +10,7 @@ import numpy as np
 from .utils import get_kstoc, roulette_selection
 
 
-@njit(nogil=True, cache=True)
+@njit(nogil=True, cache=False)
 def direct(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
