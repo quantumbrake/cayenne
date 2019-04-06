@@ -152,3 +152,20 @@ def test_long(setup_long):
     X_output = np.array([0, 0, X0.sum()])
     assert status == [3]
     assert (sim1.results.final[-1] == X_output).all()
+
+
+def test_00001(setup_00001):
+    V_r, V_p, X0, k, time_list, mu_list, std_list = setup_00001
+    n_rep = 10
+    sim1 = Simulation(V_r, V_p, X0, k)
+    sim1.simulate(
+        algorithm="direct", max_t=50, max_iter=int(1e3), chem_flag=False, n_rep=n_rep
+    )
+    for ind1, t in enumerate(time_list[1:]):
+        results = sim1.results.get_state(t)
+        mu_obs = np.mean(results)
+        std_obs = np.std(results)
+        Z = np.sqrt(n_rep) * (mu_obs - mu_list[ind1 + 1]) / std_list[ind1 + 1]
+        Y = np.sqrt(n_rep / 2) * ((std_obs ** 2) / (std_list[ind1 + 1] ** 2) - 1)
+        assert -3 < Z < 3
+        assert -5 < Y < 5
