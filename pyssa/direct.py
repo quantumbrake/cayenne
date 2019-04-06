@@ -91,10 +91,10 @@ def direct(
     kstoc = prop.copy()  # Stochastic rate constants
     while ite < max_iter:
         # Calculate propensities
-        for ind1 in range(ns):
-            for ind2 in range(nr):
+        for ind1 in range(nr):
+            for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= xt[ind1] ** react_stoic[ind1, ind2]
+                prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
         # Roulette wheel
         choice, status = roulette_selection(prop, xt)
         if status == 0:
