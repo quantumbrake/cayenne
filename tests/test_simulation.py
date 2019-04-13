@@ -45,6 +45,12 @@ class TestSanitize:
         with pytest.raises(ValueError):
             Simulation(V_r, V_p, X0, k)
 
+    def test_k_shape(self, algorithm, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        k = np.array([[1], [0], [0]])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
     def test_Vp_Vr_shape(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
         V_p = np.array([[0], [1], [0]])
@@ -54,6 +60,26 @@ class TestSanitize:
     def test_kdet_Vr_shape(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
         k = np.array([1, 1, 1])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_X0_Vr_shape(self, algorithm, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        X0 = np.array([100, 0, 0, 0])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+        X0 = np.array([100, 0])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_X0_2d(self, algorithm, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        X0 = np.array([[100, 0, 0]])
+        print(X0.shape)
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+        X0 = np.array([[100], [0], [0]])
+        print(X0.shape)
         with pytest.raises(ValueError):
             Simulation(V_r, V_p, X0, k)
 
