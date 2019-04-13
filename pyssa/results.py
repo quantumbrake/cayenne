@@ -128,5 +128,12 @@ class Results(Collection):
         for x_array, t_array, _ in self:
             ind = np.searchsorted(t_array, t)
             ind = ind - 1 if ind > 0 else ind
-            states.append(x_array[ind, :])
+            x_interp = np.zeros(x_array.shape[1])
+            for ind2 in range(x_array.shape[1]):
+                x_interp[ind2] = np.interp(
+                    t,
+                    [t_array[ind], t_array[ind + 1]],
+                    [x_array[ind, ind2], x_array[ind + 1, ind2]],
+                )
+            states.append(x_interp)
         return states
