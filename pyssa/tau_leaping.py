@@ -105,8 +105,8 @@ def tau_leaping(
             return t[:ite], x[:ite, :], -3
         prop = np.copy(kstoc)
         x[ite, :] = xt
-        t[ite] = t_curr
         t_curr += tau
+        t[ite] = t_curr
         ite += 1
     status = 2
     return t[:ite], x[:ite, :], status
