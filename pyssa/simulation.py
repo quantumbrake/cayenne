@@ -136,6 +136,7 @@ class Simulation:
         n_rep: int = 1,
         n_procs: int = 1,
         algorithm: str = "direct",
+        debug: bool = False,
         **kwargs,
     ):
         """
@@ -259,13 +260,17 @@ class Simulation:
         else:
             raise ValueError("Requested algorithm not supported")
         algo_func = partial(wrapper, func=algo)
-        with mp.Pool(processes=n_procs) as pool:
-            results = pool.map(algo_func, algo_args)
-            for t, X, status in results:
-                tlist.append(t)
-                xlist.append(X)
-                status_list.append(status)
-            self._results = Results(tlist, xlist, status_list, algorithm, seed)
+        if debug:
+            results = map(algo_func, algo_args)
+        else:
+            with mp.Pool(processes=n_procs) as pool:
+                results = pool.map(algo_func, algo_args)
+        for t, X, status in results:
+            tlist.append(t)
+            xlist.append(X)
+            status_list.append(status)
+        self._results = Results(tlist, xlist, status_list, algorithm, seed)
+
 
     def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
         """
