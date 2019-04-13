@@ -128,6 +128,7 @@ class TestSanitize:
         for t_array in results.t_list:
             assert (np.diff(t_array) > 0).all()
 
+
 # def test_bifurcation(setup_bifurcation):
 #     V_r, V_p, X0, k = setup_bifurcation
 #     count_excitation = 0
@@ -166,8 +167,13 @@ def test_00001(setup_00001):
     n_rep = 10
     sim1 = Simulation(V_r, V_p, X0, k)
     sim1.simulate(
-        algorithm="direct", max_t=50, max_iter=int(1e3), chem_flag=False, n_rep=n_rep
+        algorithm="tau_adaptive",
+        max_t=51,
+        max_iter=int(1.5e3),
+        chem_flag=False,
+        n_rep=n_rep,
     )
+    assert np.all(sim1.results.final[0] > time_list[-1])
     for ind1, t in enumerate(time_list[1:]):
         results = sim1.results.get_state(t)
         mu_obs = np.mean(results)
