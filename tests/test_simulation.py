@@ -10,19 +10,13 @@ from pyssa.simulation import Simulation
 
 @pytest.mark.parametrize("algorithm", ["direct", "tau_leaping", "tau_adaptive"])
 @pytest.mark.usefixtures("setup_basic", "setup_large")
-class TestSanitize:
+class TestSanitizeAlg:
     def test_null(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
         k = np.array([0, 0])
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm)
         assert sim.results.status_list[0] == -2
-
-    def test_too_high_order(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        V_r = np.array([[2, 0], [2, 1], [0, 0]])
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
 
     def test_status_3(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
@@ -38,68 +32,6 @@ class TestSanitize:
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=1, max_iter=100, chem_flag=True)
         assert sim.results.status_list[0] == 2
-
-    def test_neg_k(self, algorithm, setup_large):
-        V_r, V_p, X0, k = setup_large
-        k = np.array([1, 1, -1, 1, -1])
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
-
-    def test_k_shape(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        k = np.array([[1], [0], [0]])
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
-
-    def test_Vp_Vr_shape(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        V_p = np.array([[0], [1], [0]])
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
-
-    def test_kdet_Vr_shape(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        k = np.array([1, 1, 1])
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
-
-    def test_X0_Vr_shape(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        X0 = np.array([100, 0, 0, 0])
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
-        X0 = np.array([100, 0])
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
-
-    def test_X0_2d(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        X0 = np.array([[100, 0, 0]])
-        print(X0.shape)
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
-        X0 = np.array([[100], [0], [0]])
-        print(X0.shape)
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
-
-    def test_Vp_neg(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        V_p = np.array([[0, 0], [-1, 0], [0, 1]])
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
-
-    def test_Vr_neg(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        V_r = np.array([[-1, 0], [0, 1], [0, 0]])
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
-
-    def test_X0_neg(self, algorithm, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        X0 = np.array([-10, 0, 0])
-        with pytest.raises(ValueError):
-            Simulation(V_r, V_p, X0, k)
 
     def test_reproduce(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
@@ -155,6 +87,77 @@ class TestSanitize:
             assert (np.diff(t_array) > 0).all()
 
 
+@pytest.mark.usefixtures("setup_basic", "setup_large")
+class TestSanitize:
+    def test_too_high_order(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        V_r = np.array([[2, 0], [2, 1], [0, 0]])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_neg_k(self, setup_large):
+        V_r, V_p, X0, k = setup_large
+        k = np.array([1, 1, -1, 1, -1])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_k_shape(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        k = np.array([[1], [0], [0]])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_Vp_Vr_shape(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        V_p = np.array([[0], [1], [0]])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_kdet_Vr_shape(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        k = np.array([1, 1, 1])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_X0_Vr_shape(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        X0 = np.array([100, 0, 0, 0])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+        X0 = np.array([100, 0])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_X0_2d(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        X0 = np.array([[100, 0, 0]])
+        print(X0.shape)
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+        X0 = np.array([[100], [0], [0]])
+        print(X0.shape)
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_Vp_neg(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        V_p = np.array([[0, 0], [-1, 0], [0, 1]])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_Vr_neg(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        V_r = np.array([[-1, 0], [0, 1], [0, 0]])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+    def test_X0_neg(self, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        X0 = np.array([-10, 0, 0])
+        with pytest.raises(ValueError):
+            Simulation(V_r, V_p, X0, k)
+
+
 # def test_bifurcation(setup_bifurcation):
 #     V_r, V_p, X0, k = setup_bifurcation
 #     count_excitation = 0
@@ -175,14 +178,14 @@ class TestSanitize:
 #     assert np.abs(count_excitation / n_runs - 0.5) < deviation_tolerance
 
 
-def test_long(setup_long):
-    V_r, V_p, X0, k = setup_long
-    sim1 = Simulation(V_r, V_p, X0, k)
-    sim1.simulate(algorithm="direct", max_t=1e5, max_iter=int(1e8), chem_flag=False)
-    sim1.simulate(
-        algorithm="tau_adaptive", max_t=1e5, max_iter=int(1e8), chem_flag=False
-    )
-    status = sim1.results.status_list
-    X_output = np.array([0, 0, X0.sum()])
-    assert status == [3]
-    assert (sim1.results.final[-1] == X_output).all()
+# def test_long(setup_long):
+#     V_r, V_p, X0, k = setup_long
+#     sim1 = Simulation(V_r, V_p, X0, k)
+#     sim1.simulate(algorithm="direct", max_t=1e5, max_iter=int(1e8), chem_flag=False)
+#     sim1.simulate(
+#         algorithm="tau_adaptive", max_t=1e5, max_iter=int(1e8), chem_flag=False
+#     )
+#     status = sim1.results.status_list
+#     X_output = np.array([0, 0, X0.sum()])
+#     assert status == [3]
+#     assert (sim1.results.final[-1] == X_output).all()
