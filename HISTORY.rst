@@ -2,6 +2,26 @@
 History
 =======
 
+0.8.0 (2019-04-13)
+------------------
+
+Added
++++++
+- ``Results.get_states`` method - returns state at time ``t``
+- Accuracy tests for all algorithms
+- Additional consistency checks for ``X0`` and ``k_det``
+
+Changed
++++++++
+- Refactor algorithms into sub module ``algorithms``
+- Refactor algorithm independent tests
+
+Fixed
++++++
+- Indexing issue in propensity calculation in ``direct`` algorithm
+- Indexing issue in propensity calculation in ``tau_leaping`` algorithm
+- Address edge case X->2X in ``tau_adaptive`` algorithm
+
 0.7.1 (2019-03-23)
 ------------------
 

@@ -2,13 +2,14 @@
     Tests for the `Results` class
 """
 
+import numpy as np
 import pytest
 
 from pyssa.simulation import Simulation
 from pyssa.results import Results
 
 
-@pytest.mark.parametrize("algorithm", ["direct", "tau_leaping"])
+@pytest.mark.parametrize("algorithm", ["direct", "tau_leaping", "tau_adaptive"])
 @pytest.mark.usefixtures("setup_large")
 class TestResults:
     def test_init_good(self, algorithm, setup_large):
@@ -78,3 +79,13 @@ class TestResults:
         if algorithm != "tau_leaping":
             for i in range(final_states.shape[0]):
                 assert (final_states[0, :] == final_states[i, :]).all()
+
+    def test_get_states(self, algorithm, setup_large):
+        V_r, V_p, X0, k = setup_large
+        n_rep = 3
+        max_t = 1e5
+        max_iter = 100
+        sim = Simulation(V_r, V_p, X0, k)
+        sim.simulate(algorithm=algorithm, max_t=max_t, max_iter=max_iter, n_rep=n_rep)
+        results = sim.results
+        assert np.all(results.get_state(0.0) == X0)

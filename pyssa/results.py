@@ -109,3 +109,31 @@ class Results(Collection):
         final_times = np.array([v[1][-1] for v in self])
         final_states = np.array([v[0][-1, :] for v in self])
         return final_times, final_states
+
+    def get_state(self, t: float) -> List[np.ndarray]:
+        """
+            Returns the states of the system at time point t.
+
+            Parameters
+            ----------
+            t : float
+                Time point at which states are wanted.
+
+            Returns
+            -------
+            List[np.ndarray]
+                The states of the system at `t` for all repetitions.
+        """
+        states: List[np.ndarray] = []
+        for x_array, t_array, _ in self:
+            ind = np.searchsorted(t_array, t)
+            ind = ind - 1 if ind > 0 else ind
+            x_interp = np.zeros(x_array.shape[1])
+            for ind2 in range(x_array.shape[1]):
+                x_interp[ind2] = np.interp(
+                    t,
+                    [t_array[ind], t_array[ind + 1]],
+                    [x_array[ind, ind2], x_array[ind + 1, ind2]],
+                )
+            states.append(x_interp)
+        return states

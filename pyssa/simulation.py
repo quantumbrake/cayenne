@@ -11,9 +11,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
-from .direct import direct
-from .tau_leaping import tau_leaping
-from .tau_adaptive import tau_adaptive
+from .algorithms.direct import direct
+from .algorithms.tau_leaping import tau_leaping
+from .algorithms.tau_adaptive import tau_adaptive
 from .results import Results
 
 
@@ -104,10 +104,18 @@ class Simulation:
             raise ValueError("Rate constant(s) can't be negative.")
         if self._k_det.shape[0] != self._nr:
             raise ValueError("Number of rate constants must equal number of reactions")
+        if len(self._k_det.shape) != 1:
+            raise ValueError("k_det must be a 1-D array")
         if self._chem_flag not in (True, False):
             raise ValueError("chem_flag must be a boolean True or False.")
         if np.max(self._orders) > 3:
             raise ValueError("Order greater than 3 not suppported.")
+        if self._ns != self._init_state.shape[0]:
+            raise ValueError(
+                "X0 must have be of length = num. of species (or rows of V_r)"
+            )
+        if len(self._init_state.shape) != 1:
+            raise ValueError("X0 must be a 1-D array")
 
     @property
     def results(self) -> Optional[Results]:
@@ -136,6 +144,7 @@ class Simulation:
         n_rep: int = 1,
         n_procs: int = 1,
         algorithm: str = "direct",
+        debug: bool = False,
         **kwargs,
     ):
         """
@@ -259,13 +268,16 @@ class Simulation:
         else:
             raise ValueError("Requested algorithm not supported")
         algo_func = partial(wrapper, func=algo)
-        with mp.Pool(processes=n_procs) as pool:
-            results = pool.map(algo_func, algo_args)
-            for t, X, status in results:
-                tlist.append(t)
-                xlist.append(X)
-                status_list.append(status)
-            self._results = Results(tlist, xlist, status_list, algorithm, seed)
+        if debug:
+            results = map(algo_func, algo_args)
+        else:
+            with mp.Pool(processes=n_procs) as pool:
+                results = pool.map(algo_func, algo_args)
+        for t, X, status in results:
+            tlist.append(t)
+            xlist.append(X)
+            status_list.append(status)
+        self._results = Results(tlist, xlist, status_list, algorithm, seed)
 
     def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
         """

@@ -5,7 +5,7 @@
 import numpy as np
 import pytest
 
-from pyssa.tau_adaptive import get_HOR, tau_adaptive, step1, step2, step5
+from pyssa.algorithms.tau_adaptive import get_HOR, tau_adaptive, step1, step2, step5
 from pyssa.utils import get_kstoc
 from pyssa.simulation import Simulation
 
