@@ -82,7 +82,10 @@ def step1(kstoc, xt, react_stoic, v, nc):
             prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
     for ind in range(nr):
         vis = v[:, ind]
-        L[ind] = np.nanmin(xt[vis < 0] / np.abs(vis[vis < 0]))
+        if (vis < 0).any():
+            L[ind] = np.nanmin(xt[vis < 0] / np.abs(vis[vis < 0]))
+        else:
+            L[ind] = 1e2
     # A reaction j is critical if Lj <nc. However criticality is
     # considered only for reactions with propensity greater than
     # 0 (`prop > 0`).
@@ -294,11 +297,11 @@ def tau_adaptive(
             # t_ssa first element is 0. x_ssa first element is x[ite - 1, :].
             # Both should be dropped while logging the results.
             len_simulation = len(t_ssa) - 1  # Since t_ssa[0] is 0
-            t[ite : ite + len_simulation] = t_ssa[1:] + t[ite-1]
+            t[ite : ite + len_simulation] = t_ssa[1:] + t[ite - 1]
             x[ite : ite + len_simulation, :] = x_ssa[1:]
             ite += len_simulation
             if status == 3 or status == 2:
-                return t, x, status
+                return t[:ite], x[:ite, :], status
             continue
 
         # 4. Generate second candidate taupp
