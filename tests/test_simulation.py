@@ -120,6 +120,13 @@ class TestSanitize:
         with pytest.raises(TypeError):
             sim1.simulate(algorithm=algorithm, max_iter=100.0)
 
+    def test_monotonic(self, algorithm, setup_basic):
+        V_r, V_p, X0, k = setup_basic
+        sim1 = Simulation(V_r, V_p, X0, k)
+        sim1.simulate(algorithm=algorithm)
+        results = sim1.results
+        for t_array in results.t_list:
+            assert (np.diff(t_array) > 0).all()
 
 # def test_bifurcation(setup_bifurcation):
 #     V_r, V_p, X0, k = setup_bifurcation
