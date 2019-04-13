@@ -1,6 +1,6 @@
 coverage:
     ignore:
-        - "pyssa/direct.py"
+        - "pyssa/algorithms/direct.py"
         - "pyssa/utils.py"
-        - "pyssa/tau_leaping.py"
-        - "pyssa/tau_adaptive.py"
+        - "pyssa/algorithms/tau_leaping.py"
+        - "pyssa/algorithms/tau_adaptive.py"
