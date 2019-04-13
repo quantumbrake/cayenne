@@ -111,7 +111,9 @@ class Simulation:
         if np.max(self._orders) > 3:
             raise ValueError("Order greater than 3 not suppported.")
         if self._ns != self._init_state.shape[0]:
-            raise ValueError("X0 must have be of length = num. of species (or rows of V_r)")
+            raise ValueError(
+                "X0 must have be of length = num. of species (or rows of V_r)"
+            )
         if len(self._init_state.shape) != 1:
             raise ValueError("X0 must be a 1-D array")
 
