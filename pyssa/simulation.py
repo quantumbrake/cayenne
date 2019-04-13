@@ -11,9 +11,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
 
-from .direct import direct
-from .tau_leaping import tau_leaping
-from .tau_adaptive import tau_adaptive
+from .algorithms.direct import direct
+from .algorithms.tau_leaping import tau_leaping
+from .algorithms.tau_adaptive import tau_adaptive
 from .results import Results
 
 

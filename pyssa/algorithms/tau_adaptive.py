@@ -5,7 +5,7 @@
 from typing import Tuple
 from numba import njit, jit
 import numpy as np
-from .utils import get_kstoc, roulette_selection, HIGH, TINY
+from ..utils import get_kstoc, roulette_selection, HIGH, TINY
 from .direct import direct
 
 
