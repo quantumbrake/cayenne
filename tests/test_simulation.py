@@ -86,6 +86,15 @@ class TestSanitizeAlg:
         for t_array in results.t_list:
             assert (np.diff(t_array) > 0).all()
 
+    def test_long(self, algorithm, setup_long):
+        V_r, V_p, X0, k = setup_long
+        sim1 = Simulation(V_r, V_p, X0, k)
+        sim1.simulate(
+            algorithm=algorithm, max_t=1e5, max_iter=int(1e8), chem_flag=False
+        )
+        X_output = np.array([0, 0, X0.sum()])
+        assert (sim1.results.final[-1] == X_output).all()
+
 
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestSanitize:
@@ -176,16 +185,3 @@ class TestSanitize:
 #         if np.all(xt - np.array([0, 11, 0, 0]) == 0):
 #             count_excitation += 1
 #     assert np.abs(count_excitation / n_runs - 0.5) < deviation_tolerance
-
-
-# def test_long(setup_long):
-#     V_r, V_p, X0, k = setup_long
-#     sim1 = Simulation(V_r, V_p, X0, k)
-#     sim1.simulate(algorithm="direct", max_t=1e5, max_iter=int(1e8), chem_flag=False)
-#     sim1.simulate(
-#         algorithm="tau_adaptive", max_t=1e5, max_iter=int(1e8), chem_flag=False
-#     )
-#     status = sim1.results.status_list
-#     X_output = np.array([0, 0, X0.sum()])
-#     assert status == [3]
-#     assert (sim1.results.final[-1] == X_output).all()
