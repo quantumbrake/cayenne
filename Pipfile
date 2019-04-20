@@ -24,7 +24,7 @@ mypy = "*"
 pytest-cov = "*"
 ipython = "*"
 pytest-benchmark = {version = "*",extras = ["histogram"]}
-black = "==18.9b0"
+black = "==19.3b0"
 pre-commit = "*"
 sphinx-rtd-theme = "*"
 codecov = "*"
