@@ -2,6 +2,13 @@
 History
 =======
 
+0.8.1 (2019-04-20)
+------------------
+
+Fixed
++++++
+- Initialize ``algorithms`` submodule with ``__init__.py``
+
 0.8.0 (2019-04-13)
 ------------------
 
