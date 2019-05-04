@@ -94,7 +94,12 @@ def tau_leaping(
         for ind1 in range(nr):
             for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
+                if react_stoic[ind2, ind1] == 1:
+                    prop[ind1] *= xt[ind2]
+                elif react_stoic[ind2, ind1] == 2:
+                    prop[ind1] *= xt[ind2] * (xt[ind2] - 1) / 2
+                elif react_stoic[ind2, ind1] == 3:
+                    prop[ind1] *= xt[ind2] * (xt[ind2] - 1) * (xt[ind2] - 2) / 6
             n_events[ind1] = np.random.poisson(prop[ind1] * tau)  # 1 x nr
         if np.all(prop == 0):
             status = 3

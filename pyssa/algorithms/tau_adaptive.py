@@ -79,7 +79,12 @@ def step1(kstoc, xt, react_stoic, v, nc):
     for ind1 in range(nr):
         for ind2 in range(ns):
             # prop = kstoc * product of (number raised to order)
-            prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
+            if react_stoic[ind2, ind1] == 1:
+                prop[ind1] *= xt[ind2]
+            elif react_stoic[ind2, ind1] == 2:
+                prop[ind1] *= xt[ind2] * (xt[ind2] - 1) / 2
+            elif react_stoic[ind2, ind1] == 3:
+                prop[ind1] *= xt[ind2] * (xt[ind2] - 1) * (xt[ind2] - 2) / 6
     for ind in range(nr):
         vis = v[:, ind]
         if (vis < 0).any():
