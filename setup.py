@@ -32,11 +32,11 @@ setup(
     include_package_data=True,
     keywords="pyssa stochastic gillepsie simulation numba",
     name="pyssa",
-    packages=find_packages(include=["pyssa"]),
+    packages=find_packages(exclude=["tests"]),
     setup_requires=setup_requirements,
     test_suite="tests",
     tests_require=test_requirements,
     url="https://github.com/Heuro-labs/pyssa",
-    version="0.8.0",
+    version="0.8.2",
     zip_safe=False,
 )

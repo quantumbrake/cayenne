@@ -2,6 +2,14 @@
 History
 =======
 
+0.8.2 (2019-04-20)
+------------------
+
+Fixed
++++++
+- Initialize ``algorithms`` submodule with ``__init__.py``
+- Update ``setup.py`` to allow submodule detection
+
 0.8.0 (2019-04-13)
 ------------------
 
