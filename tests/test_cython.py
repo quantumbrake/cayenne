@@ -8,7 +8,7 @@ from pyssa.utils_cython import roulette_selection, get_kstoc
 
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestCython:
-    def test_sum(self, setup_basic):
+    def test_sim(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(

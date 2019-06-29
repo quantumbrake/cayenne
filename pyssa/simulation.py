@@ -266,8 +266,21 @@ class Simulation:
                 )
                 algo = tau_adaptive
         elif algorithm == "direct_cython":
-            direct_cython(2,3)
-            return
+            for index in range(n_rep):
+                algo_args.append(
+                    (
+                        self._react_stoic,
+                        self._prod_stoic,
+                        self._init_state,
+                        self._k_det,
+                        max_t,
+                        max_iter,
+                        volume,
+                        seed[index],
+                        self._chem_flag,
+                    )
+                )
+                algo = direct_cython
         else:
             raise ValueError("Requested algorithm not supported")
         algo_func = partial(wrapper, func=algo)
