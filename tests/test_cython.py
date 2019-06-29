@@ -16,13 +16,67 @@ class TestCython:
         )
 
     def test_get_kstoc(self, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        kstoc = get_kstoc(V_r, k, 1.0, False)
-        assert (k == kstoc).all()
-        kstoc = get_kstoc(V_r, k, 2.0, False)
-        assert (k == kstoc).all()
-        kstoc = get_kstoc(V_r, k, 2.0, True)
-        assert (k == kstoc).all()
+
+        # A -> B
+        # B -> C
+        vr, _, _, k = setup_basic
+        kstoc = get_kstoc(vr, k, 1.0, False)
+        assert (kstoc == k).all()
+        kstoc = get_kstoc(vr, k, 2.0, False)
+        assert (kstoc == k).all()
+        kstoc = get_kstoc(vr, k, 2.0, True)
+        assert (kstoc == k).all()
+
+        # A + B -> C
+        # B + C -> C
+        vr = np.array([[1, 1, 0], [1, 1, 0]]).transpose()
+        kstoc = get_kstoc(vr, k, 1.0, False)
+        V = 3.0
+        assert (kstoc == [k[0], k[1]]).all()
+        kstoc = get_kstoc(vr, k, V, False)
+        assert (kstoc == [k[0] / V, k[1] / V]).all()
+
+        # A + B -> C
+        # A -> C
+        vr = np.array([[1, 1, 0], [1, 0, 0]]).transpose()
+        kstoc = get_kstoc(vr, k, 1.0, False)
+        assert (kstoc == [k[0], k[1]]).all()
+        kstoc = get_kstoc(vr, k, V, False)
+        assert (kstoc == [k[0] / V, k[1]]).all()
+
+        # A -> C
+        # A + B -> C
+        vr = np.array([[1, 0, 0], [1, 1, 0]]).transpose()
+        kstoc = get_kstoc(vr, k, 1.0, False)
+        assert (kstoc == [k[0], k[1]]).all()
+        kstoc = get_kstoc(vr, k, V, False)
+        assert (kstoc == [k[0], k[1] / V]).all()
+
+        # A + B -> C
+        vr = np.array([[1, 1, 0]]).transpose()
+        k = np.array([1.0])
+        kstoc = get_kstoc(vr, k, 1.0, False)
+        assert kstoc == k
+        kstoc = get_kstoc(vr, k, V, False)
+        assert kstoc == k / V
+
+        # A + B + C -> D
+        # A -> B
+        vr = np.array([[1, 1, 1, 0], [1, 0, 0, 0]]).transpose()
+        k = np.array([1.0, 1.0])
+        kstoc = get_kstoc(vr, k, 1.0, False)
+        assert (kstoc == [k[0], k[1]]).all()
+        kstoc = get_kstoc(vr, k, V, False)
+        assert (kstoc == [k[0] / V ** 2, k[1]]).all()
+
+        # A + B -> C
+        # A + B + C -> D
+        vr = np.array([[1, 1, 0, 0], [1, 1, 1, 0]]).transpose()
+        k = np.array([1.0, 1.0])
+        kstoc = get_kstoc(vr, k, 1.0, False)
+        assert (kstoc == [k[0], k[1]]).all()
+        kstoc = get_kstoc(vr, k, V, False)
+        assert (kstoc == [k[0] / V, k[1] / V ** 2]).all()
 
 
 class TestRoulette:
