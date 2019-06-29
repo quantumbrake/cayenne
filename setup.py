@@ -2,6 +2,7 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
+from Cython.Build import cythonize
 
 with open("README.md") as readme_file:
     readme = readme_file.read()
@@ -39,4 +40,5 @@ setup(
     url="https://github.com/Heuro-labs/pyssa",
     version="0.8.2",
     zip_safe=False,
+    ext_modules=cythonize(module_list = ["pyssa/*.pyx", "pyssa/algorithms/*.pyx"]),
 )

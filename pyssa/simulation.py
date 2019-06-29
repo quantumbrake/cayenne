@@ -15,7 +15,7 @@ from .algorithms.direct import direct
 from .algorithms.tau_leaping import tau_leaping
 from .algorithms.tau_adaptive import tau_adaptive
 from .results import Results
-
+from .algorithms.direct_cython import direct_cython
 
 def wrapper(x, func):
     return func(*x)
@@ -265,6 +265,9 @@ class Simulation:
                     )
                 )
                 algo = tau_adaptive
+        elif algorithm == "direct_cython":
+            direct_cython(2,3)
+            return
         else:
             raise ValueError("Requested algorithm not supported")
         algo_func = partial(wrapper, func=algo)
