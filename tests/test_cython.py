@@ -80,19 +80,29 @@ class TestCython:
 
 
 class TestRoulette:
-    def test_roulette(self):
-        choice, status = roulette_selection(np.array([5, 0, 0]), [1, 2])
+    def test_roulettecy(self):
+        choice, status = roulette_selection(
+            np.array([5, 0, 0], dtype=np.double), np.array([1, 2], dtype=np.int)
+        )
         assert choice == 0
         assert status == 0
-        choice, status = roulette_selection(np.array([0, 5, 0]), [1, 2])
+        choice, status = roulette_selection(
+            np.array([0, 5, 0], dtype=np.double), np.array([1, 2], dtype=np.int)
+        )
         assert choice == 1
         assert status == 0
-        choice, status = roulette_selection(np.array([0, 0, 5]), [1, 2])
+        choice, status = roulette_selection(
+            np.array([0, 0, 5], dtype=np.double), np.array([1, 2], dtype=np.int)
+        )
         assert choice == 2
         assert status == 0
-        choice, status = roulette_selection(np.array([0, 0, 0]), [0, 0])
+        choice, status = roulette_selection(
+            np.array([0, 0, 0], dtype=np.double), np.array([0, 0], dtype=np.int)
+        )
         assert choice == -1
         assert status == 3
-        choice, status = roulette_selection(np.array([0, 0, 0]), [1, 2])
+        choice, status = roulette_selection(
+            np.array([0, 0, 0], dtype=np.double), np.array([1, 2], dtype=np.int)
+        )
         assert choice == -1
         assert status == -2
