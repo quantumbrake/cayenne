@@ -2,6 +2,7 @@
 """The setup script."""
 
 from setuptools import setup, find_packages
+from setuptools.extension import Extension
 from Cython.Build import cythonize
 
 with open("README.md") as readme_file:
@@ -12,6 +13,14 @@ requirements = ["numpy", "numba", "matplotlib"]
 setup_requirements = []
 
 test_requirements = ["pytest", "pytest-runner", "pytest-benchmark"]
+
+ext_modules = [
+    Extension(
+        "*",
+        ["pyssa/utils_cython.pyx", "pyssa/algorithms/direct_cython.pyx"],
+        define_macros=[("CYTHON_TRACE", "1")],
+    )
+]
 
 setup(
     author="Dileep Kishore, Srikiran Chandrasekaran",
@@ -40,5 +49,9 @@ setup(
     url="https://github.com/Heuro-labs/pyssa",
     version="0.8.2",
     zip_safe=False,
-    ext_modules=cythonize(module_list = ["pyssa/*.pyx", "pyssa/algorithms/*.pyx"]),
+    ext_modules=cythonize(
+        ext_modules,
+        annotate=True,
+        compiler_directives={"binding": True, "linetrace": True, "profile": True},
+    ),
 )
