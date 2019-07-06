@@ -1,4 +1,7 @@
 # cython: profile=True
+# cython: linetrace=True
+# cython: binding=True
+
 import numpy as np
 from ..utils_cython import roulette_selection, get_kstoc
 
