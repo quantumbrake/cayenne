@@ -73,6 +73,8 @@ def direct_cython(
 
     cdef int ite = 1  # Iteration counter
     cdef int ind = 0
+    cdef int ind1 = 0
+    cdef int ind2 = 0
     cdef int continue_flag = 0
     cdef double t_curr = 0  # Time in seconds
     cdef double prop_sum = 0
@@ -80,7 +82,7 @@ def direct_cython(
     cdef Py_ssize_t nr = react_stoic.shape[1]
     v = prod_stoic - react_stoic  # ns x nr
     xt = init_state.copy()  # Number of species at time t_curr
-    x = np.zeros((max_iter, ns))
+    x = np.zeros((max_iter, ns), dtype=np.int)
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
     xtemp = init_state.copy()  # Temporary X for updating
@@ -91,21 +93,27 @@ def direct_cython(
     kstoc = prop.copy()  # Stochastic rate constants
     cdef double [:] kstoc_view = kstoc
     cdef double [:] prop_view = prop
+    cdef long [:] xtemp_view = xtemp
+    cdef long [:] xt_view = xt
+    cdef long [:, :] v_view = v
+    cdef long [:, :] react_stoic_view = react_stoic
+    cdef long [:, :] x_view = x
     while ite < max_iter:
         # Calculate propensities
         for ind1 in range(nr):
             for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                if react_stoic[ind2, ind1] == 1:
-                    prop_view[ind1] *= xt[ind2]
-                elif react_stoic[ind2, ind1] == 2:
-                    prop_view[ind1] *= xt[ind2] * (xt[ind2] - 1) / 2
-                elif react_stoic[ind2, ind1] == 3:
-                    prop_view[ind1] *= xt[ind2] * (xt[ind2] - 1) * (xt[ind2] - 2) / 6
+                if react_stoic_view[ind2, ind1] == 1:
+                    prop_view[ind1] *= x_view[ite - 1, ind2]
+                elif react_stoic_view[ind2, ind1] == 2:
+                    prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) / 2
+                elif react_stoic_view[ind2, ind1] == 3:
+                    prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) * (x_view[ite - 1, ind2] - 2) / 6
         # Roulette wheel
-        choice, status = roulette_selection(prop, xt)
+        choice, status = roulette_selection(prop_view, x_view[ite-1, :])
         if status == 0:
-            xtemp = xt + v[:, choice]
+            for ind1 in range(ns):
+                xtemp_view[ind1] = x_view[ite-1, ind1] + v_view[ind1, choice]
         else:
             return t[:ite], x[:ite, :], status
 
@@ -113,7 +121,7 @@ def direct_cython(
         # if np.min(xtemp) < 0:
         #     continue
         for ind in range(ns):
-            if xtemp[ind] < 0:
+            if xtemp_view[ind] < 0:
                 continue_flag = 1
                 break
         if continue_flag:
@@ -131,7 +139,7 @@ def direct_cython(
                 print("Reached maximum time (t_curr = )", t_curr)
                 return t[:ite], x[:ite, :], status
         prop_view[...] = kstoc_view
-        x[ite, :] = xt
+        x_view[ite, :] = xtemp_view
         t[ite] = t_curr
         ite += 1
     status = 1
