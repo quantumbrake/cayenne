@@ -5,14 +5,19 @@
 from typing import Tuple
 
 import numpy as np
-from numba import njit
+from numba import boolean, int64, float64, njit
 
 Na = 6.023e23  # Avogadro's constant
 HIGH = 1e20
 TINY = 1e-20
 
 
-@njit(nogil=True, cache=False)
+@njit(
+    float64[:](int64[:, :], float64[:], float64, boolean),
+    nogil=True,
+    cache=True,
+    fastmath=True,
+)
 def get_kstoc(
     react_stoic: np.ndarray, k_det: np.ndarray, volume: float, chem_flag: bool
 ) -> np.ndarray:
@@ -66,7 +71,7 @@ def get_kstoc(
     return k_stoc
 
 
-@njit(nogil=True, cache=False)
+@njit((float64[:], int64[:]), nogil=True, cache=True, fastmath=True)
 def roulette_selection(prop_list: np.ndarray, Xt: np.ndarray) -> Tuple[int, int]:
     """Perform roulette selection on the list of propensities.
 
