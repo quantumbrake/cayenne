@@ -17,6 +17,7 @@ from .algorithms.tau_adaptive import tau_adaptive
 from .results import Results
 from .algorithms.direct_cython import direct_cython
 
+
 def wrapper(x, func):
     return func(*x)
 
