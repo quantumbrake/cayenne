@@ -10,7 +10,7 @@ import numpy as np
 from ..utils import get_kstoc, roulette_selection
 
 
-@njit(nogil=True, cache=False)
+@njit(nogil=True, cache=True, fastmath=True)
 def direct(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
@@ -100,6 +100,7 @@ def direct(
                     prop[ind1] *= xt[ind2] * (xt[ind2] - 1) / 2
                 elif react_stoic[ind2, ind1] == 3:
                     prop[ind1] *= xt[ind2] * (xt[ind2] - 1) * (xt[ind2] - 2) / 6
+        prop = prop * kstoc
         # Roulette wheel
         choice, status = roulette_selection(prop, xt)
         if status == 0:
@@ -117,9 +118,10 @@ def direct(
             t_curr += 1 / np.sum(prop) * np.log(1 / r2)
             if t_curr > max_t:
                 status = 2
-                print("Reached maximum time (t_curr = )", t_curr)
+                # print("Reached maximum time (t_curr = )", t_curr)
                 return t[:ite], x[:ite, :], status
-        prop = np.copy(kstoc)
+        # prop = np.copy(kstoc)
+        prop = np.ones(nr)
         x[ite, :] = xt
         t[ite] = t_curr
         ite += 1

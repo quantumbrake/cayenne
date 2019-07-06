@@ -10,7 +10,7 @@ import numpy as np
 from ..utils import get_kstoc, TINY
 
 
-@njit(nogil=True, cache=False)
+@njit(nogil=True, cache=True)
 def tau_leaping(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,

@@ -9,7 +9,7 @@ from ..utils import get_kstoc, roulette_selection, HIGH, TINY
 from .direct import direct
 
 
-@njit(nogil=True, cache=False)
+@njit(nogil=True, cache=True)
 def get_HOR(react_stoic: np.ndarray):
     """ Determine the HOR vector. HOR(i) is the highest order of reaction
         in which species S_i appears as a reactant.
@@ -68,7 +68,7 @@ def get_HOR(react_stoic: np.ndarray):
     return HOR
 
 
-@njit(nogil=True, cache=False)
+@njit(nogil=True, cache=True)
 def step1(kstoc, xt, react_stoic, v, nc):
     """ Determine critical reactions """
     nr = react_stoic.shape[1]
@@ -100,7 +100,7 @@ def step1(kstoc, xt, react_stoic, v, nc):
     return prop, crit, not_crit
 
 
-@njit(nogil=True, cache=False)
+@njit(nogil=True, cache=True)
 def step2(not_crit, react_species, v, xt, HOR, prop, epsilon):
     """ 2. Generate candidate taup """
     n_react_species = react_species.shape[0]
@@ -145,7 +145,7 @@ def step2(not_crit, react_species, v, xt, HOR, prop, epsilon):
     return taup
 
 
-@njit(nogil=True, cache=False)
+@njit(nogil=True, cache=True)
 def step5(taup, taupp, nr, not_crit, prop, xt):
     K = np.zeros(nr, dtype=np.int64)
     if taup < taupp:
@@ -172,7 +172,7 @@ def step5(taup, taupp, nr, not_crit, prop, xt):
     return tau, K
 
 
-@njit(nogil=True, cache=False)
+@njit(nogil=True, cache=True)
 def tau_adaptive(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
