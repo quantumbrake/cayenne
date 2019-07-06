@@ -3,6 +3,7 @@
 # cython: binding=True
 
 import numpy as np
+import random
 from ..utils_cython import roulette_selection, get_kstoc
 from libc.math cimport log
 
@@ -120,8 +121,7 @@ def direct_cython(
             continue
         # Update xt and t_curr
         else:
-            xt = xtemp
-            r2 = np.random.rand()
+            r2 = random.random()
             prop_sum = 0
             for ind in range(nr):
                 prop_sum += prop_view[ind]
