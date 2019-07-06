@@ -13,7 +13,7 @@ def sumfunc(a, b):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def roulette_selection(double[:] prop_list, int[:] Xt):
+def roulette_selection(double[:] prop_list, long[:] Xt):
     """Perform roulette selection on the list of propensities.
 
     Return the index of the selected reaction (`choice`) by performing
