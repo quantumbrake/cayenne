@@ -4,6 +4,7 @@
 
 import numpy as np
 from ..utils_cython import roulette_selection, get_kstoc
+from libc.math cimport log
 
 
 def direct_cython(
@@ -124,7 +125,7 @@ def direct_cython(
             prop_sum = 0
             for ind in range(nr):
                 prop_sum += prop_view[ind]
-            t_curr += 1 / prop_sum * np.log(1 / r2)
+            t_curr += 1 / prop_sum * log(1 / r2)
             if t_curr > max_t:
                 status = 2
                 print("Reached maximum time (t_curr = )", t_curr)
