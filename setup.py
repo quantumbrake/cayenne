@@ -4,6 +4,7 @@
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
 from Cython.Build import cythonize
+import numpy as np
 
 with open("README.md") as readme_file:
     readme = readme_file.read()
@@ -17,8 +18,15 @@ test_requirements = ["pytest", "pytest-runner", "pytest-benchmark"]
 ext_modules = [
     Extension(
         "*",
-        ["pyssa/utils_cython.pyx", "pyssa/algorithms/direct_cython.pyx"],
+        ["pyssa/algorithms/direct_cython.pyx"],
         define_macros=[("CYTHON_TRACE", "1")],
+        include_dirs=[np.get_include()],
+    ),
+    Extension(
+        "*",
+        ["pyssa/utils_cython.pyx"],
+        define_macros=[("CYTHON_TRACE", "1")],
+        include_dirs=[np.get_include()],
     )
 ]
 

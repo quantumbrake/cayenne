@@ -2,6 +2,7 @@
 # cython: linetrace=True
 # cython: binding=True
 
+cimport numpy as np
 import numpy as np
 import random
 from ..utils_cython import roulette_selection, get_kstoc

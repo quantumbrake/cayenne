@@ -1,6 +1,7 @@
 # cython: profile=True
 
 cimport cython
+cimport numpy as np
 import numpy as np
 
 Na = 6.023e23  # Avogadro's constant
