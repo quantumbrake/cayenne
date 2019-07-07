@@ -3,6 +3,8 @@
 cimport cython
 cimport numpy as np
 import numpy as np
+import random
+
 
 Na = 6.023e23  # Avogadro's constant
 HIGH = 1e20
@@ -56,7 +58,7 @@ def roulette_selection(double[:] prop_list, long[:] Xt):
             return -1, status
 
     cdef double prop_sum = prop_list[0]/prop0
-    r1 = np.random.rand()  # Roll the wheel
+    r1 = random.random()  # Roll the wheel
     for counter in range(1, counter_max + 1):
         if r1 < prop_sum:
             choice = counter - 1
