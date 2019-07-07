@@ -16,7 +16,7 @@ def sumfunc(a, b):
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def roulette_selection(double[:] prop_list, long[:] Xt):
+cpdef roulette_selection(double[:] prop_list, long[:] Xt):
     """Perform roulette selection on the list of propensities.
 
     Return the index of the selected reaction (`choice`) by performing
@@ -37,13 +37,10 @@ def roulette_selection(double[:] prop_list, long[:] Xt):
     status : int
         Status of the simulation as described in `direct`.
     """
-    cdef int choice = 0
-    cdef int status = 0
-    cdef int counter = 0
-    cdef int counter_max = prop_list.shape[0]
-    cdef int Xt_counter_max = Xt.shape[0]
-    cdef double prop0 = 0.0
-    cdef double Xtsum = 0.0
+    cdef:
+        int choice= 0, status=0, counter=0, counter_max=prop_list.shape[0], Xt_counter_max = Xt.shape[0]
+        double prop0 = 0.0, Xtsum = 0.0, TINY = 1e-20
+    cdef (int, int) result
     for counter in range(counter_max):
         prop0 += prop_list[counter]
     if prop0 < TINY:
@@ -52,10 +49,10 @@ def roulette_selection(double[:] prop_list, long[:] Xt):
         counter = 0
         if Xtsum < TINY:
             status = 3
-            return -1, status
+            result = -1, status
         else:
             status = -2
-            return -1, status
+            result = -1, status
 
     cdef double prop_sum = prop_list[0]/prop0
     r1 = random.random()  # Roll the wheel
@@ -65,12 +62,11 @@ def roulette_selection(double[:] prop_list, long[:] Xt):
             break
         else:
             prop_sum += prop_list[counter]/prop0
-    return choice, 0
+    result = choice, 0
+    return result
 
 
-def get_kstoc(
-    react_stoic: np.ndarray, k_det: np.ndarray, volume: float, chem_flag: bool
-) -> np.ndarray:
+def get_kstoc(react_stoic, k_det, volume, chem_flag):
     """Compute k_stoc from k_det.
 
     Return a vector of the stochastic rate constants (k_stoc) determined

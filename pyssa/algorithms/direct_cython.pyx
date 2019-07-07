@@ -5,7 +5,8 @@
 cimport numpy as np
 import numpy as np
 import random
-from ..utils_cython import roulette_selection, get_kstoc
+from ..utils_cython cimport roulette_selection
+from ..utils_cython import get_kstoc
 from libc.math cimport log
 
 
@@ -112,6 +113,7 @@ def direct_cython(
                     prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) * (x_view[ite - 1, ind2] - 2) / 6
         # Roulette wheel
         choice, status = roulette_selection(prop_view, x_view[ite-1, :])
+        # choice, status = roulette_selection(prop_view, x_view[ite-1, :])
         if status == 0:
             for ind1 in range(ns):
                 xtemp_view[ind1] = x_view[ite-1, ind1] + v_view[ind1, choice]
