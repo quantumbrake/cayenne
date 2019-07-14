@@ -50,9 +50,11 @@ cdef inline roulette_selection(double[:] prop_list, long[:] Xt):
         if Xtsum < TINY:
             status = 3
             result = -1, status
+            return result
         else:
             status = -2
             result = -1, status
+            return result
 
     cdef double prop_sum = prop_list[0]/prop0
     r1 = random.random()  # Roll the wheel
