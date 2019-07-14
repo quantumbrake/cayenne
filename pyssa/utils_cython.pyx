@@ -116,3 +116,6 @@ def get_kstoc(react_stoic, k_det, volume, chem_flag):
         else:
             k_stoc[ind] = k_det[ind] / np.power(factor * volume, orders[ind] - 1)
     return k_stoc
+
+def py_roulette_selection(prop_list, Xt):
+    return roulette_selection(prop_list, Xt)
