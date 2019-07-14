@@ -1,7 +1,6 @@
 # cython: profile=True
-# cython: linetrace=True
-# cython: binding=True
 
+cimport cython
 cimport numpy as np
 import numpy as np
 import random
@@ -10,6 +9,8 @@ from ..utils_cython import get_kstoc
 from libc.math cimport log
 
 
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def direct_cython(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
@@ -73,15 +74,10 @@ def direct_cython(
         doi:10.1016/0021-9991(76)90041-3.
     """
 
-    cdef int ite = 1  # Iteration counter
-    cdef int ind = 0
-    cdef int ind1 = 0
-    cdef int ind2 = 0
-    cdef int continue_flag = 0
-    cdef double t_curr = 0  # Time in seconds
-    cdef double prop_sum = 0
-    cdef Py_ssize_t ns = react_stoic.shape[0]
-    cdef Py_ssize_t nr = react_stoic.shape[1]
+    cdef:
+        int ite=1, ind=0, ind1=0, ind2=0, continue_flag=0
+        double t_curr=0, prop_sum=0
+        Py_ssize_t ns=react_stoic.shape[0], nr=react_stoic.shape[1]
     v = prod_stoic - react_stoic  # ns x nr
     xt = init_state.copy()  # Number of species at time t_curr
     x = np.zeros((max_iter, ns), dtype=np.int)
@@ -105,12 +101,13 @@ def direct_cython(
         for ind1 in range(nr):
             for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                if react_stoic_view[ind2, ind1] == 1:
-                    prop_view[ind1] *= x_view[ite - 1, ind2]
-                elif react_stoic_view[ind2, ind1] == 2:
-                    prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) / 2
-                elif react_stoic_view[ind2, ind1] == 3:
-                    prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) * (x_view[ite - 1, ind2] - 2) / 6
+                if react_stoic_view[ind2, ind1]:
+                    if react_stoic_view[ind2, ind1] == 1:
+                        prop_view[ind1] *= x_view[ite - 1, ind2]
+                    elif react_stoic_view[ind2, ind1] == 2:
+                        prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) / 2
+                    elif react_stoic_view[ind2, ind1] == 3:
+                        prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) * (x_view[ite - 1, ind2] - 2) / 6
         # Roulette wheel
         choice, status = roulette_selection(prop_view, x_view[ite-1, :])
         # choice, status = roulette_selection(prop_view, x_view[ite-1, :])
@@ -139,10 +136,12 @@ def direct_cython(
             t_curr += 1 / prop_sum * log(1 / r2)
             if t_curr > max_t:
                 status = 2
-                print("Reached maximum time (t_curr = )", t_curr)
+                # print("Reached maximum time (t_curr = )", t_curr)
                 return t[:ite], x[:ite, :], status
-        prop_view[...] = kstoc_view
-        x_view[ite, :] = xtemp_view
+        for ind in range(nr):
+            prop_view[ind] = kstoc_view[ind]
+        for ind in range(ns):
+            x_view[ite, ind] = xtemp_view[ind]
         t[ite] = t_curr
         ite += 1
     status = 1
