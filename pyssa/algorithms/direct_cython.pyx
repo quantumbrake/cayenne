@@ -85,7 +85,7 @@ def direct_cython(
     x[0, :] = init_state.copy()
     xtemp = init_state.copy()  # Temporary X for updating
     status = 0
-    np.random.seed(seed)  # Set the seed
+    random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
     prop = get_kstoc(react_stoic, k_det, volume, chem_flag)  # Vector of propensities
     kstoc = prop.copy()  # Stochastic rate constants
