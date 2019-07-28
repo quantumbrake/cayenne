@@ -17,17 +17,17 @@ test_requirements = ["pytest", "pytest-runner", "pytest-benchmark"]
 
 ext_modules = [
     Extension(
-        "*",
+        "pyssa.algorithms.direct_cython",
         ["pyssa/algorithms/direct_cython.pyx"],
         define_macros=[("CYTHON_TRACE", "1")],
         include_dirs=[np.get_include()],
     ),
     Extension(
-        "*",
+        "pyssa.utils_cython",
         ["pyssa/utils_cython.pyx"],
         define_macros=[("CYTHON_TRACE", "1")],
         include_dirs=[np.get_include()],
-    )
+    ),
 ]
 
 setup(
