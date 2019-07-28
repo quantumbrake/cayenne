@@ -75,7 +75,7 @@ def direct_cython(
     """
 
     cdef:
-        int ite=1, ind=0, ind1=0, ind2=0, continue_flag=0
+        int ite=1, ind=0, ind1=0, ind2=0, continue_flag=0, choice, status
         double t_curr=0, prop_sum=0
         Py_ssize_t ns=react_stoic.shape[0], nr=react_stoic.shape[1]
     v = prod_stoic - react_stoic  # ns x nr
@@ -109,8 +109,9 @@ def direct_cython(
                     elif react_stoic_view[ind2, ind1] == 3:
                         prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) * (x_view[ite - 1, ind2] - 2) / 6
         # Roulette wheel
-        choice, status = roulette_selection(prop_view, x_view[ite-1, :])
-        # choice, status = roulette_selection(prop_view, x_view[ite-1, :])
+        roulette_results = roulette_selection(prop_view, x_view[ite-1, :])
+        choice = roulette_results[0]
+        status = roulette_results[1]
         if status == 0:
             for ind1 in range(ns):
                 xtemp_view[ind1] = x_view[ite-1, ind1] + v_view[ind1, choice]
