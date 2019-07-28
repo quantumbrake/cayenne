@@ -8,12 +8,12 @@ import pytest
 from pyssa.simulation import Simulation
 
 
-@pytest.mark.parametrize("algorithm", ["direct", "tau_leaping", "tau_adaptive"])
+@pytest.mark.parametrize("algorithm", ["direct_cython"])
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestSanitizeAlg:
     def test_null(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
-        k = np.array([0, 0])
+        k = np.array([0.0, 0.0])
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm)
         assert sim.results.status_list[0] == -2

@@ -7,7 +7,7 @@ import pytest
 from pyssa.simulation import Simulation
 
 
-@pytest.mark.parametrize("algorithm", ["direct", "tau_leaping", "tau_adaptive"])
+@pytest.mark.parametrize("algorithm", ["direct_cython"])
 def test_00001(setup_00001, algorithm):
     V_r, V_p, X0, k, time_list, mu_list, std_list = setup_00001
     n_rep = 10

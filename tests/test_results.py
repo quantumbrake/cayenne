@@ -9,7 +9,7 @@ from pyssa.simulation import Simulation
 from pyssa.results import Results
 
 
-@pytest.mark.parametrize("algorithm", ["direct", "tau_leaping", "tau_adaptive"])
+@pytest.mark.parametrize("algorithm", ["direct_cython"])
 @pytest.mark.usefixtures("setup_large")
 class TestResults:
     def test_init_good(self, algorithm, setup_large):

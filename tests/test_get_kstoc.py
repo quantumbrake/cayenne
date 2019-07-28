@@ -45,14 +45,14 @@ class TestKstoc:
         k_det, volume = setup_system
         V_r = np.array([[3], [0], [0]])
         k_stoc = get_kstoc(V_r, k_det, volume, chem_flag=True)
-        assert k_stoc == k_det * 6 / (Na * volume) ** 2
+        assert np.isclose(k_stoc, k_det * 6 / (Na * volume) ** 2)
 
     def test_chemflag(self, setup_system):
         k_det, volume = setup_system
         V_r = np.array([[3], [0], [0]])
         k_stoc = get_kstoc(V_r, k_det, volume, chem_flag=True)
-        assert k_stoc == k_det * 6 / (Na * volume) ** 2
+        assert np.isclose(k_stoc, k_det * 6 / (Na * volume) ** 2)
         k_det, volume = setup_system
         V_r = np.array([[3], [0], [0]])
         k_stoc = get_kstoc(V_r, k_det, volume, chem_flag=False)
-        assert k_stoc == k_det * 6 / (1 * volume) ** 2
+        assert np.isclose(k_stoc, k_det * 6 / (1 * volume) ** 2)

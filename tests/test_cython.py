@@ -3,7 +3,8 @@
 import pytest
 import numpy as np
 from pyssa.simulation import Simulation
-from pyssa.utils_cython import roulette_selection, get_kstoc
+from pyssa.utils_cython import get_kstoc
+from pyssa.utils_cython import py_roulette_selection as roulette_selection
 
 
 @pytest.mark.usefixtures("setup_basic", "setup_large")
@@ -105,4 +106,37 @@ class TestRoulette:
             np.array([0, 0, 0], dtype=np.double), np.array([1, 2], dtype=np.int)
         )
         assert choice == -1
+        assert status == -2
+
+    def test_100(self):
+        prop_list = np.array([1.0, 0.0, 0.0])
+        xt = np.array([1, 2], dtype=np.int)
+        choice, status = roulette_selection(prop_list, xt)
+        assert status == 0
+        assert choice == 0
+
+    def test_010(self):
+        prop_list = np.array([0.0, 1.0, 0.0])
+        xt = np.array([1, 2], dtype=np.int)
+        choice, status = roulette_selection(prop_list, xt)
+        assert status == 0
+        assert choice == 1
+
+    def test_001(self):
+        prop_list = np.array([0.0, 0.0, 1.0])
+        xt = np.array([1, 2], dtype=np.int)
+        choice, status = roulette_selection(prop_list, xt)
+        assert status == 0
+        assert choice == 2
+
+    def test_stat3(self):
+        prop_list = np.array([0.0, 0.0, 0.0])
+        xt = np.array([0, 0], dtype=np.int)
+        _, status = roulette_selection(prop_list, xt)
+        assert status == 3
+
+    def test_statm2(self):
+        prop_list = np.array([0.0, 0.0, 0.0])
+        xt = np.array([1, 0], dtype=np.int)
+        _, status = roulette_selection(prop_list, xt)
         assert status == -2
