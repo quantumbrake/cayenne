@@ -11,10 +11,6 @@ HIGH = 1e20
 TINY = 1e-20
 
 
-def sumfunc(a, b):
-    return a + b + b
-
-# TODO: Add return type annotation to the function
 @cython.returns((int, int))
 @cython.boundscheck(False)
 @cython.wraparound(False)
