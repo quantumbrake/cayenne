@@ -9,7 +9,7 @@ from pyssa.simulation import Simulation
 from pyssa.results import Results
 
 
-@pytest.mark.parametrize("algorithm", ["direct_cython"])
+@pytest.mark.parametrize("algorithm", ["direct_cython", "tau_leaping_cython"])
 @pytest.mark.usefixtures("setup_large")
 class TestResults:
     def test_init_good(self, algorithm, setup_large):
@@ -76,7 +76,7 @@ class TestResults:
         results = sim.results
         final_times, final_states = results.final
         assert final_times.shape[0] == final_states.shape[0]
-        if algorithm != "tau_leaping":
+        if algorithm != "tau_leaping" and algorithm != "tau_leaping_cython":
             for i in range(final_states.shape[0]):
                 assert (final_states[0, :] == final_states[i, :]).all()
 
