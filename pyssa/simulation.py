@@ -16,6 +16,7 @@ from .algorithms.tau_leaping import tau_leaping
 from .algorithms.tau_adaptive import tau_adaptive
 from .results import Results
 from .algorithms.direct_cython import direct_cython
+from .algorithms.tau_leaping_cython import tau_leaping_cython
 
 
 def wrapper(x, func):
@@ -204,7 +205,7 @@ class Simulation:
             raise TypeError("max_iter should be of type int")
 
         algo_args = []
-        if algorithm == "direct":
+        if algorithm == "direct" or algorithm == "direct_cython":
             for index in range(n_rep):
                 algo_args.append(
                     (
@@ -220,7 +221,7 @@ class Simulation:
                     )
                 )
                 algo = direct
-        elif algorithm == "tau_leaping":
+        elif algorithm == "tau_leaping" or algorithm == "tau_leaping_cython":
             if "tau" in kwargs.keys():
                 tau = kwargs["tau"]
             else:
@@ -266,22 +267,6 @@ class Simulation:
                     )
                 )
                 algo = tau_adaptive
-        elif algorithm == "direct_cython":
-            for index in range(n_rep):
-                algo_args.append(
-                    (
-                        self._react_stoic,
-                        self._prod_stoic,
-                        self._init_state,
-                        self._k_det,
-                        max_t,
-                        max_iter,
-                        volume,
-                        seed[index],
-                        self._chem_flag,
-                    )
-                )
-                algo = direct_cython
         else:
             raise ValueError("Requested algorithm not supported")
         algo_func = partial(wrapper, func=algo)
