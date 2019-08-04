@@ -219,6 +219,8 @@ class Simulation:
                     )
                 )
                 algo = direct
+                if algorithm == "direct_cython":
+                    algo = direct_cython
         elif algorithm == "tau_leaping" or algorithm == "tau_leaping_cython":
             if "tau" in kwargs.keys():
                 tau = kwargs["tau"]
@@ -239,6 +241,8 @@ class Simulation:
                     )
                 )
                 algo = tau_leaping
+                if algorithm == "tau_leaping_cython":
+                    algo = tau_leaping_cython
         elif algorithm == "tau_adaptive":
             if "epsilon" in kwargs.keys():
                 epsilon = kwargs["epsilon"]
