@@ -23,6 +23,12 @@ ext_modules = [
         include_dirs=[np.get_include()],
     ),
     Extension(
+        "pyssa.algorithms.tau_leaping_cython",
+        ["pyssa/algorithms/tau_leaping_cython.pyx"],
+        define_macros=[("CYTHON_TRACE", "1")],
+        include_dirs=[np.get_include()],
+    ),
+    Extension(
         "pyssa.utils_cython",
         ["pyssa/utils_cython.pyx"],
         define_macros=[("CYTHON_TRACE", "1")],

@@ -1,8 +1,13 @@
+# cython: profile=True
+"""
+    Implementation of the tau leaping algorithm in Cython
+"""
+
 cimport cython
 cimport numpy as np
 import numpy as np
 import random
-from ..utils_cython import get_kstoc
+from ..utils_cython import get_kstoc, TINY
 
 
 @cython.boundscheck(False)
@@ -81,7 +86,6 @@ def tau_leaping_cython(
 
     cdef double [:] kstoc_view = kstoc
     cdef double [:] prop_view = prop
-    cdef long [:] xtemp_view = xtemp
     cdef long [:] xt_view = xt
     cdef long [:] n_events_view = n_events
     cdef long [:, :] v_view = v

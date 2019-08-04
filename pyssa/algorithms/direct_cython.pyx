@@ -1,4 +1,7 @@
 # cython: profile=True
+"""
+    Implementation of the direct method.
+"""
 
 cimport cython
 cimport numpy as np
