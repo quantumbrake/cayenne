@@ -18,7 +18,7 @@ class Results(Collection):
         x_list : List[np.ndarray]
         status_list : List[int]
         algorithm : str
-        seed: List[int]
+        sim_seeds: List[int]
 
         Other Parameters
         ----------------
@@ -33,14 +33,14 @@ class Results(Collection):
         x_list: List[np.ndarray],
         status_list: List[int],
         algorithm: str,
-        seed: List[int],
+        sim_seeds: List[int],
         **kwargs,
     ) -> None:
         self.x_list = x_list
         self.t_list = t_list
         self.status_list = status_list
         self.algorithm = algorithm
-        self.seed = seed
+        self.sim_seeds = sim_seeds
         if not self._check_consistency():
             raise ValueError("Inconsistent results passed")
 
@@ -58,7 +58,7 @@ class Results(Collection):
             len(self.x_list)
             == len(self.t_list)
             == len(self.status_list)
-            == len(self.seed)
+            == len(self.sim_seeds)
         ):
             pass
         else:
@@ -71,9 +71,7 @@ class Results(Collection):
         return True
 
     def __repr__(self) -> str:
-        return (
-            f"<Results n_rep={len(self)} algorithm={self.algorithm} seed={self.seed}>"
-        )
+        return f"<Results n_rep={len(self)} algorithm={self.algorithm} sim_seeds={self.sim_seeds}>"
 
     def __str__(self) -> str:
         return self.__repr__()

@@ -54,7 +54,7 @@ class TestSanitizeAlg:
         sim1 = Simulation(V_r, V_p, X0, k)
         sim2 = Simulation(V_r, V_p, X0, k)
         sim1.simulate(algorithm=algorithm)
-        sim2.simulate(algorithm=algorithm, seed=[1])
+        sim2.simulate(algorithm=algorithm, seed=1)
         for i, j in zip(sim1.results.t_list, sim2.results.t_list):
             if i.shape[0] == j.shape[0]:
                 assert not (
@@ -67,9 +67,9 @@ class TestSanitizeAlg:
     def test_incorrect_seed(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
         sim1 = Simulation(V_r, V_p, X0, k)
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             sim1.simulate(algorithm=algorithm, n_rep=2, seed=[1])
-        with pytest.raises(ValueError):
+        with pytest.raises(TypeError):
             sim1.simulate(algorithm=algorithm, n_rep=2, seed=[1, 2, 3])
 
     def test_maxiter_type(self, algorithm, setup_basic):

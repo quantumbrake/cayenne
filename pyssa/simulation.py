@@ -141,7 +141,7 @@ class Simulation:
         max_t: float = 10.0,
         max_iter: int = 1000,
         volume: float = 1.0,
-        seed: Optional[List[int]] = None,
+        seed: int = 0,
         n_rep: int = 1,
         n_procs: int = 1,
         algorithm: str = "direct",
@@ -162,10 +162,9 @@ class Simulation:
         volume : float, optional
             The volume of the system
             The default value is 1.0
-        seed : List[int], optional
-            The list of seeds for the simulations
-            The length of this list should be equal to `n_rep`
-            The default value is None
+        seed : int, optional
+            The seed used to generate simulation seeds.
+            The default value is 0
         n_rep : int, optional
             The number of repetitions of the simulation required
             The default value is 1
@@ -194,11 +193,10 @@ class Simulation:
         xlist = []
         status_list = []
 
-        if seed is not None:
-            if n_rep != len(seed):
-                raise ValueError("Seed should be as long as n_rep")
-        else:
-            seed = [index for index in range(n_rep)]
+        if not isinstance(seed, int):
+            raise TypeError("Seed should be of type int")
+        np.random.seed(seed)
+        sim_seeds = np.random.randint(low=0, high=1e7, size=n_rep)
 
         if not isinstance(max_iter, int):
             raise TypeError("max_iter should be of type int")
@@ -215,7 +213,7 @@ class Simulation:
                         max_t,
                         max_iter,
                         volume,
-                        seed[index],
+                        sim_seeds[index],
                         self._chem_flag,
                     )
                 )
@@ -235,7 +233,7 @@ class Simulation:
                         tau,
                         max_t,
                         volume,
-                        seed[index],
+                        sim_seeds[index],
                         self._chem_flag,
                     )
                 )
@@ -261,7 +259,7 @@ class Simulation:
                         max_t,
                         max_iter,
                         volume,
-                        seed[index],
+                        sim_seeds[index],
                         self._chem_flag,
                     )
                 )
@@ -277,7 +275,7 @@ class Simulation:
                         max_t,
                         max_iter,
                         volume,
-                        seed[index],
+                        sim_seeds[index],
                         self._chem_flag,
                     )
                 )
@@ -294,7 +292,7 @@ class Simulation:
             tlist.append(t)
             xlist.append(X)
             status_list.append(status)
-        self._results = Results(tlist, xlist, status_list, algorithm, seed)
+        self._results = Results(tlist, xlist, status_list, algorithm, sim_seeds)
 
     def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
         """
