@@ -73,9 +73,9 @@ def tau_leaping_cython(
         double t_curr = 0.0, prop_sum=0.0
         Py_ssize_t ns=react_stoic.shape[0], nr=react_stoic.shape[1]
     v = prod_stoic - react_stoic  # ns x nr
-    xt = init_state.copy()  # Number of species at time t_curr
+    xt = init_state.copy().astype(np.int64)  # Number of species at time t_curr
     max_iter = np.int(max_t / tau) + 1
-    x = np.zeros((max_iter, ns), dtype=np.int)
+    x = np.zeros((max_iter, ns), dtype=np.int64)
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
     n_events = np.zeros((nr,), dtype=np.int64)
@@ -86,11 +86,11 @@ def tau_leaping_cython(
 
     cdef double [:] kstoc_view = kstoc
     cdef double [:] prop_view = prop
-    cdef long [:] xt_view = xt
-    cdef long [:] n_events_view = n_events
+    cdef long long [:] xt_view = xt
+    cdef long long [:] n_events_view = n_events
     cdef long [:, :] v_view = v
     cdef long [:, :] react_stoic_view = react_stoic
-    cdef long [:, :] x_view = x
+    cdef long long [:, :] x_view = x
 
     for ind in range(nr):
         prop_sum += prop_view[ind]
@@ -115,15 +115,14 @@ def tau_leaping_cython(
                     elif react_stoic_view[ind2, ind1] == 3:
                         prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) * (x_view[ite - 1, ind2] - 2) / 6
             prop_sum += prop_view[ind1]
-            n_events[ind1] = np.random.poisson(prop_view[ind1] * tau)  # 1 x nr
-        prop_sum = 0
+            n_events_view[ind1] = np.random.poisson(prop_view[ind1] * tau)  # 1 x nr
         if prop_sum == 0:
             status = 3
             return t[:ite], x[:ite,], status
         for ind1 in range(ns):
-            xt_view[ind1] = 0
+            xt_view[ind1] = x_view[ite-1, ind1]
             for ind2 in range(nr):
-                xt_view[ind1] += n_events[ind2] * v[ind1, ind2]
+                xt_view[ind1] += n_events_view[ind2] * v[ind1, ind2]
         for ind1 in range(ns):
             if xt_view[ind1] < 0:
                 return t[:ite], x[:ite, :], -3
