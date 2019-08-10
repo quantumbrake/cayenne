@@ -89,3 +89,17 @@ class TestResults:
         sim.simulate(algorithm=algorithm, max_t=max_t, max_iter=max_iter, n_rep=n_rep)
         results = sim.results
         assert np.all(results.get_state(0.0) == X0)
+
+    def test_get_states_high_time(self, algorithm, setup_00003):
+        V_r, V_p, X0, k, _, _, _, max_t, max_iter, n_rep = setup_00003
+        sim = Simulation(V_r, V_p, X0, k)
+        sim.simulate(algorithm=algorithm, max_t=10000, max_iter=max_iter, n_rep=1)
+        print(
+            "status", sim.results.status_list[0], sim.results.t_list, sim.results.x_list
+        )
+        states = sim.results.get_state(t=15000)
+        _, x_final = sim.results.final
+        assert states[0] == x_final[0]
+        sim.simulate(algorithm=algorithm, max_t=2, max_iter=max_iter, n_rep=1)
+        with pytest.warns(UserWarning):
+            sim.results.get_state(t=1000000)
