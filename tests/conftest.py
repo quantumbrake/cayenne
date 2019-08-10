@@ -73,21 +73,40 @@ def setup_long():
     return V_r, V_p, X0, k
 
 
-@pytest.fixture
-def setup_00001():
-    V_r = np.array([[1, 1]])
-    V_p = np.array([[2, 0]])
-    X0 = np.array([100])
-    k = np.array([0.1, 0.11])
-    print(V_r.shape, V_p.shape)
+def read_results(test_id: str):
+    filename = f"{CURR_DIR}/data/results_{test_id}.csv"
     time_list = []
     mu_list = []
     std_list = []
-    with open(f"{CURR_DIR}/data/results_00001.csv") as fid:
+    with open(filename) as fid:
         csv_reader = csv.reader(fid, delimiter=",")
         next(csv_reader)
         for time, mu, std in csv_reader:
             time_list.append(float(time))
             mu_list.append(float(mu))
             std_list.append(float(std))
-    return V_r, V_p, X0, k, time_list, np.array(mu_list), np.array(std_list)
+    return time_list, mu_list, std_list
+
+
+@pytest.fixture
+def setup_00001():
+    V_r = np.array([[1, 1]])
+    V_p = np.array([[2, 0]])
+    X0 = np.array([100])
+    k = np.array([0.1, 0.11])
+    max_t = 51
+    max_iter = int(1.5e3)
+    n_rep = 10
+    time_list, mu_list, std_list = read_results("00001")
+    return (
+        V_r,
+        V_p,
+        X0,
+        k,
+        time_list,
+        np.array(mu_list),
+        np.array(std_list),
+        max_t,
+        max_iter,
+        n_rep,
+    )

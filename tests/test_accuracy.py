@@ -7,25 +7,37 @@ import pytest
 from pyssa.simulation import Simulation
 
 
+def calculate_zy(sim: Simulation, time_list: list, mu_list: list, std_list: list):
+    z_list = []
+    y_list = []
+    n_rep = len(sim.results.t_list)
+    for ind1, t in enumerate(time_list[1:]):
+        results = sim.results.get_state(t)
+        mu_obs = np.mean(results)
+        std_obs = np.std(results)
+        z_list.append(
+            np.sqrt(n_rep) * (mu_obs - mu_list[ind1 + 1]) / std_list[ind1 + 1]
+        )
+        y_list.append(
+            np.sqrt(n_rep / 2) * ((std_obs ** 2) / (std_list[ind1 + 1] ** 2) - 1)
+        )
+    return np.array(z_list), np.array(y_list)
+
+
 @pytest.mark.parametrize("algorithm", ["direct_cython", "tau_leaping_cython"])
 def test_00001(setup_00001, algorithm):
-    V_r, V_p, X0, k, time_list, mu_list, std_list = setup_00001
-    n_rep = 10
+    V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00001
     sim1 = Simulation(V_r, V_p, X0, k)
     sim1.simulate(
         algorithm=algorithm,
-        max_t=51,
-        max_iter=int(1.5e3),
+        max_t=max_t,
+        max_iter=max_iter,
         chem_flag=False,
         n_rep=n_rep,
-        # debug=True
     )
+    Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
     assert np.all(sim1.results.final[0] > time_list[-1])
-    for ind1, t in enumerate(time_list[1:]):
-        results = sim1.results.get_state(t)
-        mu_obs = np.mean(results)
-        std_obs = np.std(results)
-        Z = np.sqrt(n_rep) * (mu_obs - mu_list[ind1 + 1]) / std_list[ind1 + 1]
-        Y = np.sqrt(n_rep / 2) * ((std_obs ** 2) / (std_list[ind1 + 1] ** 2) - 1)
-        assert -3 < Z < 3
-        assert -5 < Y < 5
+    assert (-3 < Z).all()
+    assert (Z < 3).all()
+    assert (-5 < Y).all()
+    assert (Y < 5).all()
