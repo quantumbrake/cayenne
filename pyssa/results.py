@@ -122,7 +122,7 @@ class Results(Collection):
             -------
             List[np.ndarray]
                 The states of the system at `t` for all repetitions.
-            
+
             Raises
             ------
             UserWarning
