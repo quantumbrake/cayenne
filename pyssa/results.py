@@ -4,6 +4,7 @@
 
 from collections.abc import Collection
 from typing import List, Tuple
+from warnings import warn
 
 import numpy as np
 
@@ -121,17 +122,28 @@ class Results(Collection):
             -------
             List[np.ndarray]
                 The states of the system at `t` for all repetitions.
+            
+            Raises
+            ------
+            UserWarning
+                If simulation ends before `t` but system does not reach
+                extinction.
         """
         states: List[np.ndarray] = []
-        for x_array, t_array, _ in self:
+        for x_array, t_array, s in self:
             ind = np.searchsorted(t_array, t)
             ind = ind - 1 if ind > 0 else ind
-            x_interp = np.zeros(x_array.shape[1])
-            for ind2 in range(x_array.shape[1]):
-                x_interp[ind2] = np.interp(
-                    t,
-                    [t_array[ind], t_array[ind + 1]],
-                    [x_array[ind, ind2], x_array[ind + 1, ind2]],
-                )
-            states.append(x_interp)
+            if ind == len(t_array) - 1:
+                states.append(x_array[-1, :])
+                if s != 3:
+                    warn(f"Simulation ended before {t}, returning last state.")
+            else:
+                x_interp = np.zeros(x_array.shape[1])
+                for ind2 in range(x_array.shape[1]):
+                    x_interp[ind2] = np.interp(
+                        t,
+                        [t_array[ind], t_array[ind + 1]],
+                        [x_array[ind, ind2], x_array[ind + 1, ind2]],
+                    )
+                states.append(x_interp)
         return states
