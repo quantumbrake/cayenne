@@ -41,3 +41,24 @@ def test_00001(setup_00001, algorithm):
     assert (Z < 3).all()
     assert (-5 < Y).all()
     assert (Y < 5).all()
+
+
+@pytest.mark.filterwarnings("ignore::UserWarning")
+@pytest.mark.parametrize("algorithm", ["direct_cython", "tau_leaping_cython"])
+def test_00003(setup_00003, algorithm):
+    V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00003
+    sim1 = Simulation(V_r, V_p, X0, k)
+    sim1.simulate(
+        algorithm=algorithm,
+        max_t=max_t,
+        max_iter=max_iter,
+        chem_flag=False,
+        n_rep=n_rep,
+    )
+    t_final, x_final = sim1.results.final
+    Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
+    assert (np.array(sim1.results.status_list) != 1).all()
+    assert (-3 < Z).all()
+    assert (Z < 3).all()
+    assert (-5 < Y).all()
+    assert (Y < 5).all()

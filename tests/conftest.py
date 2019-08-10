@@ -110,3 +110,27 @@ def setup_00001():
         max_iter,
         n_rep,
     )
+
+
+@pytest.fixture
+def setup_00003():
+    V_r = np.array([[1, 1]])
+    V_p = np.array([[2, 0]])
+    X0 = np.array([100])
+    k = np.array([1.0, 1.1])
+    max_t = 51
+    max_iter = int(1e5)
+    n_rep = 10
+    time_list, mu_list, std_list = read_results("00003")
+    return (
+        V_r,
+        V_p,
+        X0,
+        k,
+        time_list,
+        np.array(mu_list),
+        np.array(std_list),
+        max_t,
+        max_iter,
+        n_rep,
+    )
