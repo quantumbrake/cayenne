@@ -82,7 +82,6 @@ def direct_cython(
         double t_curr=0, prop_sum=0
         Py_ssize_t ns=react_stoic.shape[0], nr=react_stoic.shape[1]
     v = prod_stoic - react_stoic  # ns x nr
-    xt = init_state.copy()  # Number of species at time t_curr
     x = np.zeros((max_iter, ns), dtype=np.int)
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
@@ -95,7 +94,6 @@ def direct_cython(
     cdef double [:] kstoc_view = kstoc
     cdef double [:] prop_view = prop
     cdef long [:] xtemp_view = xtemp
-    cdef long [:] xt_view = xt
     cdef long [:, :] v_view = v
     cdef long [:, :] react_stoic_view = react_stoic
     cdef long [:, :] x_view = x
