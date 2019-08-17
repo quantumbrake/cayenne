@@ -373,3 +373,75 @@ def setup_00031():
         max_iter,
         n_rep,
     )
+
+
+@pytest.fixture
+def setup_00037():
+    V_r = np.array([[0, 1]])
+    V_p = np.array([[5, 0]])
+    X0 = np.array([0])
+    k = np.array([1.0, 0.2])
+    max_t = 53
+    max_iter = int(1.5e3)
+    n_rep = 10
+    time_list, mu_list, std_list = read_results("00037")
+    return (
+        V_r,
+        V_p,
+        X0,
+        k,
+        time_list,
+        np.array(mu_list),
+        np.array(std_list),
+        max_t,
+        max_iter,
+        n_rep,
+    )
+
+
+@pytest.fixture
+def setup_00038():
+    V_r = np.array([[0, 1]])
+    V_p = np.array([[10, 0]])
+    X0 = np.array([0])
+    k = np.array([1.0, 0.4])
+    max_t = 53
+    max_iter = int(1.5e3)
+    n_rep = 10
+    time_list, mu_list, std_list = read_results("00038")
+    return (
+        V_r,
+        V_p,
+        X0,
+        k,
+        time_list,
+        np.array(mu_list),
+        np.array(std_list),
+        max_t,
+        max_iter,
+        n_rep,
+    )
+
+
+@pytest.fixture
+def setup_00039():
+    V_r = np.array([[0, 1]])
+    V_p = np.array([[100, 0]])
+    X0 = np.array([0])
+    k = np.array([1.0, 4.0])
+    max_t = 53
+    max_iter = int(1.5e3)
+    n_rep = 50
+    time_list, mu_list, std_list = read_results("00039")
+    return (
+        V_r,
+        V_p,
+        X0,
+        k,
+        time_list,
+        np.array(mu_list),
+        np.array(std_list),
+        max_t,
+        max_iter,
+        n_rep,
+    )
