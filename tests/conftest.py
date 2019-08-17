@@ -88,6 +88,21 @@ def read_results(test_id: str):
     return time_list, mu_list, std_list
 
 
+def read_results_2sp(test_id: str):
+    filename = f"{CURR_DIR}/data/results_{test_id}.csv"
+    time_list = []
+    mu_list = []
+    std_list = []
+    with open(filename) as fid:
+        csv_reader = csv.reader(fid, delimiter=",")
+        next(csv_reader)
+        for time, mu1, mu2, std1, std2 in csv_reader:
+            time_list.append(float(time))
+            mu_list.append(np.array([float(mu1), float(mu2)]))
+            std_list.append(np.array([float(std1), float(std2)]))
+    return time_list, mu_list, std_list
+
+
 @pytest.fixture
 def setup_00001():
     V_r = np.array([[1, 1]])
@@ -292,6 +307,60 @@ def setup_00023():
     max_iter = int(1.5e5)
     n_rep = 10
     time_list, mu_list, std_list = read_results("00023")
+    return (
+        V_r,
+        V_p,
+        X0,
+        k,
+        time_list,
+        np.array(mu_list),
+        np.array(std_list),
+        max_t,
+        max_iter,
+        n_rep,
+    )
+
+
+@pytest.fixture
+def setup_00030():
+    V_r = np.array([[2, 0], [0, 1]])
+    V_p = np.array([[0, 2], [1, 0]])
+    X0 = np.array([100, 0])
+    # In the model description, they just say k1 = 0.001 without specifying
+    # deterministic or stochastic. They end up using k1_stoc = 0.001. To have
+    # k1_stoc = 0.001, we should set k1_det = 0.001/2
+    k = np.array([0.001 / 2, 0.01])
+    max_t = 53
+    max_iter = int(1.5e5)
+    n_rep = 10
+    time_list, mu_list, std_list = read_results_2sp("00030")
+    return (
+        V_r,
+        V_p,
+        X0,
+        k,
+        time_list,
+        np.array(mu_list),
+        np.array(std_list),
+        max_t,
+        max_iter,
+        n_rep,
+    )
+
+
+@pytest.fixture
+def setup_00031():
+    V_r = np.array([[2, 0], [0, 1]])
+    V_p = np.array([[0, 2], [1, 0]])
+    X0 = np.array([1000, 0])
+    # In the model description, they just say k1 = 0.0002 without specifying
+    # deterministic or stochastic. They end up using k1_stoc = 0.0002. To have
+    # k1_stoc = 0.0002, we should set k1_det = 0.0002/2
+    k = np.array([0.0002 / 2, 0.004])
+    max_t = 52
+    max_iter = int(1.5e5)
+    n_rep = 20
+    time_list, mu_list, std_list = read_results_2sp("00031")
     return (
         V_r,
         V_p,
