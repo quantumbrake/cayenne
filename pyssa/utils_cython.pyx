@@ -99,20 +99,25 @@ def get_kstoc(react_stoic, k_det, volume, chem_flag):
     reactions. J. Comput. Phys. 22, 403–434.
     doi:10.1016/0021-9991(76)90041-3.
     """
-    cdef int nr = react_stoic.shape[1]
-    orders = np.sum(react_stoic, axis=0)  # Order of rxn = number of reactants
-    cdef float factor = 1.0
-    k_stoc = k_det.copy()
+    cdef:
+        int nr=react_stoic.shape[1], ns=react_stoic.shape[0], max_order
+        double factor = 1.0
+    orders = np.zeros((nr,), dtype=np.int64) # Order of rxn = number of reactants
+    for ind1 in range(nr):
+        for ind2 in range(ns):
+            orders[ind1] += react_stoic[ind2, ind1]
+    cdef double[:] k_stoc = k_det.copy()
     if chem_flag:
         factor = Na
     for ind in range(nr):
+        max_order = max(react_stoic[:, ind])
         # If highest order is 3
-        if react_stoic[:, ind].max() == 3:
-            k_stoc[ind] = k_det[ind] * 6 / np.power(factor * volume, 2)
-        elif react_stoic[:, ind].max() == 2:  # Highest order is 2
-            k_stoc[ind] = k_det[ind] * 2 / np.power(factor * volume, orders[ind] - 1)
+        if max_order == 3:
+            k_stoc[ind] = k_det[ind] * 6 / pow(factor * volume, 2)
+        elif max_order == 2:  # Highest order is 2
+            k_stoc[ind] = k_det[ind] * 2 / pow(factor * volume, orders[ind] - 1)
         else:
-            k_stoc[ind] = k_det[ind] / np.power(factor * volume, orders[ind] - 1)
+            k_stoc[ind] = k_det[ind] / pow(factor * volume, orders[ind] - 1)
     return k_stoc
 
 def py_roulette_selection(prop_list, Xt):
