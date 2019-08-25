@@ -25,6 +25,7 @@ def tau_leaping_cython(
 ):
     """
         Runs the Tau Leaping Simulation Algorithm.
+        Exits if negative population encountered.
 
         Parameters
         ----------
