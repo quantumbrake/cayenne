@@ -330,6 +330,7 @@ class Simulation:
                         res.t_list[index2],
                         res.x_list[index2][:, plot_indices[index1]],
                         color=colors[index1],
+                        where='post',
                     )
             if names is None:
                 names = generic_names
