@@ -430,8 +430,8 @@ def setup_00039():
     X0 = np.array([0])
     k = np.array([1.0, 4.0])
     max_t = 53
-    max_iter = int(1.5e3)
-    n_rep = 50
+    max_iter = int(1.5e5)
+    n_rep = 10
     time_list, mu_list, std_list = read_results("00039")
     return (
         V_r,

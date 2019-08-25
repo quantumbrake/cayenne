@@ -3,7 +3,6 @@
 """
 import numpy as np
 import pytest
-
 from pyssa.simulation import Simulation
 
 
@@ -297,23 +296,20 @@ def test_00038(setup_00038, algorithm):
     assert (Y < 5).all()
 
 
-# @pytest.mark.filterwarnings("ignore::UserWarning")
-# @pytest.mark.parametrize("algorithm", ["direct_cython", "tau_leaping_cython"])
-# def test_00039(setup_00039, algorithm):
-#     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00039
-#     sim1 = Simulation(V_r, V_p, X0, k)
-#     sim1.simulate(
-#         algorithm=algorithm,
-#         max_t=max_t,
-#         max_iter=max_iter,
-#         chem_flag=False,
-#         n_rep=n_rep,
-#     )
-#     print(sim1.results.status_list)
-#     sim1.plot()
-#     Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
-#     assert np.all(sim1.results.final[0] > time_list[-1])
-#     assert (-3 < Z).all()
-#     assert (Z < 3).all()
-#     assert (-5 < Y).all()
-#     assert (Y < 5).all()
+@pytest.mark.filterwarnings("ignore::UserWarning")
+@pytest.mark.parametrize("algorithm", ["direct_cython", "tau_leaping_cython"])
+def test_00039(setup_00039, algorithm):
+    V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00039
+    sim1 = Simulation(V_r, V_p, X0, k)
+    sim1.simulate(
+        algorithm=algorithm,
+        max_t=max_t,
+        max_iter=max_iter,
+        chem_flag=False,
+        n_rep=n_rep,
+    )
+    Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
+    assert (-3 < Z).all()
+    assert (Z < 3).all()
+    assert (-5 < Y).all()
+    assert (Y < 5).all()
