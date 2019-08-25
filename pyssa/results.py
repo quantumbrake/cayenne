@@ -139,11 +139,14 @@ class Results(Collection):
                     warn(f"Simulation ended before {t}, returning last state.")
             else:
                 x_interp = np.zeros(x_array.shape[1])
-                for ind2 in range(x_array.shape[1]):
-                    x_interp[ind2] = np.interp(
-                        t,
-                        [t_array[ind], t_array[ind + 1]],
-                        [x_array[ind, ind2], x_array[ind + 1, ind2]],
-                    )
-                states.append(x_interp)
+                if self.algorithm != "direct_cython":
+                    for ind2 in range(x_array.shape[1]):
+                        x_interp[ind2] = np.interp(
+                            t,
+                            [t_array[ind], t_array[ind + 1]],
+                            [x_array[ind, ind2], x_array[ind + 1, ind2]],
+                        )
+                    states.append(x_interp)
+                else:
+                    states.append(x_array[ind, :])
         return states
