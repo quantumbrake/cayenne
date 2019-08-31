@@ -185,3 +185,101 @@ class TestSanitize:
 #         if np.all(xt - np.array([0, 11, 0, 0]) == 0):
 #             count_excitation += 1
 #     assert np.abs(count_excitation / n_runs - 0.5) < deviation_tolerance
+
+
+class TestHOR:
+
+    @staticmethod
+    def create_sim_inst(react_stoic):
+        prod_stoic = np.random.randint(0, 5, react_stoic.shape)
+        k = np.random.rand(react_stoic.shape[1])
+        X = np.random.randint(0, 5, react_stoic.shape[0])
+        sim = Simulation(react_stoic, prod_stoic, X, k)
+        return sim
+
+    def test_hor1(self):
+        # A ->
+        react_stoic = np.array([[1, 0]])
+        sim = self.create_sim_inst(react_stoic)
+        assert sim.HOR == 1
+
+    def test_hor2(self):
+        # A ->
+        # A ->
+        # A ->
+        react_stoic = np.array([[1, 1, 1], [0, 0, 0]])
+        sim = self.create_sim_inst(react_stoic)
+        assert np.all(sim.HOR == [1, 0])
+
+    def test_hor3(self):
+        # A + B ->
+        # A ->
+        react_stoic = np.array([[1, 1], [1, 0]])
+        sim = self.create_sim_inst(react_stoic)
+        assert np.all(sim.HOR == [2, 2])
+
+    def test_hor4(self):
+        # # A + B ->
+        # # C ->
+        react_stoic = np.array([[1, 0], [1, 0], [0, 1]])
+        sim = self.create_sim_inst(react_stoic)
+        assert np.all(sim.HOR == [2, 2, 1])
+
+    def test_hor5(self):
+        # A + A ->
+        # A ->
+        # B ->
+        react_stoic = np.array([[2, 1, 0], [0, 0, 1]])
+        sim = self.create_sim_inst(react_stoic)
+        assert np.all(sim.HOR == [-2, 1])
+
+    def test_hor6(self):
+        # # A + A + B ->
+        # # A + B ->
+        # # B ->
+        react_stoic = np.array([[2, 1, 0], [1, 1, 1]])
+        sim = self.create_sim_inst(react_stoic)
+        assert np.all(sim.HOR == [-32, 3])
+
+    def test_hor7(self):
+        # A + A + B ->
+        # A + B + B ->
+        react_stoic = np.array([[2, 1], [1, 2]])
+        sim = self.create_sim_inst(react_stoic)
+        assert np.all(sim.HOR == [-32, -32])
+
+    def test_hor8(self):
+        # # A + A + A ->
+        # # A + A + B ->
+        # # A + B ->
+        react_stoic = np.array([[3, 2, 1], [0, 1, 1]])
+        sim = self.create_sim_inst(react_stoic)
+        assert np.all(sim.HOR == [-3, 3])
+
+    def test_hor9(self):
+        # A + A + A ->
+        # B + B + B ->
+        # A + A + B ->
+        # A + B + B ->
+        # A + B + C ->
+        react_stoic = np.array([[3, 0, 2, 1, 1], [0, 3, 1, 2, 1], [0, 0, 0, 0, 1]])
+        sim = self.create_sim_inst(react_stoic)
+        assert np.all(sim.HOR == [-3, -3, 3])
+
+    def test_hor10(self):
+        # A + B ->
+        # A + A + A ->
+        # B + B ->
+        # A + C ->
+        # C + D + E ->
+        react_stoic = np.array(
+            [
+                [1, 3, 0, 1, 0],
+                [1, 0, 2, 0, 0],
+                [0, 0, 0, 1, 1],
+                [0, 0, 0, 0, 1],
+                [0, 0, 0, 0, 1],
+            ]
+        )
+        sim = self.create_sim_inst(react_stoic)
+        assert np.all(sim.HOR == [-3, -2, 3, 3, 3])

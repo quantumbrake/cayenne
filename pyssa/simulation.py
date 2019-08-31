@@ -283,6 +283,59 @@ class Simulation:
             status_list.append(status)
         self._results = Results(tlist, xlist, status_list, algorithm, sim_seeds)
 
+    @property
+    def HOR(self) -> np.ndarray:
+        """
+            Determine the HOR vector. HOR(i) is the highest order of reaction
+            in which species S_i appears as a reactant.
+
+            Returns
+            -------
+            HOR : np.ndarray
+                Highest order of the reaction for the reactive species as
+                defined under Eqn. (27) of [1]_. HOR can be 1, 2 or 3
+                if the species appears only once in the reactants.
+                If HOR is -2, it appears twice in a second order reaction.
+                If HOR is -3, it appears thrice in a third order reaction.
+                If HOR is -32, it appears twice in a third order reaction.
+                The corresponding value of `g_i` in Eqn. (27) is handled
+                by `tau_adaptive`.
+
+            References
+            ----------
+            .. [1] Cao, Y., Gillespie, D.T., Petzold, L.R., 2006.
+            Efficient step size selection for the tau-leaping simulation
+            method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
+        """
+        ns = self._react_stoic.shape[0]
+        HOR = np.zeros(ns, dtype=np.int64)
+        orders = np.sum(self._react_stoic, axis=0)
+        for ind in range(ns):
+            this_orders = orders[np.where(self._react_stoic[ind, :] > 0)[0]]
+            if len(this_orders) == 0:
+                HOR[ind] = 0
+                continue
+            HOR[ind] = np.max(this_orders)
+            if HOR[ind] == 1:
+                continue
+            order_2_indices = np.where(orders == 2)
+            this_react_stoic = self._react_stoic[ind, :]
+            if order_2_indices[0].size > 0:
+                if np.max(this_react_stoic[order_2_indices[0]]) == 2 and HOR[ind] == 2:
+                    HOR[ind] = -2  # g_i should be (2 + 1/(x_i-1))
+            if np.where(orders == 3):
+                if (
+                    HOR[ind] == 3
+                    and np.max(this_react_stoic[np.where(this_orders == 3)[0]]) == 2
+                ):
+                    HOR[ind] = -32  # g_i should be (3/2 * (2 + 1/(x_i-1)))
+                elif (
+                    HOR[ind] == 3
+                    and np.max(this_react_stoic[np.where(this_orders == 3)[0]]) == 3
+                ):
+                    HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
+        return HOR
+
     def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
         """
         Plot the simulation
@@ -330,7 +383,7 @@ class Simulation:
                         res.t_list[index2],
                         res.x_list[index2][:, plot_indices[index1]],
                         color=colors[index1],
-                        where='post',
+                        where="post",
                     )
             if names is None:
                 names = generic_names
