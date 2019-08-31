@@ -123,14 +123,14 @@ def tau_leaping_cython(
         for ind1 in range(ns):
             xt_view[ind1] = x_view[ite-1, ind1]
             for ind2 in range(nr):
-                xt_view[ind1] += n_events_view[ind2] * v[ind1, ind2]
+                xt_view[ind1] += n_events_view[ind2] * v_view[ind1, ind2]
         for ind1 in range(ns):
             if xt_view[ind1] < 0:
                 return t[:ite], x[:ite, :], -3
             else:
                 x_view[ite, ind1] = xt_view[ind1]
         for ind1 in range(nr):
-            prop_view[ind1] = kstoc[ind1]
+            prop_view[ind1] = kstoc_view[ind1]
         t_curr += tau
         t[ite] = t_curr
         ite += 1
