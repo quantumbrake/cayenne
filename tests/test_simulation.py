@@ -188,12 +188,11 @@ class TestSanitize:
 
 
 class TestHOR:
-
     @staticmethod
     def create_sim_inst(react_stoic):
         prod_stoic = np.random.randint(0, 5, react_stoic.shape)
         k = np.random.rand(react_stoic.shape[1])
-        X = np.random.randint(0, 5, react_stoic.shape[0])
+        X = np.random.randint(0, 5, react_stoic.shape[0], dtype=np.int64)
         sim = Simulation(react_stoic, prod_stoic, X, k)
         return sim
 
