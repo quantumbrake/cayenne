@@ -25,7 +25,7 @@ cdef step1(
         int visflag = 0
     cdef double [:] prop_view = np.zeros(nr)
     prop_view[...] = kstoc_view
-    L = np.ones(nr, dtype=np.int64) * 1000
+    L = np.ones(nr, dtype=np.int64) * (nc + 1)
     cdef long [:] crit = np.zeros(nr, dtype=np.int32)
     cdef long [:] not_crit = np.zeros(nr, dtype=np.int32)
     # Calculate the propensities
@@ -40,18 +40,9 @@ cdef step1(
                 prop_view[ind1] *= xt_view[ind2] * (xt_view[ind2] - 1) * (xt_view[ind2] - 2) / 6
     for ind1 in range(nr):
         vis = v_view[:, ind1]
-        visflag = 0
-        # TODO: Make this one loop
         for ind2 in range(ns):
             if vis[ind2] < 0:
-                visflag = 1
-                break
-        for ind2 in range(ns):
-            if visflag == 1:
-                if vis[ind2] < 0:
-                    L[ind1] = min(L[ind1], xt_view[ind2] / abs(vis[ind2]))
-            else:
-                L[ind1] = nc + 1  # set to greater than nc
+                L[ind1] = min(L[ind1], xt_view[ind2] / abs(vis[ind2]))
     # A reaction j is critical if Lj <nc. However criticality is
     # considered only for reactions with propensity greater than
     # 0 (`prop > 0`).
@@ -227,7 +218,8 @@ def tau_adaptive_cython(
             -3 : Negative species count encountered
     """
     cdef:
-        int ite = 1, xtsum = 0
+        int ite = 1
+        long long xtsum = 0
         bint skipflag = 0
         Py_ssize_t ns=react_stoic.shape[0], nr=react_stoic.shape[1]
         double prop_sum = 0
