@@ -3,7 +3,12 @@
 """
 
 import numpy as np
-from pyssa.algorithms.tau_adaptive_cython import py_step1, py_step2, py_step2_get_g
+from pyssa.algorithms.tau_adaptive_cython import (
+    py_step1,
+    py_step2,
+    py_step2_get_g,
+    py_step5,
+)
 from pyssa.utils_cython import get_kstoc, HIGH
 from .test_simulation import TestHOR
 
@@ -109,17 +114,17 @@ def test_tauadaptive_step2_get_g():
     assert np.isclose(py_step2_get_g(-32, 10), 3 / 2 * (2 + 1 / 9))
 
 
-# def test_tauadaptive_step5(setup_basic):
-#     V_r, V_p, X0, k = setup_basic
-#     nr = V_r.shape[1]
-#     V = V_p - V_r
-#     kstoc = get_kstoc(V_r, k, 1.0, False)
-#     prop, _, not_crit = step1(kstoc, X0, V_r, V, nc=10)
-#     taup, taupp = 100, 10
-#     tau, K = step5(taup, taupp, nr, not_crit, prop, X0)
-#     assert tau == taupp
-#     assert K[1] == 0
-#     taup, taupp = 0.01, 1
-#     tau, K = step5(taup, taupp, nr, not_crit, prop, X0)
-#     assert tau == taup
-#     assert K[1] == 0
+def test_tauadaptive_step5(setup_basic):
+    V_r, V_p, X0, k = setup_basic
+    nr = V_r.shape[1]
+    V = V_p - V_r
+    kstoc = get_kstoc(V_r, k, 1.0, False)
+    prop, _, not_crit = py_step1(kstoc, np.int64(X0), V_r, V, nc=10)
+    taup, taupp = 100.0, 10.0
+    tau, K = py_step5(taup, taupp, nr, not_crit, prop, np.int64(X0))
+    assert tau == taupp
+    assert K[1] == 0
+    taup, taupp = 0.01, 1.0
+    tau, K = py_step5(taup, taupp, nr, not_crit, prop, np.int64(X0))
+    assert tau == taup
+    assert K[1] == 0

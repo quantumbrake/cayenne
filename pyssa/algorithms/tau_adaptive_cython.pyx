@@ -8,6 +8,7 @@ cimport numpy as np
 import numpy as np
 import random
 from ..utils_cython import get_kstoc, TINY, HIGH
+from ..utils_cython cimport roulette_selection
 from .direct_cython import direct_cython
 from libc.math cimport log
 
@@ -150,6 +151,49 @@ def py_step2(not_crit,
     taup = step2(not_crit, react_species, v, xt, hor, prop, epsilon)
     return np.array(taup)
 
+
+cdef step5(
+    double taup,
+    double taupp,
+    Py_ssize_t nr,
+    int [:] not_crit,
+    double [:] prop_view,
+    long long [:] xt_view,
+    ):
+    cdef:
+        double tau
+        double [:] temp_prop = np.zeros(nr)
+        long long [:] K = np.zeros(nr, dtype=np.int64)
+    if taup < taupp:
+        tau = taup
+        for ind in range(nr):
+            if not_crit[ind]:
+                K[ind] = np.random.poisson(prop_view[ind] * tau)
+            else:
+                K[ind] = 0
+    else:
+        tau = taupp
+        # Identify the only critical reaction to fire
+        # Send in xt to match signature of roulette_selection
+        for ind in range(nr):
+            if not_crit[ind]:
+                temp_prop[ind] = 0.0
+            else:
+                temp_prop[ind] = prop_view[ind]
+        j_crit, _ = roulette_selection(temp_prop, xt_view)
+        for ind in range(nr):
+            if not_crit[ind]:
+                K[ind] = np.random.poisson(prop_view[ind] * tau)
+            elif ind == j_crit:
+                K[ind] = 1
+            else:
+                K[ind] = 0
+    return tau, K
+
+
+def py_step5(taup, taupp, nr, not_crit, prop, xt):
+    tau, K = step5(taup, taupp, nr, not_crit, prop, xt)
+    return tau, np.array(K)
 
 def tau_adaptive_cython(
     react_stoic: np.ndarray,
@@ -311,7 +355,7 @@ def tau_adaptive_cython(
                     return t[:ite], x[:ite, :], status
                 continue
 
-            # 4. Generate second candidate taupp
+            # Step 4. Generate second candidate taupp
             # ----------------------------------
             prop_crit_sum = 0.0
             for ind in range(nr):
@@ -321,5 +365,9 @@ def tau_adaptive_cython(
                 taupp = HIGH
             else:
                 taupp = 1 / prop_crit_sum * log(1 / random.rand())
+
+            # Step 5. Leap
+            # ------------
+            tau, K = step5(taup, taupp, nr, not_crit, prop_view, x_view[ite-1, :])
 
         ite = ite + 1
