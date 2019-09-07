@@ -128,7 +128,7 @@ cdef step2(
                 sigp_view[ind] = TINY
             g = step2_get_g(hor_view[species_index], xt_view[species_index])
             tau_num[ind] = max(epsilon * xt_view[species_index] / g, 1)
-        for ind in range(nr):
+        for ind in range(ns):
             if mup_view[ind] != 0:
                 v1 = tau_num[ind] / abs(mup_view[ind])
             else:
