@@ -93,10 +93,10 @@ def direct_cython(
     kstoc = prop.copy()  # Stochastic rate constants
     cdef double [:] kstoc_view = kstoc
     cdef double [:] prop_view = prop
-    cdef long [:] xtemp_view = xtemp
-    cdef long [:, :] v_view = v
+    cdef long long [:] xtemp_view = xtemp
+    cdef long long [:, :] v_view = v
     cdef long [:, :] react_stoic_view = react_stoic
-    cdef long [:, :] x_view = x
+    cdef long long [:, :] x_view = x
     while ite < max_iter:
         # Calculate propensities
         for ind1 in range(nr):

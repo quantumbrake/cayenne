@@ -14,7 +14,7 @@ TINY = 1e-20
 @cython.returns((int, int))
 @cython.boundscheck(False)
 @cython.wraparound(False)
-cdef roulette_selection(double[:] prop_list, long[:] Xt):
+cdef roulette_selection(double [:] prop_list, long long [:] Xt):
     """Perform roulette selection on the list of propensities.
 
     Return the index of the selected reaction (`choice`) by performing
