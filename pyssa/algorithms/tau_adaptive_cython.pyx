@@ -41,6 +41,7 @@ cdef step1(
     for ind1 in range(nr):
         vis = v_view[:, ind1]
         visflag = 0
+        # TODO: Make this one loop
         for ind2 in range(ns):
             if vis[ind2] < 0:
                 visflag = 1
@@ -62,8 +63,6 @@ cdef step1(
             crit[ind1] = 0
             not_crit[ind1] = 1
     # crit = (L < nc) * (prop > 0)
-    # # To get the non-critical reactions, we use the bitwise not operator.
-    # not_crit = ~crit
     return prop_view, crit, not_crit
 
 
@@ -72,8 +71,7 @@ def py_step1(kstoc, xt, react_stoic, v, nc):
     return np.array(prop_view), np.array(crit), np.array(not_crit)
 
 
-# TODO: Try inlining this function
-cdef step2_get_g(int hor, long long x):
+cdef inline step2_get_g(int hor, long long x):
     cdef double g
     if hor > 0:
         g = float(hor)
@@ -126,8 +124,7 @@ cdef step2(
     else:
         # Compute mu from eqn 32a and sig from eqn 32b
         for ind, species_index in enumerate(react_species_view):
-            # this_v = v_view[species_index, :]
-            for i in range(len(not_crit)):
+            for i in range(nr):
                 if not_crit[i]:
                     mup_view[ind] += v_view[species_index, i] * prop[i]
                     sigp_view[ind] += v_view[species_index, i] * prop[i] * v_view[species_index, i]
@@ -137,9 +134,16 @@ cdef step2(
                 sigp_view[ind] = TINY
             g = step2_get_g(hor_view[species_index], xt_view[species_index])
             tau_num[ind] = max(epsilon * xt_view[species_index] / g, 1)
-        taup = np.nanmin(
-            np.concatenate((tau_num / np.abs(mup_view), np.power(tau_num, 2) / np.abs(sigp_view)))
-        )
+        for ind in range(nr):
+            if mup_view[ind] != 0:
+                v1 = tau_num[ind] / abs(mup_view[ind])
+            else:
+                v1 = HIGH
+            if sigp_view[ind] != 0:
+                v2 = tau_num[ind] * tau_num[ind] / sigp_view[ind]
+            else:
+                v2 = HIGH
+            taup = min(taup, min(v1, v2))
     return taup
 
 
