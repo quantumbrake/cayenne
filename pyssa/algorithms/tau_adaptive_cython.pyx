@@ -8,6 +8,7 @@ cimport numpy as np
 import numpy as np
 import random
 from ..utils_cython import get_kstoc, TINY, HIGH
+from .direct_cython import direct_cython
 
 
 cdef step1(
@@ -240,6 +241,7 @@ def tau_adaptive_cython(
     cdef long [:, :] v_view = v
     cdef long [:, :] react_stoic_view = react_stoic
     cdef long long [:, :] x_view = x
+    cdef long [:] t_view = t
     cdef int [:] react_species_view = react_species
     cdef int [:] hor_view = hor
 
@@ -259,7 +261,7 @@ def tau_adaptive_cython(
         if not skipflag:
 
             # Step 1
-            prop, crit, not_crit = step1(
+            prop_view, crit, not_crit = step1(
                 kstoc_view,
                 x_view[ite - 1, :],
                 react_stoic_view,
@@ -273,17 +275,39 @@ def tau_adaptive_cython(
                 status = 3
                 return t[:ite], x[:ite, :], status
 
-            # Step 2:
+            # Step 2
             taup = step2(
                 not_crit,
                 react_species_view,
                 v_view,
                 x_view[ite-1, :],
                 hor_view,
-                prop,
+                prop_view,
                 epsilon,
             )
 
-            # Step 2
+            # Step 3: For small taup, do SSA
+            skipflag = 0
+            if taup < 10.0 / prop_sum:
+                t_ssa, x_ssa, status = direct_cython(
+                    react_stoic,
+                    prod_stoic,
+                    x[ite - 1, :],
+                    k_det,
+                    max_t=max_t - t[ite - 1],
+                    max_iter=min(101, max_iter - ite),
+                    volume=volume,
+                    seed=seed,
+                    chem_flag=chem_flag,
+                )
+                # t_ssa first element is 0. x_ssa first element is x[ite - 1, :].
+                # Both should be dropped while logging the results.
+                len_simulation = len(t_ssa) - 1  # Since t_ssa[0] is 0
+                t_view[ite : ite + len_simulation] = t_ssa[1:] + t[ite - 1]
+                x_view[ite : ite + len_simulation, :] = x_ssa[1:]
+                ite += len_simulation
+                if status == 3 or status == 2:
+                    return t[:ite], x[:ite, :], status
+                continue
 
         ite = ite + 1
