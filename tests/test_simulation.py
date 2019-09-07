@@ -21,14 +21,14 @@ class TestSanitizeAlg:
     def test_status_3(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
         V_p = np.array([[0, 0], [0, 0], [0, 1]])
-        X0 = np.array([10, 0, 0])
+        X0 = np.array([10, 0, 0], dtype=np.int64)
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=10, max_iter=100, chem_flag=True)
         assert sim.results.status_list[0] == 3
 
     def test_status_2(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
-        X0 = np.array([10, 0, 0])
+        X0 = np.array([10, 0, 0], dtype=np.int64)
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=1, max_iter=100, chem_flag=True)
         assert sim.results.status_list[0] == 2

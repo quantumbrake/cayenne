@@ -18,7 +18,7 @@ CURR_DIR = pathlib.Path(__file__).parent
 def setup_basic():
     V_r = np.array([[1, 0], [0, 1], [0, 0]])
     V_p = np.array([[0, 0], [1, 0], [0, 1]])
-    X0 = np.array([100, 0, 0])
+    X0 = np.array([100, 0, 0], dtype=np.int64)
     k = np.array([1.0, 1.0])
     return V_r, V_p, X0, k
 
@@ -43,7 +43,7 @@ def setup_large():
             [0, 0, 0, 1, 0],
         ]
     )
-    X0 = np.array([10, 0, 0, 0, 0])
+    X0 = np.array([10, 0, 0, 0, 0], dtype=np.int64)
     k = np.array([1.0, 1.0, 1.0, 1.0, 1.0])
     return V_r, V_p, X0, k
 
@@ -60,7 +60,7 @@ def setup_bifurcation():
     V_r = np.array([[1, 0, 1], [0, 1, 0], [0, 0, 0], [0, 1, 0]])
     V_p = np.array([[0, 0, 0], [1, 2, 0], [0, 0, 1], [0, 0, 0]])
     k = np.array([1.0, 0.01 * Na, 1.0])
-    X0 = np.array([1, 0, 0, 10])
+    X0 = np.array([1, 0, 0, 10], dtype=np.int64)
     return V_r, V_p, X0, k
 
 
@@ -69,7 +69,7 @@ def setup_long():
     V_r = np.array([[1, 0], [0, 1], [0, 0]])
     V_p = np.array([[0, 0], [1, 0], [0, 1]])
     k = np.array([1.0, 1.0])
-    X0 = np.array([int(4e5), 1000, 0])
+    X0 = np.array([int(4e5), 1000, 0], dtype=np.int64)
     return V_r, V_p, X0, k
 
 
@@ -107,7 +107,7 @@ def read_results_2sp(test_id: str):
 def setup_00001():
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
-    X0 = np.array([100])
+    X0 = np.array([100], dtype=np.int64)
     k = np.array([0.1, 0.11])
     max_t = 51
     max_iter = int(1.5e3)
@@ -131,7 +131,7 @@ def setup_00001():
 def setup_00003():
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
-    X0 = np.array([100])
+    X0 = np.array([100], dtype=np.int64)
     k = np.array([1.0, 1.1])
     max_t = 51
     max_iter = int(1e5)
@@ -155,7 +155,7 @@ def setup_00003():
 def setup_00004():
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
-    X0 = np.array([10])
+    X0 = np.array([10], dtype=np.int64)
     k = np.array([0.1, 0.11])
     max_t = 51
     max_iter = int(1.5e3)
@@ -179,7 +179,7 @@ def setup_00004():
 def setup_00005():
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
-    X0 = np.array([10_000])
+    X0 = np.array([10_000], dtype=np.int64)
     k = np.array([0.1, 0.11])
     max_t = 51
     max_iter = int(5e5)
@@ -203,7 +203,7 @@ def setup_00005():
 def setup_00011():
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
-    X0 = np.array([100])
+    X0 = np.array([100], dtype=np.int64)
     # divide k by 2 because rate expression given in units of concentration
     # in the model file
     k = np.array([0.1, 0.11]) / 2
@@ -229,7 +229,7 @@ def setup_00011():
 def setup_00020():
     V_r = np.array([[0, 1]])
     V_p = np.array([[1, 0]])
-    X0 = np.array([0])
+    X0 = np.array([0], dtype=np.int64)
     k = np.array([1.0, 0.1])
     max_t = 51
     max_iter = int(1.5e3)
@@ -253,7 +253,7 @@ def setup_00020():
 def setup_00021():
     V_r = np.array([[0, 1]])
     V_p = np.array([[1, 0]])
-    X0 = np.array([0])
+    X0 = np.array([0], dtype=np.int64)
     k = np.array([10.0, 0.1])
     max_t = 51
     max_iter = int(1.5e3)
@@ -277,7 +277,7 @@ def setup_00021():
 def setup_00022():
     V_r = np.array([[0, 1]])
     V_p = np.array([[1, 0]])
-    X0 = np.array([0])
+    X0 = np.array([0], dtype=np.int64)
     k = np.array([5.0, 0.1])
     max_t = 51
     max_iter = int(1.5e3)
@@ -301,7 +301,7 @@ def setup_00022():
 def setup_00023():
     V_r = np.array([[0, 1]])
     V_p = np.array([[1, 0]])
-    X0 = np.array([0])
+    X0 = np.array([0], dtype=np.int64)
     k = np.array([1000.0, 0.1])
     max_t = 51
     max_iter = int(1.5e5)
@@ -325,7 +325,7 @@ def setup_00023():
 def setup_00030():
     V_r = np.array([[2, 0], [0, 1]])
     V_p = np.array([[0, 2], [1, 0]])
-    X0 = np.array([100, 0])
+    X0 = np.array([100, 0], dtype=np.int64)
     # In the model description, they just say k1 = 0.001 without specifying
     # deterministic or stochastic. They end up using k1_stoc = 0.001. To have
     # k1_stoc = 0.001, we should set k1_det = 0.001/2
@@ -352,7 +352,7 @@ def setup_00030():
 def setup_00031():
     V_r = np.array([[2, 0], [0, 1]])
     V_p = np.array([[0, 2], [1, 0]])
-    X0 = np.array([1000, 0])
+    X0 = np.array([1000, 0], dtype=np.int64)
     # In the model description, they just say k1 = 0.0002 without specifying
     # deterministic or stochastic. They end up using k1_stoc = 0.0002. To have
     # k1_stoc = 0.0002, we should set k1_det = 0.0002/2
@@ -379,7 +379,7 @@ def setup_00031():
 def setup_00037():
     V_r = np.array([[0, 1]])
     V_p = np.array([[5, 0]])
-    X0 = np.array([0])
+    X0 = np.array([0], dtype=np.int64)
     k = np.array([1.0, 0.2])
     max_t = 53
     max_iter = int(1.5e3)
@@ -403,7 +403,7 @@ def setup_00037():
 def setup_00038():
     V_r = np.array([[0, 1]])
     V_p = np.array([[10, 0]])
-    X0 = np.array([0])
+    X0 = np.array([0], dtype=np.int64)
     k = np.array([1.0, 0.4])
     max_t = 53
     max_iter = int(1.5e3)
@@ -427,7 +427,7 @@ def setup_00038():
 def setup_00039():
     V_r = np.array([[0, 1]])
     V_p = np.array([[100, 0]])
-    X0 = np.array([0])
+    X0 = np.array([0], dtype=np.int64)
     k = np.array([1.0, 4.0])
     max_t = 53
     max_iter = int(1.5e5)

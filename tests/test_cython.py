@@ -84,60 +84,60 @@ class TestCython:
 class TestRoulette:
     def test_roulettecy(self):
         choice, status = roulette_selection(
-            np.array([5, 0, 0], dtype=np.double), np.array([1, 2], dtype=np.int)
+            np.array([5, 0, 0], dtype=np.double), np.array([1, 2], dtype=np.int64)
         )
         assert choice == 0
         assert status == 0
         choice, status = roulette_selection(
-            np.array([0, 5, 0], dtype=np.double), np.array([1, 2], dtype=np.int)
+            np.array([0, 5, 0], dtype=np.double), np.array([1, 2], dtype=np.int64)
         )
         assert choice == 1
         assert status == 0
         choice, status = roulette_selection(
-            np.array([0, 0, 5], dtype=np.double), np.array([1, 2], dtype=np.int)
+            np.array([0, 0, 5], dtype=np.double), np.array([1, 2], dtype=np.int64)
         )
         assert choice == 2
         assert status == 0
         choice, status = roulette_selection(
-            np.array([0, 0, 0], dtype=np.double), np.array([0, 0], dtype=np.int)
+            np.array([0, 0, 0], dtype=np.double), np.array([0, 0], dtype=np.int64)
         )
         assert choice == -1
         assert status == 3
         choice, status = roulette_selection(
-            np.array([0, 0, 0], dtype=np.double), np.array([1, 2], dtype=np.int)
+            np.array([0, 0, 0], dtype=np.double), np.array([1, 2], dtype=np.int64)
         )
         assert choice == -1
         assert status == -2
 
     def test_100(self):
         prop_list = np.array([1.0, 0.0, 0.0])
-        xt = np.array([1, 2], dtype=np.int)
+        xt = np.array([1, 2], dtype=np.int64)
         choice, status = roulette_selection(prop_list, xt)
         assert status == 0
         assert choice == 0
 
     def test_010(self):
         prop_list = np.array([0.0, 1.0, 0.0])
-        xt = np.array([1, 2], dtype=np.int)
+        xt = np.array([1, 2], dtype=np.int64)
         choice, status = roulette_selection(prop_list, xt)
         assert status == 0
         assert choice == 1
 
     def test_001(self):
         prop_list = np.array([0.0, 0.0, 1.0])
-        xt = np.array([1, 2], dtype=np.int)
+        xt = np.array([1, 2], dtype=np.int64)
         choice, status = roulette_selection(prop_list, xt)
         assert status == 0
         assert choice == 2
 
     def test_stat3(self):
         prop_list = np.array([0.0, 0.0, 0.0])
-        xt = np.array([0, 0], dtype=np.int)
+        xt = np.array([0, 0], dtype=np.int64)
         _, status = roulette_selection(prop_list, xt)
         assert status == 3
 
     def test_statm2(self):
         prop_list = np.array([0.0, 0.0, 0.0])
-        xt = np.array([1, 0], dtype=np.int)
+        xt = np.array([1, 0], dtype=np.int64)
         _, status = roulette_selection(prop_list, xt)
         assert status == -2
