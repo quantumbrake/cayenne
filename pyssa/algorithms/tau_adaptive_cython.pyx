@@ -266,7 +266,7 @@ def tau_adaptive_cython(
     cdef:
         int ite = 1
         long long xtsum = 0
-        bint skipflag = 0
+        bint skipflag = 0, negflag = 0
         Py_ssize_t ns=react_stoic.shape[0], nr=react_stoic.shape[1]
         double prop_sum = 0, prop_crit_sum = 0, taup, taupp
     v = prod_stoic - react_stoic  # ns x nr
@@ -280,15 +280,18 @@ def tau_adaptive_cython(
     kstoc = prop.copy()  # Stochastic rate constants
     vis = np.zeros(nr, dtype=np.int64)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
+    react_species = react_species.astype(dtype=np.int)
 
     cdef double [:] kstoc_view = kstoc
     cdef double [:] prop_view = prop
     cdef long [:, :] v_view = v
     cdef long [:, :] react_stoic_view = react_stoic
     cdef long long [:, :] x_view = x
-    cdef long [:] t_view = t
+    cdef double [:] t_view = t
     cdef int [:] react_species_view = react_species
     cdef int [:] hor_view = hor
+    cdef long long [:] vdotK = np.zeros((ns,), dtype=np.int64)
+    cdef long long [:] x_new = np.zeros((ns,), dtype=np.int64)
 
 
     for ind in range(nr):
@@ -331,43 +334,74 @@ def tau_adaptive_cython(
                 epsilon,
             )
 
-            # Step 3: For small taup, do SSA
-            skipflag = 0
-            if taup < 10.0 / prop_sum:
-                t_ssa, x_ssa, status = direct_cython(
-                    react_stoic,
-                    prod_stoic,
-                    x[ite - 1, :],
-                    k_det,
-                    max_t=max_t - t[ite - 1],
-                    max_iter=min(101, max_iter - ite),
-                    volume=volume,
-                    seed=seed,
-                    chem_flag=chem_flag,
-                )
-                # t_ssa first element is 0. x_ssa first element is x[ite - 1, :].
-                # Both should be dropped while logging the results.
-                len_simulation = len(t_ssa) - 1  # Since t_ssa[0] is 0
-                t_view[ite : ite + len_simulation] = t_ssa[1:] + t[ite - 1]
-                x_view[ite : ite + len_simulation, :] = x_ssa[1:]
-                ite += len_simulation
-                if status == 3 or status == 2:
-                    return t[:ite], x[:ite, :], status
-                continue
+        # Step 3: For small taup, do SSA
+        skipflag = 0
+        if taup < 10.0 / prop_sum:
+            t_ssa, x_ssa, status = direct_cython(
+                react_stoic,
+                prod_stoic,
+                x[ite - 1, :],
+                k_det,
+                max_t=max_t - t[ite - 1],
+                max_iter=min(101, max_iter - ite),
+                volume=volume,
+                seed=seed,
+                chem_flag=chem_flag,
+            )
+            # t_ssa first element is 0. x_ssa first element is x[ite - 1, :].
+            # Both should be dropped while logging the results.
+            len_simulation = len(t_ssa) - 1  # Since t_ssa[0] is 0
+            for ind1 in range(len_simulation):
+                t_view[ite+ind1] = t_ssa[1+ind1] + t[ite-1]
+                for ind2 in range(ns):
+                    x_view[ite+ind1, ind2] = x_ssa[1+ind1, ind2]
+            ite += len_simulation
+            if status == 3 or status == 2:
+                return t[:ite], x[:ite, :], status
+            continue
 
-            # Step 4. Generate second candidate taupp
-            # ----------------------------------
-            prop_crit_sum = 0.0
-            for ind in range(nr):
-                if crit[ind]:
-                    prop_crit_sum += prop[crit[ind]]
-            if prop_crit_sum == 0:
-                taupp = HIGH
-            else:
-                taupp = 1 / prop_crit_sum * log(1 / random.rand())
+        # Step 4. Generate second candidate taupp
+        # ----------------------------------
+        prop_crit_sum = 0.0
+        for ind in range(nr):
+            if crit[ind]:
+                prop_crit_sum += prop[crit[ind]]
+        if prop_crit_sum == 0:
+            taupp = HIGH
+        else:
+            taupp = 1 / prop_crit_sum * log(1 / random.rand())
 
-            # Step 5. Leap
-            # ------------
-            tau, K = step5(taup, taupp, nr, not_crit, prop_view, x_view[ite-1, :])
+        # Step 5. Leap
+        # ------------
+        tau, K = step5(taup, taupp, nr, not_crit, prop_view, x_view[ite-1, :])
 
-        ite = ite + 1
+        # 6. Handle negatives, update and exit conditions
+        # -----------------------------------------------
+        # v = ns, nr
+        # K = nr
+        for ind1 in range(ns):
+                vdotK[ind1] = 0
+        negflag = 0
+        for ind1 in range(ns):
+            for ind2 in range(nr):
+                vdotK[ind1] += v[ind1, ind2] * K[ind2]
+            x_new[ind1] = x[ite - 1, ind1] + vdotK[ind1]
+            if x_new[ind1] < 0:
+                negflag = 1
+        if negflag:
+            taup = taup / 2
+            skip_flag = True
+        else:
+            # Update states if nothing is negative
+            for ind1 in range(ns):
+                x_view[ite, ind1] = x_view[ite - 1, ind1] + vdotK[ind1]
+            t_view[ite] = t_view[ite - 1] + tau
+            ite = ite + 1
+
+        # Exit conditions
+        if t[ite - 1] > max_t:
+            status = 2
+            return t[:ite], x[:ite, :], status
+
+    status = 1
+    return t[:ite], x[:ite, :], status

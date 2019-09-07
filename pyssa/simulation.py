@@ -14,6 +14,7 @@ import matplotlib.lines as mlines
 from .algorithms.direct import direct
 from .algorithms.tau_leaping import tau_leaping
 from .algorithms.tau_adaptive import tau_adaptive
+from .algorithms.tau_adaptive_cython import tau_adaptive_cython
 from .results import Results
 from .algorithms.direct_cython import direct_cython
 from .algorithms.tau_leaping_cython import tau_leaping_cython
@@ -243,7 +244,7 @@ class Simulation:
                 algo = tau_leaping
                 if algorithm == "tau_leaping_cython":
                     algo = tau_leaping_cython
-        elif algorithm == "tau_adaptive":
+        elif algorithm == "tau_adaptive" or algorithm == "tau_adaptive_cython":
             if "epsilon" in kwargs.keys():
                 epsilon = kwargs["epsilon"]
             else:
@@ -252,23 +253,43 @@ class Simulation:
                 nc = kwargs["nc"]
             else:
                 nc = 10
+            hor = self.HOR
             for index in range(n_rep):
-                algo_args.append(
-                    (
-                        np.int64(self._react_stoic),
-                        np.int64(self._prod_stoic),
-                        self._init_state,
-                        self._k_det,
-                        nc,
-                        epsilon,
-                        max_t,
-                        max_iter,
-                        volume,
-                        sim_seeds[index],
-                        self._chem_flag,
+                if algorithm == "tau_adaptive":
+                    algo_args.append(
+                        (
+                            self._react_stoic,
+                            self._prod_stoic,
+                            self._init_state,
+                            self._k_det,
+                            nc,
+                            epsilon,
+                            max_t,
+                            max_iter,
+                            volume,
+                            sim_seeds[index],
+                            self._chem_flag,
+                        )
                     )
-                )
-                algo = tau_adaptive
+                    algo = tau_adaptive
+                elif algorithm == "tau_adaptive_cython":
+                    algo_args.append(
+                        (
+                            self._react_stoic,
+                            self._prod_stoic,
+                            self._init_state,
+                            self._k_det,
+                            hor.astype(np.int),
+                            nc,
+                            epsilon,
+                            max_t,
+                            max_iter,
+                            volume,
+                            sim_seeds[index],
+                            self._chem_flag,
+                        )
+                    )
+                    algo = tau_adaptive_cython
         else:
             raise ValueError("Requested algorithm not supported")
         algo_func = partial(wrapper, func=algo)
