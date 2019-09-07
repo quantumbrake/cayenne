@@ -9,6 +9,7 @@ import numpy as np
 import random
 from ..utils_cython import get_kstoc, TINY, HIGH
 from .direct_cython import direct_cython
+from libc.math cimport log
 
 
 cdef step1(
@@ -223,7 +224,7 @@ def tau_adaptive_cython(
         long long xtsum = 0
         bint skipflag = 0
         Py_ssize_t ns=react_stoic.shape[0], nr=react_stoic.shape[1]
-        double prop_sum = 0
+        double prop_sum = 0, prop_crit_sum = 0, taup, taupp
     v = prod_stoic - react_stoic  # ns x nr
     x = np.zeros((max_iter, ns), dtype=np.int64)
     t = np.zeros((max_iter))
@@ -309,5 +310,16 @@ def tau_adaptive_cython(
                 if status == 3 or status == 2:
                     return t[:ite], x[:ite, :], status
                 continue
+
+            # 4. Generate second candidate taupp
+            # ----------------------------------
+            prop_crit_sum = 0.0
+            for ind in range(nr):
+                if crit[ind]:
+                    prop_crit_sum += prop[crit[ind]]
+            if prop_crit_sum == 0:
+                taupp = HIGH
+            else:
+                taupp = 1 / prop_crit_sum * log(1 / random.rand())
 
         ite = ite + 1
