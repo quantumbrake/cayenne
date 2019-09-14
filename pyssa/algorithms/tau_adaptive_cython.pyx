@@ -14,11 +14,11 @@ from libc.math cimport log
 
 
 cdef step1(
-    double [:] kstoc_view,
-    long long [:] xt_view,
-    long [:, :] react_stoic_view,
-    long [:, :] v_view,
-    int nc,
+        double [:] kstoc_view,
+        long long [:] xt_view,
+        long [:, :] react_stoic_view,
+        long [:, :] v_view,
+        int nc,
     ):
     """ Determine critical reactions """
     cdef:
