@@ -91,7 +91,7 @@ def py_step2_get_g(hor, x):
     return step2_get_g(hor, x)
 
 cdef step2(
-    long [:] not_crit,
+    int [:] not_crit,
     int [:] react_species_view,
     long [:, :] v_view,
     long long [:] xt_view,
@@ -128,7 +128,7 @@ cdef step2(
                 sigp_view[ind] = TINY
             g = step2_get_g(hor_view[species_index], xt_view[species_index])
             tau_num[ind] = max(epsilon * xt_view[species_index] / g, 1)
-        for ind in range(ns):
+        for ind in range(n_react_species):
             if mup_view[ind] != 0:
                 v1 = tau_num[ind] / abs(mup_view[ind])
             else:
