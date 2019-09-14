@@ -29,8 +29,8 @@ cdef step1(
     cdef double [:] prop_view = np.zeros(nr)
     prop_view[...] = kstoc_view
     L = np.ones(nr, dtype=np.int64) * (nc + 1)
-    cdef long [:] crit = np.zeros(nr, dtype=np.int32)
-    cdef long [:] not_crit = np.zeros(nr, dtype=np.int32)
+    cdef np.int32_t [:] crit = np.zeros(nr, dtype=np.int32)
+    cdef np.int32_t [:] not_crit = np.zeros(nr, dtype=np.int32)
     # Calculate the propensities
     for ind1 in range(nr):
         for ind2 in range(ns):
