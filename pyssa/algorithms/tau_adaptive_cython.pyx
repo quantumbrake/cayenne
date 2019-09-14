@@ -92,10 +92,10 @@ def py_step2_get_g(hor, x):
 
 cdef step2(
     int [:] not_crit,
-    int [:] react_species_view,
+    np.int32_t [:] react_species_view,
     long [:, :] v_view,
     long long [:] xt_view,
-    int [:] hor_view,
+    np.int32_t [:] hor_view,
     double [:] prop,
     double epsilon,
     ):
@@ -280,7 +280,7 @@ def tau_adaptive_cython(
     kstoc = prop.copy()  # Stochastic rate constants
     vis = np.zeros(nr, dtype=np.int64)
     react_species = np.where(np.sum(react_stoic, axis=1) > 0)[0]
-    react_species = react_species.astype(dtype=np.int)
+    react_species = react_species.astype(dtype=np.int32)
 
     cdef double [:] kstoc_view = kstoc
     cdef double [:] prop_view = prop
@@ -288,8 +288,8 @@ def tau_adaptive_cython(
     cdef long [:, :] react_stoic_view = react_stoic
     cdef long long [:, :] x_view = x
     cdef double [:] t_view = t
-    cdef int [:] react_species_view = react_species
-    cdef int [:] hor_view = hor
+    cdef np.int32_t [:] react_species_view = react_species
+    cdef np.int32_t [:] hor_view = hor.astype(np.int32)
     cdef long long [:] vdotK = np.zeros((ns,), dtype=np.int64)
     cdef long long [:] x_new = np.zeros((ns,), dtype=np.int64)
 

@@ -329,7 +329,7 @@ class Simulation:
             method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
         """
         ns = self._react_stoic.shape[0]
-        HOR = np.zeros(ns, dtype=np.int64)
+        HOR = np.zeros(ns, dtype=np.int32)
         orders = np.sum(self._react_stoic, axis=0)
         for ind in range(ns):
             this_orders = orders[np.where(self._react_stoic[ind, :] > 0)[0]]
