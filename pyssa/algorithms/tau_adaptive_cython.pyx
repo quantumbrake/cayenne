@@ -345,7 +345,7 @@ def tau_adaptive_cython(
                 max_t=max_t - t[ite - 1],
                 max_iter=min(101, max_iter - ite),
                 volume=volume,
-                seed=seed,
+                seed=np.random.randint(low=0, high=1e7),
                 chem_flag=chem_flag,
             )
             # t_ssa first element is 0. x_ssa first element is x[ite - 1, :].
