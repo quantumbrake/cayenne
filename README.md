@@ -15,6 +15,7 @@
 
 `pyssa` is a Python package for stochastic simulations. It offers a simple api to define models, perform stochastic simulations on them and visualize the results in a convenient manner.
 
+Currently under active development in the `develop` branch.
 
 ## Install
 
