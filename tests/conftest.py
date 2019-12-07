@@ -105,6 +105,8 @@ def read_results_2sp(test_id: str):
 
 @pytest.fixture
 def setup_00001():
+    # A -0.1-> 2A
+    # A -0.11-> X
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
     X0 = np.array([100], dtype=np.int64)
@@ -231,7 +233,8 @@ def setup_00020():
     V_p = np.array([[1, 0]])
     X0 = np.array([0], dtype=np.int64)
     k = np.array([1.0, 0.1])
-    max_t = 51
+    max_t = 52
+    # we did 52 because direct would stop earlier than 50, but we want at least 50 crossed.
     max_iter = int(1.5e3)
     n_rep = 10
     time_list, mu_list, std_list = read_results("00020")
@@ -330,7 +333,7 @@ def setup_00030():
     # deterministic or stochastic. They end up using k1_stoc = 0.001. To have
     # k1_stoc = 0.001, we should set k1_det = 0.001/2
     k = np.array([0.001 / 2, 0.01])
-    max_t = 53
+    max_t = 55
     max_iter = int(1.5e5)
     n_rep = 10
     time_list, mu_list, std_list = read_results_2sp("00030")
