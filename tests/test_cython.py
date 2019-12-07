@@ -3,8 +3,8 @@
 import pytest
 import numpy as np
 from pyssa.simulation import Simulation
-from pyssa.utils_cython import get_kstoc
-from pyssa.utils_cython import py_roulette_selection as roulette_selection
+from pyssa.utils import get_kstoc
+from pyssa.utils import py_roulette_selection as roulette_selection
 
 
 @pytest.mark.usefixtures("setup_basic", "setup_large")
@@ -13,7 +13,7 @@ class TestCython:
         V_r, V_p, X0, k = setup_basic
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(
-            algorithm="direct_cython", max_t=1e5, max_iter=int(1e8), chem_flag=False
+            algorithm="direct", max_t=1e5, max_iter=int(1e8), chem_flag=False
         )
 
     def test_get_kstoc(self, setup_basic):

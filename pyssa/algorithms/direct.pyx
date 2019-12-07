@@ -1,4 +1,3 @@
-# cython: profile=True
 """
     Implementation of the direct method.
 """
@@ -6,15 +5,15 @@
 cimport cython
 cimport numpy as np
 import numpy as np
-import random
-from ..utils_cython cimport roulette_selection
-from ..utils_cython import get_kstoc
+# import random # faster than using np.random, but reproducibility issues
+from ..utils cimport roulette_selection
+from ..utils import get_kstoc
 from libc.math cimport log
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def direct_cython(
+def direct(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
     init_state: np.ndarray,
@@ -87,7 +86,8 @@ def direct_cython(
     x[0, :] = init_state.copy()
     xtemp = init_state.copy()  # Temporary X for updating
     status = 0
-    random.seed(seed)  # Set the seed
+    np.random.seed(seed)
+    # random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
     prop = get_kstoc(react_stoic, k_det, volume, chem_flag)  # Vector of propensities
     kstoc = prop.copy()  # Stochastic rate constants
@@ -131,14 +131,15 @@ def direct_cython(
             continue
         # Update xt and t_curr
         else:
-            r2 = random.random()
+            r2 = np.random.random()
             prop_sum = 0
             for ind in range(nr):
                 prop_sum += prop_view[ind]
-            t_curr += 1 / prop_sum * log(1 / r2)
+            # t_curr += 1 / prop_sum * log(1 / r2)
+            # t_curr += -1 / prop_sum * log(r2)
+            t_curr += np.random.exponential(1/prop_sum)
             if t_curr > max_t:
                 status = 2
-                # print("Reached maximum time (t_curr = )", t_curr)
                 return t[:ite], x[:ite, :], status
         for ind in range(nr):
             prop_view[ind] = kstoc_view[ind]

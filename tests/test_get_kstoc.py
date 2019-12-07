@@ -5,7 +5,7 @@
 import numpy as np
 import pytest
 
-from pyssa.utils_cython import Na, get_kstoc
+from pyssa.utils import Na, get_kstoc
 from pyssa.simulation import Simulation
 
 

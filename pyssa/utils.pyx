@@ -1,9 +1,11 @@
-# cython: profile=True
+"""
+    Contains various utility functions
+"""
 
 cimport cython
 cimport numpy as np
 import numpy as np
-import random
+# import random
 
 
 Na = 6.023e23  # Avogadro's constant
@@ -11,7 +13,7 @@ HIGH = 1e20
 TINY = 1e-20
 
 
-@cython.returns((int, int))
+# @cython.returns((int, int))
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef roulette_selection(double [:] prop_list, long long [:] Xt):
@@ -55,7 +57,8 @@ cdef roulette_selection(double [:] prop_list, long long [:] Xt):
             return result
 
     cdef double prop_sum = prop_list[0]/prop0
-    r1 = random.random()  # Roll the wheel
+    # r1 = random.random()  # Roll the wheel
+    r1 = np.random.random()  # Roll the wheel
     for counter in range(1, counter_max + 1):
         if r1 < prop_sum:
             choice = counter - 1

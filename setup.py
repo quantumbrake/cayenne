@@ -9,34 +9,34 @@ import numpy as np
 with open("README.md") as readme_file:
     readme = readme_file.read()
 
-requirements = ["numpy", "numba", "matplotlib"]
+requirements = ["numpy", "Cython", "matplotlib"]
 
-setup_requirements = []
+setup_requirements = ["Cython"]
 
 test_requirements = ["pytest", "pytest-runner", "pytest-benchmark"]
 
 ext_modules = [
     Extension(
-        "pyssa.algorithms.direct_cython",
-        ["pyssa/algorithms/direct_cython.pyx"],
+        "pyssa.algorithms.direct",
+        ["pyssa/algorithms/direct.pyx"],
         define_macros=[("CYTHON_TRACE", "1")],
         include_dirs=[np.get_include()],
     ),
     Extension(
-        "pyssa.algorithms.tau_leaping_cython",
-        ["pyssa/algorithms/tau_leaping_cython.pyx"],
+        "pyssa.algorithms.tau_leaping",
+        ["pyssa/algorithms/tau_leaping.pyx"],
         define_macros=[("CYTHON_TRACE", "1")],
         include_dirs=[np.get_include()],
     ),
     Extension(
-        "pyssa.algorithms.tau_adaptive_cython",
-        ["pyssa/algorithms/tau_adaptive_cython.pyx"],
+        "pyssa.algorithms.tau_adaptive",
+        ["pyssa/algorithms/tau_adaptive.pyx"],
         define_macros=[("CYTHON_TRACE", "1")],
         include_dirs=[np.get_include()],
     ),
     Extension(
-        "pyssa.utils_cython",
-        ["pyssa/utils_cython.pyx"],
+        "pyssa.utils",
+        ["pyssa/utils.pyx"],
         define_macros=[("CYTHON_TRACE", "1")],
         include_dirs=[np.get_include()],
     ),
@@ -60,7 +60,7 @@ setup(
     long_description=readme + "\n\n",
     long_description_content_type="text/markdown",
     include_package_data=True,
-    keywords="pyssa stochastic gillepsie simulation numba",
+    keywords="pyssa stochastic gillepsie simulation",
     name="pyssa",
     packages=find_packages(exclude=["tests"]),
     setup_requires=setup_requirements,

@@ -1,15 +1,14 @@
-# cython: profile=True
 """
-    Implementation of the tau adaptive algorithm in Cython.
+    Experimental implementation of the tau adaptive algorithm in Cython.
 """
 
 cimport cython
 cimport numpy as np
 import numpy as np
-import random
-from ..utils_cython import get_kstoc, TINY, HIGH
-from ..utils_cython cimport roulette_selection
-from .direct_cython import direct_cython
+# import random
+from ..utils import get_kstoc, TINY, HIGH
+from ..utils cimport roulette_selection
+from .direct import direct
 from libc.math cimport log
 
 
@@ -138,6 +137,7 @@ cdef step2(
             else:
                 v2 = HIGH
             taup = min(taup, min(v1, v2))
+        # print("mup, sigp, tau_num, xt, taup", np.array(mup_view), np.array(sigp_view), np.array(tau_num), np.array(xt_view), taup)
     return taup
 
 
@@ -171,6 +171,7 @@ cdef step5(
                 K[ind] = np.random.poisson(prop_view[ind] * tau)
             else:
                 K[ind] = 0
+        # print("taup, prop_view, K", taup, np.array(prop_view), np.array(K))
     else:
         tau = taupp
         # Identify the only critical reaction to fire
@@ -195,7 +196,9 @@ def py_step5(taup, taupp, nr, not_crit, prop, xt):
     tau, K = step5(taup, taupp, nr, not_crit, prop, xt)
     return tau, np.array(K)
 
-def tau_adaptive_cython(
+@cython.boundscheck(False)
+@cython.wraparound(False)
+def tau_adaptive(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
     init_state: np.ndarray,
@@ -210,7 +213,7 @@ def tau_adaptive_cython(
     chem_flag: bool,
 ):
     """
-        Runs the Tau adaptive simulation algorithm
+        Runs the adaptive tau leaping simulation algorithm `[1]`_.
 
         Parameters
         ---------
@@ -262,6 +265,12 @@ def tau_adaptive_cython(
             -1 : Failure, order greater than 3 detected.
             -2 : Failure, propensity zero without extinction.
             -3 : Negative species count encountered
+    
+        References
+        ----------
+        .. [1] Cao, Y., Gillespie, D.T., Petzold, L.R., 2006.
+        Efficient step size selection for the tau-leaping simulation
+        method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
     """
     cdef:
         int ite = 1
@@ -273,7 +282,7 @@ def tau_adaptive_cython(
     x = np.zeros((max_iter, ns), dtype=np.int64)
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
-    random.seed(seed)  # Set the seed
+    # random.seed(seed)  # Set the seed
     np.random.seed(seed)
     # Determine kstoc from kdet and the highest order or reactions
     prop = get_kstoc(react_stoic, k_det, volume, chem_flag) # Vector of propensities
@@ -305,10 +314,10 @@ def tau_adaptive_cython(
 
 
     while ite < max_iter:
-
         if not skipflag:
 
             # Step 1
+            # print("starting step 1", ite, t[ite-1])
             prop_view, crit, not_crit = step1(
                 kstoc_view,
                 x_view[ite - 1, :],
@@ -324,6 +333,7 @@ def tau_adaptive_cython(
                 return t[:ite], x[:ite, :], status
 
             # Step 2
+            # print("starting step 2", ite, t[ite-1])
             taup = step2(
                 not_crit,
                 react_species_view,
@@ -333,11 +343,12 @@ def tau_adaptive_cython(
                 prop_view,
                 epsilon,
             )
+            # print("ite, taup, x, 10/propsum, time is : ", ite, taup, np.array(x_view[ite-1, :]), 10.0/prop_sum, t[ite-1])
 
         # Step 3: For small taup, do SSA
         skipflag = 0
         if taup < 10.0 / prop_sum:
-            t_ssa, x_ssa, status = direct_cython(
+            t_ssa, x_ssa, status = direct(
                 react_stoic,
                 prod_stoic,
                 x[ite - 1, :],
@@ -362,6 +373,7 @@ def tau_adaptive_cython(
 
         # Step 4. Generate second candidate taupp
         # ----------------------------------
+        # print("starting step 4", ite, t[ite-1])
         prop_crit_sum = 0.0
         for ind in range(nr):
             if crit[ind]:
@@ -369,11 +381,14 @@ def tau_adaptive_cython(
         if prop_crit_sum == 0:
             taupp = HIGH
         else:
-            taupp = 1 / prop_crit_sum * log(1 / random.rand())
+            # taupp = 1 / prop_crit_sum * log(1 / random.rand())
+            taupp = 1 / prop_crit_sum * log(1 / np.random.random())
+            # taupp = np.random.exponential(1/prop_crit_sum)
 
         # Step 5. Leap
         # ------------
         tau, K = step5(taup, taupp, nr, not_crit, prop_view, x_view[ite-1, :])
+        # print("taup, taupp, tau", taup, taupp, tau)
 
         # 6. Handle negatives, update and exit conditions
         # -----------------------------------------------
@@ -388,6 +403,7 @@ def tau_adaptive_cython(
             x_new[ind1] = x[ite - 1, ind1] + vdotK[ind1]
             if x_new[ind1] < 0:
                 negflag = 1
+        # print("vdotk, k, negflag", np.array(vdotK), np.array(K), negflag)
         if negflag:
             taup = taup / 2
             skip_flag = True

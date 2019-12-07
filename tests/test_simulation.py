@@ -8,7 +8,9 @@ import pytest
 from pyssa.simulation import Simulation
 
 
-@pytest.mark.parametrize("algorithm", ["direct_cython", "tau_leaping_cython", "tau_adaptive_cython"])
+@pytest.mark.parametrize(
+    "algorithm", ["direct", "tau_leaping", "tau_adaptive"]
+)
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestSanitizeAlg:
     def test_null(self, algorithm, setup_basic):

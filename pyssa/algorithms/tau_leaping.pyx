@@ -1,4 +1,3 @@
-# cython: profile=True
 """
     Implementation of the tau leaping algorithm in Cython
 """
@@ -7,12 +6,12 @@ cimport cython
 cimport numpy as np
 import numpy as np
 import random
-from ..utils_cython import get_kstoc, TINY
+from ..utils import get_kstoc, TINY
 
 
 @cython.boundscheck(False)
 @cython.wraparound(False)
-def tau_leaping_cython(
+def tau_leaping(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
     init_state: np.ndarray,
