@@ -8,6 +8,7 @@ numpy = "*"
 numba = "*"
 matplotlib = "*"
 numpydoc = "*"
+cython = "*"
 
 [dev-packages]
 bumpversion = "*"

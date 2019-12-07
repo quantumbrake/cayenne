@@ -1,16 +1,16 @@
 """
-    Implementation of the tau leaping algorithm in Numba
+    Implementation of the tau leaping algorithm in Cython
 """
 
-from typing import Tuple
-
-from numba import njit
+cimport cython
+cimport numpy as np
 import numpy as np
-
+import random
 from ..utils import get_kstoc, TINY
 
 
-@njit(nogil=True, cache=False)
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def tau_leaping(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
@@ -21,16 +21,19 @@ def tau_leaping(
     volume: float,
     seed: int,
     chem_flag: bool,
-) -> Tuple[np.ndarray, np.ndarray, int]:
+):
     """
+        Runs the Tau Leaping Simulation Algorithm.
+        Exits if negative population encountered.
+
         Parameters
-        ---------
+        ----------
         react_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
-            Species are rows and reactions are columns.
+            Reactions are columns and species are rows.
         prod_stoic : (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
-            Species are rows and reactions are columns.
+            Reactions are columns and species are rows.
         init_state : (ns,) ndarray
             A 1D array representing the initial state of the system.
         k_det : (nr,) ndarray
@@ -51,7 +54,7 @@ def tau_leaping(
             Defaults to False.
 
         Returns
-        -------
+        ------
         t : ndarray
             Numpy array of the times.
         x : ndarray
@@ -65,46 +68,68 @@ def tau_leaping(
             -2 : Failure, propensity zero without extinction.
             -3 : Negative species count encountered.
     """
-
-    ite = 1  # Iteration counter
-    t_curr = 0.0  # Time in seconds
-    ns = react_stoic.shape[0]
-    nr = react_stoic.shape[1]
+    cdef:
+        int ite = 1, max_iter=0, ind1=0, ind2=0, xtsum=0  # Iteration counter
+        double t_curr = 0.0, prop_sum=0.0
+        Py_ssize_t ns=react_stoic.shape[0], nr=react_stoic.shape[1]
     v = prod_stoic - react_stoic  # ns x nr
-    xt = init_state.copy()  # Number of species at time t_curr
+    xt = init_state.copy().astype(np.int64)  # Number of species at time t_curr
     max_iter = np.int(max_t / tau) + 1
-    x = np.zeros((max_iter, ns))
+    x = np.zeros((max_iter, ns), dtype=np.int64)
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
     n_events = np.zeros((nr,), dtype=np.int64)
     np.random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
-    prop = np.copy(
-        get_kstoc(react_stoic, k_det, volume, chem_flag)
-    )  # Vector of propensities
+    prop = get_kstoc(react_stoic, k_det, volume, chem_flag)  # Vector of propensities
     kstoc = prop.copy()  # Stochastic rate constants
 
-    if np.sum(prop) < TINY:
-        if np.sum(xt) > TINY:
+    cdef double [:] kstoc_view = kstoc
+    cdef double [:] prop_view = prop
+    cdef long long [:] xt_view = xt
+    cdef long long [:] n_events_view = n_events
+    cdef long [:, :] v_view = v
+    cdef long [:, :] react_stoic_view = react_stoic
+    cdef long long [:, :] x_view = x
+
+    for ind in range(nr):
+        prop_sum += prop_view[ind]
+    if prop_sum < TINY:
+        for ind in range(ns):
+            xtsum += xt_view[ind]
+        if xtsum > TINY:
             status = -2
             return t[:ite], x[:ite, :], status
 
     while ite < max_iter:
-        # Calculate the event rates
+        # Calculate propensities
+        prop_sum = 0
         for ind1 in range(nr):
             for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
-            n_events[ind1] = np.random.poisson(prop[ind1] * tau)  # 1 x nr
-        if np.all(prop == 0):
+                if react_stoic_view[ind2, ind1]:
+                    if react_stoic_view[ind2, ind1] == 1:
+                        prop_view[ind1] *= x_view[ite - 1, ind2]
+                    elif react_stoic_view[ind2, ind1] == 2:
+                        prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) / 2
+                    elif react_stoic_view[ind2, ind1] == 3:
+                        prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) * (x_view[ite - 1, ind2] - 2) / 6
+            prop_sum += prop_view[ind1]
+            n_events_view[ind1] = np.random.poisson(prop_view[ind1] * tau)  # 1 x nr
+        if prop_sum == 0:
             status = 3
             return t[:ite], x[:ite,], status
+        for ind1 in range(ns):
+            xt_view[ind1] = x_view[ite-1, ind1]
+            for ind2 in range(nr):
+                xt_view[ind1] += n_events_view[ind2] * v_view[ind1, ind2]
+        for ind1 in range(ns):
+            if xt_view[ind1] < 0:
+                return t[:ite], x[:ite, :], -3
+            else:
+                x_view[ite, ind1] = xt_view[ind1]
         for ind1 in range(nr):
-            xt += n_events[ind1] * v[:, ind1]
-        if np.any(xt < 0):
-            return t[:ite], x[:ite, :], -3
-        prop = np.copy(kstoc)
-        x[ite, :] = xt
+            prop_view[ind1] = kstoc_view[ind1]
         t_curr += tau
         t[ite] = t_curr
         ite += 1

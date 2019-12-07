@@ -77,23 +77,13 @@ You can also access the final states of all the simulation runs by
 final_times, final_states = results.final
 ```
 
-## Benchmarks
-
-We chose `numba` after extensive testing and benchmarking against `python` and `cython` implementations.
-
-Name (time in ms) | Min | Max | Mean | StdDev | Median | IQR | Outliers | OPS | Rounds | Iterations |
-| --- |:---:| :---:|:---:| :---:|:---:| :---:|:---:| :---:|:---:| :---:|
-test_numba_benchmark | 314.1758 (1.0) | 342.9915 (1.0) | 322.9318 (1.0) |  11.4590 (1.0) |   318.7983 (1.0) |  9.1533 (1.0) |     1;1 | 3.0966 (1.0) |     5 |     1 |
-test_cy_benchmark |  17,345.7698 (55.21)  |  19,628.3931 (57.23)  |  18,255.3931 (56.53)  | 862.4711 (75.27) |  18,148.9358 (56.93)  |  1,030.3676 (112.57) |   2;0 | 0.0548 (0.02) |    5 |     1 |
-test_py_benchmark |  27,366.3681 (87.11) |  28,417.8333 (82.85) |   27,782.2482 (86.03)  |  387.2758 (33.80)  |  27,728.4224 (86.98)  |  347.3891 (37.95) |   2;0 | 0.0360 (0.01) |    5 |     1 |
-
 ## License
 
 Copyright (c) 2018-2019, Dileep Kishore, Srikiran Chandrasekaran. Released under: Apache Software License 2.0
 
 ## Credits
 
-- [Numba](https://numba.pydata.org/)
+- [Cython](https://cython.org/)
 - [pytest](https://docs.pytest.org)
 - [Cookiecutter](https://github.com/audreyr/cookiecutter)
 - [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)

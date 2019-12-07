@@ -2,15 +2,17 @@
     Implementation of the direct method.
 """
 
-from typing import Tuple
-
-from numba import njit
+cimport cython
+cimport numpy as np
 import numpy as np
+# import random # faster than using np.random, but reproducibility issues
+from ..utils cimport roulette_selection
+from ..utils import get_kstoc
+from libc.math cimport log
 
-from ..utils import get_kstoc, roulette_selection
 
-
-@njit(nogil=True, cache=False)
+@cython.boundscheck(False)
+@cython.wraparound(False)
 def direct(
     react_stoic: np.ndarray,
     prod_stoic: np.ndarray,
@@ -21,7 +23,7 @@ def direct(
     volume: float,
     seed: int,
     chem_flag: bool,
-) -> Tuple[np.ndarray, np.ndarray, int]:
+):
     """
         Runs the Direct Stochastic Simulation Algorithm.
 
@@ -74,48 +76,75 @@ def direct(
         doi:10.1016/0021-9991(76)90041-3.
     """
 
-    ite = 1  # Iteration counter
-    t_curr = 0  # Time in seconds
-    ns = react_stoic.shape[0]
-    nr = react_stoic.shape[1]
+    cdef:
+        int ite=1, ind=0, ind1=0, ind2=0, continue_flag=0, choice, status
+        double t_curr=0, prop_sum=0
+        Py_ssize_t ns=react_stoic.shape[0], nr=react_stoic.shape[1]
     v = prod_stoic - react_stoic  # ns x nr
-    xt = init_state.copy()  # Number of species at time t_curr
-    x = np.zeros((max_iter, ns))
+    x = np.zeros((max_iter, ns), dtype=np.int64)
     t = np.zeros((max_iter))
     x[0, :] = init_state.copy()
     xtemp = init_state.copy()  # Temporary X for updating
     status = 0
-    np.random.seed(seed)  # Set the seed
+    np.random.seed(seed)
+    # random.seed(seed)  # Set the seed
     # Determine kstoc from kdet and the highest order or reactions
     prop = get_kstoc(react_stoic, k_det, volume, chem_flag)  # Vector of propensities
     kstoc = prop.copy()  # Stochastic rate constants
+    cdef double [:] kstoc_view = kstoc
+    cdef double [:] prop_view = prop
+    cdef long long [:] xtemp_view = xtemp
+    cdef long [:, :] v_view = v
+    cdef long [:, :] react_stoic_view = react_stoic
+    cdef long long [:, :] x_view = x
     while ite < max_iter:
         # Calculate propensities
         for ind1 in range(nr):
             for ind2 in range(ns):
                 # prop = kstoc * product of (number raised to order)
-                prop[ind1] *= np.power(xt[ind2], react_stoic[ind2, ind1])
+                if react_stoic_view[ind2, ind1]:
+                    if react_stoic_view[ind2, ind1] == 1:
+                        prop_view[ind1] *= x_view[ite - 1, ind2]
+                    elif react_stoic_view[ind2, ind1] == 2:
+                        prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) / 2
+                    elif react_stoic_view[ind2, ind1] == 3:
+                        prop_view[ind1] *= x_view[ite - 1, ind2] * (x_view[ite - 1, ind2] - 1) * (x_view[ite - 1, ind2] - 2) / 6
         # Roulette wheel
-        choice, status = roulette_selection(prop, xt)
+        roulette_results = roulette_selection(prop_view, x_view[ite-1, :])
+        choice = roulette_results[0]
+        status = roulette_results[1]
         if status == 0:
-            xtemp = xt + v[:, choice]
+            for ind1 in range(ns):
+                xtemp_view[ind1] = x_view[ite-1, ind1] + v_view[ind1, choice]
         else:
             return t[:ite], x[:ite, :], status
 
         # If negative species produced, reject step
-        if np.min(xtemp) < 0:
+        # if np.min(xtemp) < 0:
+        #     continue
+        for ind in range(ns):
+            if xtemp_view[ind] < 0:
+                continue_flag = 1
+                break
+        if continue_flag:
+            continue_flag = 0
             continue
         # Update xt and t_curr
         else:
-            xt = xtemp
-            r2 = np.random.rand()
-            t_curr += 1 / np.sum(prop) * np.log(1 / r2)
+            r2 = np.random.random()
+            prop_sum = 0
+            for ind in range(nr):
+                prop_sum += prop_view[ind]
+            # t_curr += 1 / prop_sum * log(1 / r2)
+            # t_curr += -1 / prop_sum * log(r2)
+            t_curr += np.random.exponential(1/prop_sum)
             if t_curr > max_t:
                 status = 2
-                print("Reached maximum time (t_curr = )", t_curr)
                 return t[:ite], x[:ite, :], status
-        prop = np.copy(kstoc)
-        x[ite, :] = xt
+        for ind in range(nr):
+            prop_view[ind] = kstoc_view[ind]
+        for ind in range(ns):
+            x_view[ite, ind] = xtemp_view[ind]
         t[ite] = t_curr
         ite += 1
     status = 1

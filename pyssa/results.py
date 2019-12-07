@@ -4,6 +4,7 @@
 
 from collections.abc import Collection
 from typing import List, Tuple
+from warnings import warn
 
 import numpy as np
 
@@ -18,7 +19,7 @@ class Results(Collection):
         x_list : List[np.ndarray]
         status_list : List[int]
         algorithm : str
-        seed: List[int]
+        sim_seeds: List[int]
 
         Other Parameters
         ----------------
@@ -33,14 +34,14 @@ class Results(Collection):
         x_list: List[np.ndarray],
         status_list: List[int],
         algorithm: str,
-        seed: List[int],
+        sim_seeds: List[int],
         **kwargs,
     ) -> None:
         self.x_list = x_list
         self.t_list = t_list
         self.status_list = status_list
         self.algorithm = algorithm
-        self.seed = seed
+        self.sim_seeds = sim_seeds
         if not self._check_consistency():
             raise ValueError("Inconsistent results passed")
 
@@ -58,7 +59,7 @@ class Results(Collection):
             len(self.x_list)
             == len(self.t_list)
             == len(self.status_list)
-            == len(self.seed)
+            == len(self.sim_seeds)
         ):
             pass
         else:
@@ -71,9 +72,7 @@ class Results(Collection):
         return True
 
     def __repr__(self) -> str:
-        return (
-            f"<Results n_rep={len(self)} algorithm={self.algorithm} seed={self.seed}>"
-        )
+        return f"<Results n_rep={len(self)} algorithm={self.algorithm} sim_seeds={self.sim_seeds}>"
 
     def __str__(self) -> str:
         return self.__repr__()
@@ -123,17 +122,31 @@ class Results(Collection):
             -------
             List[np.ndarray]
                 The states of the system at `t` for all repetitions.
+
+            Raises
+            ------
+            UserWarning
+                If simulation ends before `t` but system does not reach
+                extinction.
         """
         states: List[np.ndarray] = []
-        for x_array, t_array, _ in self:
+        for x_array, t_array, s in self:
             ind = np.searchsorted(t_array, t)
             ind = ind - 1 if ind > 0 else ind
-            x_interp = np.zeros(x_array.shape[1])
-            for ind2 in range(x_array.shape[1]):
-                x_interp[ind2] = np.interp(
-                    t,
-                    [t_array[ind], t_array[ind + 1]],
-                    [x_array[ind, ind2], x_array[ind + 1, ind2]],
-                )
-            states.append(x_interp)
+            if ind == len(t_array) - 1:
+                states.append(x_array[-1, :])
+                if s != 3:
+                    warn(f"Simulation ended before {t}, returning last state.")
+            else:
+                x_interp = np.zeros(x_array.shape[1])
+                if self.algorithm != "direct":
+                    for ind2 in range(x_array.shape[1]):
+                        x_interp[ind2] = np.interp(
+                            t,
+                            [t_array[ind], t_array[ind + 1]],
+                            [x_array[ind, ind2], x_array[ind + 1, ind2]],
+                        )
+                    states.append(x_interp)
+                else:
+                    states.append(x_array[ind, :])
         return states

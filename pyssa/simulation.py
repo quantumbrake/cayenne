@@ -140,7 +140,7 @@ class Simulation:
         max_t: float = 10.0,
         max_iter: int = 1000,
         volume: float = 1.0,
-        seed: Optional[List[int]] = None,
+        seed: int = 0,
         n_rep: int = 1,
         n_procs: int = 1,
         algorithm: str = "direct",
@@ -161,10 +161,9 @@ class Simulation:
         volume : float, optional
             The volume of the system
             The default value is 1.0
-        seed : List[int], optional
-            The list of seeds for the simulations
-            The length of this list should be equal to `n_rep`
-            The default value is None
+        seed : int, optional
+            The seed used to generate simulation seeds.
+            The default value is 0
         n_rep : int, optional
             The number of repetitions of the simulation required
             The default value is 1
@@ -193,11 +192,10 @@ class Simulation:
         xlist = []
         status_list = []
 
-        if seed is not None:
-            if n_rep != len(seed):
-                raise ValueError("Seed should be as long as n_rep")
-        else:
-            seed = [index for index in range(n_rep)]
+        if not isinstance(seed, int):
+            raise TypeError("Seed should be of type int")
+        np.random.seed(seed)
+        sim_seeds = np.random.randint(low=0, high=1e7, size=n_rep)
 
         if not isinstance(max_iter, int):
             raise TypeError("max_iter should be of type int")
@@ -214,7 +212,7 @@ class Simulation:
                         max_t,
                         max_iter,
                         volume,
-                        seed[index],
+                        sim_seeds[index],
                         self._chem_flag,
                     )
                 )
@@ -234,7 +232,7 @@ class Simulation:
                         tau,
                         max_t,
                         volume,
-                        seed[index],
+                        sim_seeds[index],
                         self._chem_flag,
                     )
                 )
@@ -248,23 +246,25 @@ class Simulation:
                 nc = kwargs["nc"]
             else:
                 nc = 10
+            hor = self.HOR
             for index in range(n_rep):
                 algo_args.append(
                     (
-                        np.int64(self._react_stoic),
-                        np.int64(self._prod_stoic),
+                        self._react_stoic,
+                        self._prod_stoic,
                         self._init_state,
                         self._k_det,
+                        hor.astype(np.int),
                         nc,
                         epsilon,
                         max_t,
                         max_iter,
                         volume,
-                        seed[index],
+                        sim_seeds[index],
                         self._chem_flag,
                     )
                 )
-                algo = tau_adaptive
+            algo = tau_adaptive
         else:
             raise ValueError("Requested algorithm not supported")
         algo_func = partial(wrapper, func=algo)
@@ -277,7 +277,60 @@ class Simulation:
             tlist.append(t)
             xlist.append(X)
             status_list.append(status)
-        self._results = Results(tlist, xlist, status_list, algorithm, seed)
+        self._results = Results(tlist, xlist, status_list, algorithm, sim_seeds)
+
+    @property
+    def HOR(self) -> np.ndarray:
+        """
+            Determine the HOR vector. HOR(i) is the highest order of reaction
+            in which species S_i appears as a reactant.
+
+            Returns
+            -------
+            HOR : np.ndarray
+                Highest order of the reaction for the reactive species as
+                defined under Eqn. (27) of [1]_. HOR can be 1, 2 or 3
+                if the species appears only once in the reactants.
+                If HOR is -2, it appears twice in a second order reaction.
+                If HOR is -3, it appears thrice in a third order reaction.
+                If HOR is -32, it appears twice in a third order reaction.
+                The corresponding value of `g_i` in Eqn. (27) is handled
+                by `tau_adaptive`.
+
+            References
+            ----------
+            .. [1] Cao, Y., Gillespie, D.T., Petzold, L.R., 2006.
+            Efficient step size selection for the tau-leaping simulation
+            method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
+        """
+        ns = self._react_stoic.shape[0]
+        HOR = np.zeros(ns, dtype=np.int32)
+        orders = np.sum(self._react_stoic, axis=0)
+        for ind in range(ns):
+            this_orders = orders[np.where(self._react_stoic[ind, :] > 0)[0]]
+            if len(this_orders) == 0:
+                HOR[ind] = 0
+                continue
+            HOR[ind] = np.max(this_orders)
+            if HOR[ind] == 1:
+                continue
+            order_2_indices = np.where(orders == 2)
+            this_react_stoic = self._react_stoic[ind, :]
+            if order_2_indices[0].size > 0:
+                if np.max(this_react_stoic[order_2_indices[0]]) == 2 and HOR[ind] == 2:
+                    HOR[ind] = -2  # g_i should be (2 + 1/(x_i-1))
+            if np.where(orders == 3):
+                if (
+                    HOR[ind] == 3
+                    and np.max(this_react_stoic[np.where(this_orders == 3)[0]]) == 2
+                ):
+                    HOR[ind] = -32  # g_i should be (3/2 * (2 + 1/(x_i-1)))
+                elif (
+                    HOR[ind] == 3
+                    and np.max(this_react_stoic[np.where(this_orders == 3)[0]]) == 3
+                ):
+                    HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
+        return HOR
 
     def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
         """
@@ -326,6 +379,7 @@ class Simulation:
                         res.t_list[index2],
                         res.x_list[index2][:, plot_indices[index1]],
                         color=colors[index1],
+                        where="post",
                     )
             if names is None:
                 names = generic_names
