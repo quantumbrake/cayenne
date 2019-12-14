@@ -2,6 +2,32 @@
 History
 =======
 
+0.9.0 (2019-12-14)
+------------------
+Replace ``numba`` implementation with ``Cython`` implementation
+
+Fixed
++++++
+- Propensity calculation in all algorithms
+- Considerable speed-up in algorithm runtimes
+
+Added
++++++
+- ``direct`` algorithm in ``Cython``
+- ``tau_leaping`` algorithm in ``Cython``
+- ``tau_adaptive`` algorithm in ``Cython`` (experimental)
+- ``Cython`` to Azure pipeline
+- Accuracy tests from `sbml-test-suite <https://github.com/sbmlteam/sbml-test-suite>`_
+- HOR property and tests for it
+- Code coverage for ``Cython``
+
+Changed
++++++++
+- Remove ``numba`` algorithms
+- Remove interpolation for direct algorithm
+- ``sim.plot`` now plots ``post`` step curve
+
+
 0.8.2 (2019-04-20)
 ------------------
 
