@@ -17,25 +17,26 @@ TINY = 1e-20
 @cython.boundscheck(False)
 @cython.wraparound(False)
 cdef roulette_selection(double [:] prop_list, long long [:] Xt):
-    """Perform roulette selection on the list of propensities.
+    """
+        Perform roulette selection on the list of propensities.
 
-    Return the index of the selected reaction (`choice`) by performing
-    Roulette selection on the given list of reaction propensities.
+        Return the index of the selected reaction (``choice``) by performing
+        Roulette selection on the given list of reaction propensities.
 
-    Parameters
-    ----------
-    prop_list : array_like
-        A 1D array of the propensities of the reactions.
+        Parameters
+        ----------
+        prop_list: array_like
+            A 1D array of the propensities of the reactions.
 
-    Xt : array_like
-        A 1D array of the current simulation state.
+        Xt: array_like
+            A 1D array of the current simulation state.
 
-    Returns
-    -------
-    choice : int
-        Index of the chosen reaction.
-    status : int
-        Status of the simulation as described in `direct`.
+        Returns
+        -------
+        choice: int
+            Index of the chosen reaction.
+        status: int
+            Status of the simulation as described in ``direct``.
     """
     cdef:
         int choice= 0, status=0, counter=0, counter_max=prop_list.shape[0], Xt_counter_max = Xt.shape[0]
@@ -70,37 +71,38 @@ cdef roulette_selection(double [:] prop_list, long long [:] Xt):
 
 
 def get_kstoc(react_stoic, k_det, volume, chem_flag):
-    """Compute k_stoc from k_det.
+    """
+        Compute k_stoc from k_det.
 
-    Return a vector of the stochastic rate constants (k_stoc) determined
-    from the deterministic rate constants (k_det).
+        Return a vector of the stochastic rate constants (k_stoc) determined
+        from the deterministic rate constants (k_det) [1]_
 
-    Parameters
-    ----------
-    react_stoic : (ns, nr) ndarray
-        A 2D array of the stoichiometric coefficients of the reactants.
-        Reactions are columns and species are rows.
-    k_det : (nr,) ndarray
-        A 1D array representing the deterministic rate constants of the
-        system.
-    volume : float
-        The volume of the reactor vessel which is important for second
-        and higher order reactions
-    chem_flag : bool
-        If True, divide by Na while calculating stochastic rate constants.
+        Parameters
+        ----------
+        react_stoic: (ns, nr) ndarray
+            A 2D array of the stoichiometric coefficients of the reactants.
+            Reactions are columns and species are rows.
+        k_det: (nr,) ndarray
+            A 1D array representing the deterministic rate constants of the
+            system.
+        volume: float
+            The volume of the reactor vessel which is important for second
+            and higher order reactions
+        chem_flag: bool
+            If True, divide by Na while calculating stochastic rate constants.
 
-    Returns
-    -------
-    k_stoc : (nr,) ndarray
-        A 1D array representing the stochastic rate constants of the
-        system.
+        Returns
+        -------
+        k_stoc: (nr,) ndarray
+            A 1D array representing the stochastic rate constants of the
+            system.
 
-    References
-    ----------
-    1. Gillespie, D.T., 1976. A general method for numerically
-    simulating the stochastic time evolution of coupled chemical
-    reactions. J. Comput. Phys. 22, 403–434.
-    doi:10.1016/0021-9991(76)90041-3.
+        References
+        ----------
+        .. [1] Gillespie, D.T., 1976.
+            A general method for numerically simulating the stochastic time evolution
+            of coupled chemical reactions. J. Comput. Phys. 22, 403–434.
+            doi:10.1016/0021-9991(76)90041-3.
     """
     cdef:
         int nr=react_stoic.shape[1], ns=react_stoic.shape[0], max_order
@@ -124,4 +126,25 @@ def get_kstoc(react_stoic, k_det, volume, chem_flag):
     return k_stoc
 
 def py_roulette_selection(prop_list, Xt):
+    """
+        Perform roulette selection on the list of propensities.
+
+        Return the index of the selected reaction (``choice``) by performing
+        Roulette selection on the given list of reaction propensities.
+
+        Parameters
+        ----------
+        prop_list: array_like
+            A 1D array of the propensities of the reactions.
+
+        Xt: array_like
+            A 1D array of the current simulation state.
+
+        Returns
+        -------
+        choice: int
+            Index of the chosen reaction.
+        status: int
+            Status of the simulation as described in ``direct``.
+    """
     return roulette_selection(prop_list, Xt)

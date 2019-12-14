@@ -27,27 +27,27 @@ class Simulation:
 
         Parameters
         ----------
-        react_stoic : (ns, nr) ndarray
+        react_stoic: (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
             Reactions are columns and species are rows.
-        prod_stoic : (ns, nr) ndarray
+        prod_stoic: (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
             Reactions are columns and species are rows.
-        init_state : (ns,) ndarray
+        init_state: (ns,) ndarray
             A 1D array representing the initial state of the system.
-        k_det : (nr,) ndarray
+        k_det: (nr,) ndarray
             A 1D array representing the deterministic rate constants of the
             system.
-        volume : float, optional
+        volume: float, optional
             The volume of the reactor vessel which is important for second
             and higher order reactions. Defaults to 1 arbitrary units.
-        chem_flag : bool, optional
+        chem_flag: bool, optional
             If True, divide by Na while calculating stochastic rate constants.
             Defaults to False.
 
         Attributes
         ----------
-        results : Results
+        results: Results
             The results instance
 
         Raises
@@ -148,45 +148,45 @@ class Simulation:
         **kwargs,
     ):
         """
-        Run the simulation
+            Run the simulation
 
-        Parameters
-        ----------
-        max_t : float, optional
-            The end time of the simulation
-            The default is 10.0
-        max_iter : int, optional
-            The maximum number of iterations of the simulation loop
-            The default is 1000 iterations
-        volume : float, optional
-            The volume of the system
-            The default value is 1.0
-        seed : int, optional
-            The seed used to generate simulation seeds.
-            The default value is 0
-        n_rep : int, optional
-            The number of repetitions of the simulation required
-            The default value is 1
-        n_procs : int, optional
-            The number of cpu cores to use for the simulation
-            The default value is 1
-        algorithm : str, optional
-            The algorithm to be used to run the simulation
-            The default value is "direct"
+            Parameters
+            ----------
+            max_t: float, optional
+                The end time of the simulation
+                The default is 10.0
+            max_iter: int, optional
+                The maximum number of iterations of the simulation loop
+                The default is 1000 iterations
+            volume: float, optional
+                The volume of the system
+                The default value is 1.0
+            seed: int, optional
+                The seed used to generate simulation seeds.
+                The default value is 0
+            n_rep: int, optional
+                The number of repetitions of the simulation required
+                The default value is 1
+            n_procs: int, optional
+                The number of cpu cores to use for the simulation
+                The default value is 1
+            algorithm: str, optional
+                The algorithm to be used to run the simulation
+                The default value is "direct"
 
-        Returns
-        -------
-        t : float
-            End time of the simulation.
-        Xt : ndarray
-            System state at time `t` and initial.
-        status : int
-            Indicates the status of the simulation at exit.
-            1 : Succesful completion, terminated when `max_iter` iterations reached.
-            2 : Succesful completion, terminated when `max_t` crossed.
-            3 : Succesful completion, terminated when all species went extinct.
-            -1 : Failure, order greater than 3 detected.
-            -2 : Failure, propensity zero without extinction.
+            Returns
+            -------
+            t: float
+                End time of the simulation.
+            Xt: ndarray
+                System state at time `t` and initial.
+            status: int
+                Indicates the status of the simulation at exit.
+                1: Succesful completion, terminated when `max_iter` iterations reached.
+                2: Succesful completion, terminated when `max_t` crossed.
+                3: Succesful completion, terminated when all species went extinct.
+                -1: Failure, order greater than 3 detected.
+                -2: Failure, propensity zero without extinction.
         """
         tlist = []
         xlist = []
@@ -287,21 +287,21 @@ class Simulation:
 
             Returns
             -------
-            HOR : np.ndarray
+            HOR: np.ndarray
                 Highest order of the reaction for the reactive species as
                 defined under Eqn. (27) of [1]_. HOR can be 1, 2 or 3
                 if the species appears only once in the reactants.
                 If HOR is -2, it appears twice in a second order reaction.
                 If HOR is -3, it appears thrice in a third order reaction.
                 If HOR is -32, it appears twice in a third order reaction.
-                The corresponding value of `g_i` in Eqn. (27) is handled
-                by `tau_adaptive`.
+                The corresponding value of ``g_i`` in Eqn. (27) is handled
+                by ``tau_adaptive``.
 
             References
             ----------
             .. [1] Cao, Y., Gillespie, D.T., Petzold, L.R., 2006.
-            Efficient step size selection for the tau-leaping simulation
-            method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
+                Efficient step size selection for the tau-leaping simulation
+                method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
         """
         ns = self._react_stoic.shape[0]
         HOR = np.zeros(ns, dtype=np.int32)
@@ -334,26 +334,26 @@ class Simulation:
 
     def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
         """
-        Plot the simulation
+            Plot the simulation
 
-        Parameters
-        ----------
-        plot_indices : list, optional
-            The indices of the species to be plotted.
-            The default is `[i for i in range(self._ns)]` plots all species.
-        disp : bool, optional
-            If `True`, the plot is displayed.
-            The default shows the plot.
-        names : list, optional
-            The names of the species to be plotted.
-            The default is `xi` for species `i`.
+            Parameters
+            ----------
+            plot_indices: list, optional
+                The indices of the species to be plotted.
+                The default is `[i for i in range(self._ns)]` plots all species.
+            disp: bool, optional
+                If `True`, the plot is displayed.
+                The default shows the plot.
+            names: list, optional
+                The names of the species to be plotted.
+                The default is `xi` for species `i`.
 
-        Returns
-        -------
-        fig : class 'matplotlib.figure.Figure'
-            Figure object of the generated plot.
-        ax : class 'matplotlib.axes._subplots.AxesSubplot
-            Axis objected of the generated plot.
+            Returns
+            -------
+            fig: class 'matplotlib.figure.Figure'
+                Figure object of the generated plot.
+            ax: class 'matplotlib.axes._subplots.AxesSubplot
+                Axis objected of the generated plot.
         """
 
         if self._results is None:

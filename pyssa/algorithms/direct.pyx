@@ -25,55 +25,55 @@ def direct(
     chem_flag: bool,
 ):
     """
-        Runs the Direct Stochastic Simulation Algorithm.
+        Runs the Direct Stochastic Simulation Algorithm [1]_
 
         Parameters
         ----------
-        react_stoic : (ns, nr) ndarray
+        react_stoic: (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
             Reactions are columns and species are rows.
-        prod_stoic : (ns, nr) ndarray
+        prod_stoic: (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
             Reactions are columns and species are rows.
-        init_state : (ns,) ndarray
+        init_state: (ns,) ndarray
             A 1D array representing the initial state of the system.
-        k_det : (nr,) ndarray
+        k_det: (nr,) ndarray
             A 1D array representing the deterministic rate constants of the
             system.
-        max_t : float
+        max_t: float
             The maximum simulation time to run the simulation for.
-        max_iter : int
+        max_iter: int
             The maximum number of iterations to run the simulation for.
-        volume : float
+        volume: float
             The volume of the reactor vessel which is important for second
             and higher order reactions. Defaults to 1 arbitrary units.
-        seed : int
+        seed: int
             The seed for the numpy random generator used for the current run
             of the algorithm.
-        chem_flag : bool
+        chem_flag: bool
             If True, divide by Na while calculating stochastic rate constants.
             Defaults to False.
 
         Returns
         -------
-        t : ndarray
+        t: ndarray
             Numpy array of the times.
-        x : ndarray
-            Numpy array of the states of the system at times in in `t`.
-        status : int
+        x: ndarray
+            Numpy array of the states of the system at times in in ``t``.
+        status: int
             Indicates the status of the simulation at exit.
-            1 : Succesful completion, terminated when `max_iter` iterations reached.
-            2 : Succesful completion, terminated when `max_t` crossed.
-            3 : Succesful completion, terminated when all species went extinct.
-            -1 : Failure, order greater than 3 detected.
-            -2 : Failure, propensity zero without extinction.
+            1 - Succesful completion, terminated when ``max_iter`` iterations reached.
+            2 - Succesful completion, terminated when ``max_t`` crossed.
+            3 - Succesful completion, terminated when all species went extinct.
+            -1 - Failure, order greater than 3 detected.
+            -2 - Failure, propensity zero without extinction.
 
         References
         ----------
-        .. [1] Gillespie, D.T., 1976. A general method for numerically
-        simulating the stochastic time evolution of coupled chemical
-        reactions. J. Comput. Phys. 22, 403–434.
-        doi:10.1016/0021-9991(76)90041-3.
+        .. [1] Gillespie, D.T., 1976.
+            A general method for numerically simulating the stochastic time
+            evolution of coupled chemical reactions. J. Comput. Phys. 22, 403–434.
+            doi:10.1016/0021-9991(76)90041-3.
     """
 
     cdef:

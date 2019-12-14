@@ -15,17 +15,21 @@ class Results(Collection):
 
         Parameters
         ----------
-        t_list : List[float]
-        x_list : List[np.ndarray]
-        status_list : List[int]
-        algorithm : str
+        t_list: List[float]
+            List of time points for each repetition
+        x_list: List[np.ndarray]
+            List of system states for each repetition
+        status_list: List[int]
+            List of return status for each repetition
+        algorithm: str
+            Algorithm used to run the simulation
         sim_seeds: List[int]
-
-        Other Parameters
-        ----------------
+            List of seeds used for the simulation
 
         Attributes
         ----------
+        final: Tuple[np.ndarray, np.ndarray]
+            The final times and states of the sytem
     """
 
     def __init__(
@@ -35,7 +39,6 @@ class Results(Collection):
         status_list: List[int],
         algorithm: str,
         sim_seeds: List[int],
-        **kwargs,
     ) -> None:
         self.x_list = x_list
         self.t_list = t_list
@@ -72,28 +75,69 @@ class Results(Collection):
         return True
 
     def __repr__(self) -> str:
-        return f"<Results n_rep={len(self)} algorithm={self.algorithm} sim_seeds={self.sim_seeds}>"
+        """
+            Return summary of simulation.
+
+            Returns
+            -------
+            summary: str
+                Summary of the simulation with length of simulation, algorithm and seeds used.
+        """
+        summary = f"<Results n_rep={len(self)} algorithm={self.algorithm} sim_seeds={self.sim_seeds}>"
+        return summary
 
     def __str__(self) -> str:
+        """ Return self.__repr__() """
         return self.__repr__()
 
     def __iter__(self):
+        """ Iterate over each repetition """
         return zip(self.x_list, self.t_list, self.status_list)
 
     def __len__(self):
-        return len(self.x_list)
+        """
+            Return number of repetitions in simulation
+
+            Returns
+            -------
+            n_rep: int
+                Number of repetitions in simulation
+        """
+        n_rep = len(self.x_list)
+        return n_rep
 
     def __contains__(self, ind):
+        """ Returns True if ind is one of the repetition numbers """
         if ind < len(self):
             return True
         else:
             return False
 
     def __getitem__(self, ind: int):
+        """
+            Return sim. state, time points and status of repetition no. `ind`
+
+            Parameters
+            ----------
+            ind: int
+                Index of the repetition in the simulation
+
+            Returns
+            -------
+            x_ind: np.ndarray
+                Simulation status of repetition no. `ind`
+            t_ind: np.ndarray
+                Time points of repetition no. `ind`
+            status_ind
+                Simulation end status of repetition no. `ind`
+        """
         if ind in self:
-            return self.x_list[ind], self.t_list[ind], self.status_list[ind]
+            x_ind = self.x_list[ind]
+            t_ind = self.t_list[ind]
+            status_ind = self.status_list[ind]
         else:
             raise IndexError(f"{ind} out of bounds")
+        return x_ind, t_ind, status_ind
 
     @property
     def final(self) -> Tuple[np.ndarray, np.ndarray]:
@@ -115,7 +159,7 @@ class Results(Collection):
 
             Parameters
             ----------
-            t : float
+            t: float
                 Time point at which states are wanted.
 
             Returns

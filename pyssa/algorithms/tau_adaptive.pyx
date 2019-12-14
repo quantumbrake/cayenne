@@ -213,64 +213,64 @@ def tau_adaptive(
     chem_flag: bool,
 ):
     """
-        Runs the adaptive tau leaping simulation algorithm `[1]`_.
+        Runs the adaptive tau leaping simulation algorithm [1]_.
 
         Parameters
-        ---------
-        react_stoic : (ns, nr) ndarray
+        ----------
+        react_stoic: (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
             Reactions are columns and species are rows.
-        prod_stoic : (ns, nr) ndarray
+        prod_stoic: (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the products.
             Reactions are columns and species are rows.
-        init_state : (ns,) ndarray
+        init_state: (ns,) ndarray
             A 1D array representing the initial state of the system.
-        k_det : (nr,) ndarray
+        k_det: (nr,) ndarray
             A 1D array representing the deterministic rate constants of the
             system.
         hor
             A 1D array of the highest order reaction in which each species
             appears.
-        nc : int
+        nc: int
             The criticality threshold. Reactions with that cannot fire more than
             nc times are deemed critical.
-        epsilon : float
+        epsilon: float
             The epsilon used in tau-leaping, measure of the bound on relative
             change in propensity.
-        max_t : float
+        max_t: float
             The maximum simulation time to run the simulation for.
-        max_iter : int
+        max_iter: int
             The maximum number of iterations to run the simulation for.
-        volume : float
+        volume: float
             The volume of the reactor vessel which is important for second
             and higher order reactions. Defaults to 1 arbitrary units.
-        seed : int
+        seed: int
             The seed for the numpy random generator used for the current run
             of the algorithm.
-        chem_flag : bool
+        chem_flag: bool
             If True, divide by Na while calculating stochastic rate constants.
             Defaults to False.
 
         Returns
         -------
-        t : ndarray
+        t: ndarray
             Numpy array of the times.
-        x : ndarray
-            Numpy array of the states of the system at times in in `t`.
-        status : int
+        x: ndarray
+            Numpy array of the states of the system at times in in ``t``.
+        status: int
             Indicates the status of the simulation at exit.
-            1 : Succesful completion, terminated when `max_iter` iterations reached.
-            2 : Succesful completion, terminated when `max_t` crossed.
-            3 : Succesful completion, terminated when all species went extinct.
-            -1 : Failure, order greater than 3 detected.
-            -2 : Failure, propensity zero without extinction.
-            -3 : Negative species count encountered
-    
+            1 - Succesful completion, terminated when ``max_iter`` iterations reached.
+            2 - Succesful completion, terminated when ``max_t`` crossed.
+            3 - Succesful completion, terminated when all species went extinct.
+            -1 - Failure, order greater than 3 detected.
+            -2 - Failure, propensity zero without extinction.
+            -3 - Negative species count encountered
+
         References
         ----------
         .. [1] Cao, Y., Gillespie, D.T., Petzold, L.R., 2006.
-        Efficient step size selection for the tau-leaping simulation
-        method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
+            Efficient step size selection for the tau-leaping simulation
+            method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
     """
     cdef:
         int ite = 1
@@ -343,7 +343,7 @@ def tau_adaptive(
                 prop_view,
                 epsilon,
             )
-            # print("ite, taup, x, 10/propsum, time is : ", ite, taup, np.array(x_view[ite-1, :]), 10.0/prop_sum, t[ite-1])
+            # print("ite, taup, x, 10/propsum, time is: ", ite, taup, np.array(x_view[ite-1, :]), 10.0/prop_sum, t[ite-1])
 
         # Step 3: For small taup, do SSA
         skipflag = 0
