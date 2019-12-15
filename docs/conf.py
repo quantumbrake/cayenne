@@ -20,7 +20,8 @@
 import os
 import sys
 
-sys.path.insert(0, os.path.abspath(".."))
+if os.environ["RTD"] != "True":
+    sys.path.insert(0, os.path.abspath(".."))
 
 import pyssa
 
@@ -35,7 +36,7 @@ import pyssa
 extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
-    "numpydoc",
+    "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
 ]
 
