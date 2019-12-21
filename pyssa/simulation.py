@@ -42,8 +42,8 @@ class Simulation:
             The volume of the reactor vessel which is important for second
             and higher order reactions. Defaults to 1 arbitrary units.
         chem_flag: bool, optional
-            If True, divide by Na while calculating stochastic rate constants.
-            Defaults to False.
+            If True, divide by Na (Avogadro's constant) while calculating
+            stochastic rate constants. Defaults to ``False``.
 
         Attributes
         ----------

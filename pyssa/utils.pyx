@@ -75,7 +75,7 @@ def get_kstoc(react_stoic, k_det, volume, chem_flag):
         Compute k_stoc from k_det.
 
         Return a vector of the stochastic rate constants (k_stoc) determined
-        from the deterministic rate constants (k_det) [1]_
+        from the deterministic rate constants (k_det) [#]_
 
         Parameters
         ----------
@@ -89,7 +89,8 @@ def get_kstoc(react_stoic, k_det, volume, chem_flag):
             The volume of the reactor vessel which is important for second
             and higher order reactions
         chem_flag: bool
-            If True, divide by Na while calculating stochastic rate constants.
+            If True, divide by Na (Avogadro's constant) while calculating
+            stochastic rate constants. Defaults to ``False``.
 
         Returns
         -------
@@ -99,7 +100,7 @@ def get_kstoc(react_stoic, k_det, volume, chem_flag):
 
         References
         ----------
-        .. [1] Gillespie, D.T., 1976.
+        .. [#] Gillespie, D.T., 1976.
             A general method for numerically simulating the stochastic time evolution
             of coupled chemical reactions. J. Comput. Phys. 22, 403–434.
             doi:10.1016/0021-9991(76)90041-3.

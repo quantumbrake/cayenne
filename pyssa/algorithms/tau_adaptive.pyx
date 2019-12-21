@@ -213,7 +213,7 @@ def tau_adaptive(
     chem_flag: bool,
 ):
     """
-        Runs the adaptive tau leaping simulation algorithm [1]_.
+        Runs the adaptive tau leaping simulation algorithm [#]_
 
         Parameters
         ----------
@@ -248,8 +248,8 @@ def tau_adaptive(
             The seed for the numpy random generator used for the current run
             of the algorithm.
         chem_flag: bool
-            If True, divide by Na while calculating stochastic rate constants.
-            Defaults to False.
+            If True, divide by Na (Avogadro's constant) while calculating
+            stochastic rate constants. Defaults to ``False``.
 
         Returns
         -------
@@ -259,16 +259,22 @@ def tau_adaptive(
             Numpy array of the states of the system at times in in ``t``.
         status: int
             Indicates the status of the simulation at exit.
+
             1 - Succesful completion, terminated when ``max_iter`` iterations reached.
+
             2 - Succesful completion, terminated when ``max_t`` crossed.
+
             3 - Succesful completion, terminated when all species went extinct.
+
             -1 - Failure, order greater than 3 detected.
+
             -2 - Failure, propensity zero without extinction.
+
             -3 - Negative species count encountered
 
         References
         ----------
-        .. [1] Cao, Y., Gillespie, D.T., Petzold, L.R., 2006.
+        .. [#] Cao, Y., Gillespie, D.T., Petzold, L.R., 2006.
             Efficient step size selection for the tau-leaping simulation
             method. J. Chem. Phys. 124, 044109. doi:10.1063/1.2159468
     """

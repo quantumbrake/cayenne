@@ -25,7 +25,7 @@ def direct(
     chem_flag: bool,
 ):
     """
-        Runs the Direct Stochastic Simulation Algorithm [1]_
+        Runs the Direct Stochastic Simulation Algorithm [#]_
 
         Parameters
         ----------
@@ -51,8 +51,8 @@ def direct(
             The seed for the numpy random generator used for the current run
             of the algorithm.
         chem_flag: bool
-            If True, divide by Na while calculating stochastic rate constants.
-            Defaults to False.
+            If True, divide by Na (Avogadro's constant) while calculating
+            stochastic rate constants. Defaults to ``False``.
 
         Returns
         -------
@@ -62,15 +62,20 @@ def direct(
             Numpy array of the states of the system at times in in ``t``.
         status: int
             Indicates the status of the simulation at exit.
+
             1 - Succesful completion, terminated when ``max_iter`` iterations reached.
+
             2 - Succesful completion, terminated when ``max_t`` crossed.
+
             3 - Succesful completion, terminated when all species went extinct.
+
             -1 - Failure, order greater than 3 detected.
+
             -2 - Failure, propensity zero without extinction.
 
         References
         ----------
-        .. [1] Gillespie, D.T., 1976.
+        .. [#] Gillespie, D.T., 1976.
             A general method for numerically simulating the stochastic time
             evolution of coupled chemical reactions. J. Comput. Phys. 22, 403–434.
             doi:10.1016/0021-9991(76)90041-3.

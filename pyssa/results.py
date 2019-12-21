@@ -25,11 +25,6 @@ class Results(Collection):
             Algorithm used to run the simulation
         sim_seeds: List[int]
             List of seeds used for the simulation
-
-        Attributes
-        ----------
-        final: Tuple[np.ndarray, np.ndarray]
-            The final times and states of the sytem
     """
 
     def __init__(
