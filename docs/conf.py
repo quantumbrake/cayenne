@@ -20,7 +20,7 @@
 import os
 import sys
 
-if os.environ["RTD"] != "True":
+if os.environ.get("RTD") != "True":
     sys.path.insert(0, os.path.abspath(".."))
 
 import pyssa
