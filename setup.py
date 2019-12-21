@@ -72,6 +72,6 @@ setup(
     ext_modules=cythonize(
         ext_modules,
         annotate=True,
-        compiler_directives={"binding": True, "linetrace": True, "profile": True},
+        compiler_directives={"binding": True, "linetrace": False, "profile": False},
     ),
 )
