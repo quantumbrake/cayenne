@@ -59,7 +59,7 @@ cdef step1(
     return prop_view, crit, not_crit
 
 
-def py_step1(kstoc, xt, react_stoic, v, nc):
+def _py_step1(kstoc, xt, react_stoic, v, nc):
     prop_view, crit, not_crit = step1(kstoc, xt, react_stoic, v, nc)
     return np.array(prop_view), np.array(crit), np.array(not_crit)
 
@@ -86,7 +86,7 @@ cdef inline step2_get_g(int hor, long long x):
     return g
 
 
-def py_step2_get_g(hor, x):
+def _py_step2_get_g(hor, x):
     return step2_get_g(hor, x)
 
 cdef step2(
@@ -141,7 +141,7 @@ cdef step2(
     return taup
 
 
-def py_step2(not_crit,
+def _py_step2(not_crit,
     react_species,
     v,
     xt,
@@ -192,7 +192,7 @@ cdef step5(
     return tau, K
 
 
-def py_step5(taup, taupp, nr, not_crit, prop, xt):
+def _py_step5(taup, taupp, nr, not_crit, prop, xt):
     tau, K = step5(taup, taupp, nr, not_crit, prop, xt)
     return tau, np.array(K)
 
