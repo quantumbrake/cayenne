@@ -24,7 +24,7 @@ pytz==2019.3
 requests==2.22.0
 six==1.13.0
 snowballstemmer==2.0.0
-sphinx==2.2.2
+sphinx==2.3.0
 sphinxcontrib-applehelp==1.0.1
 sphinxcontrib-devhelp==1.0.1
 sphinxcontrib-htmlhelp==1.0.2
