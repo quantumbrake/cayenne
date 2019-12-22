@@ -1,19 +1,17 @@
-========
 Tutorial
 ========
 
 Model Building
-++++++++++++++
-
+--------------
 
 Consider a simple system of chemical reactions given by:
 
 .. math::
 
     A \xrightarrow[]{k_1} B\\
-    B \xrightarrow[]{k_2} C \\
+    B \xrightarrow[]{k_2} C\\
 
-Suppose k\ :sub:`1` = 1, k\ :sub:`2` 1 and there are initiall 100 units of A. Then we have the following variable definitions ::
+Suppose k\ :sub:`1` = 1, k\ :sub:`2` 1 and there are initially 100 units of A. Then we have the following variable definitions ::
 
     k1, k2 = 1.0, 1.0
     A0, B0, C0 = 100, 0, 0
@@ -21,26 +19,40 @@ Suppose k\ :sub:`1` = 1, k\ :sub:`2` 1 and there are initiall 100 units of A. Th
 Then to build the model we have the following variable definitions::
 
     import numpy as np
+    # reaction stoichiometry
     V_r = np.array([[1, 0], [0, 1], [0, 0]])
+    # product stoichiometry
     V_p = np.array([[0, 0], [1, 0], [0, 1]])
+    # initial concentration
     X0 = np.array([A0, B0, C0])
+    # reaction rates
     k = np.array([k1, k2])
 
+We then pass these variables to the ``Simulation`` class to create an object that represents the current system ::
+
+    from pyssa import Simulation
+
+    sim = Simulation(V_r, V_p, X0, k)
+
+.. autoclass:: pyssa.simulation.Simulation
 
 Running Simulations
-+++++++++++++++++++
+-------------------
 
-Suppose we want to run 10 runs of the system for earlier of 1000 time steps / 150 time units each, we have ::
+Suppose we want to run 10 repetitions of the system for at most 1000 steps / 150 time units each, we can use the ``simulate`` method to do this ::
 
-    from pyssa.simulation import Simulation
+    from pyssa import Simulation
 
     sim = Simulation(V_r, V_p, X0, k)
     sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
 
-Note that the ``chem_flag`` is set to ``True`` since we are dealing with a chemical system.
+.. automethod:: pyssa.simulation.Simulation.simulate
+
+.. note::
+    The ``chem_flag`` is set to ``True`` since we are dealing with a chemical system.
 
 Plotting
-++++++++
+--------
 
 To plot the results on the screen, we simply have ::
 
@@ -64,9 +76,14 @@ To not display the plot on the screen and retrieve the figure and axis objects, 
 
     fig, ax = sim.plot(disp = False)
 
+.. automethod:: pyssa.simulation.Simulation.plot
+
+.. note::
+    ``sim.plot`` needs to be run after ``sim.simulate``
+
 
 Accessing the results
-+++++++++++++++++++++
+---------------------
 
 The results of the simulation can be retrieved by accessing the ``Results`` object as ::
 
@@ -106,17 +123,18 @@ You can also access the final states of all the simulation runs by ::
        [  0.,   0., 100.],
        [  0.,   0., 100.]])
 
+.. autoclass:: pyssa.results.Results
+
 
 Algorithms
-++++++++++
+----------
 
-The ``Simulation`` class currently supports the following algorithms:
+The ``Simulation`` class currently supports the following algorithms (see :ref:`algorithms`):
 
-1. Direct
-2. Tau leaping
+1. :ref:`Gillespie's direct method <direct>`
+2. :ref:`Tau leaping method method <tau_leaping>`
+3. :ref:`Adaptive tau leaping method (experimental) <tau_adaptive>`
 
-You can change the algorithm used to perform a simulation using the ``simulation`` flag
-
-.. code-block:: python
+You can change the algorithm used to perform a simulation using the ``algorithm`` argument ::
 
     sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, algorithm="tau_leaping")
