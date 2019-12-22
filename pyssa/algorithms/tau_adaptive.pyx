@@ -1,5 +1,11 @@
 """
-    Experimental implementation of the tau adaptive algorithm in Cython.
+    Experimental implementation of the `tau adaptive algorithm
+    <https://doi.org/10.1063/1.2159468>`_. This is an approximate method that
+    builds off the tau_leaping method. It self-adapts the value of ``tau``
+    over the course of the simulation. For sytems with a small number of
+    molecules, it will be similar in speed to the direct method. For systems
+    with a large number of molecules, it will be much faster than the direct
+    method.
 """
 
 cimport cython
