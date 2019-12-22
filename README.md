@@ -13,7 +13,7 @@
 
 ## Introduction
 
-`pyssa` is a Python package for stochastic simulations. It offers a simple api to define models, perform stochastic simulations on them and visualize the results in a convenient manner.
+`pyssa` is a Python package for stochastic simulations. It offers a simple API to define models, perform stochastic simulations with them and visualize the results in a convenient manner.
 
 Currently under active development in the `develop` branch.
 
@@ -33,6 +33,8 @@ $ pip install pyssa
 
 ## Usage
 
+A short summary follows, but a more detailed tutorial can be found at <https://pyssa.readthedocs.io/en/latest/tutorial.html>
+
 ```python
 from pyssa.simulation import Simulation
 V_r = np.array([[1, 0], [0, 1], [0, 0]])  # Reactant matrix
@@ -44,20 +46,22 @@ sim = Simulation(V_r, V_p, X0, k)  # Declare the simulation object
 sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
 ```
 
+### Change simulation algorithm
+
 You can change the algorithm used to perform the simulation by changing the `algorithm` parameter
 
 ```python
 sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, algorithm="tau_adaptive")
 ```
 
+### Run simulations in parallel
 You can run the simulations on multiple cores by specifying the `n_procs` parameter
 
 ```python
 sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, n_procs=4)
 ```
 
-
-### Plotting
+### Plot simulation results
 
 ```python
 sim.plot()
@@ -65,7 +69,7 @@ sim.plot()
 
 ![Plot of species A, B and C](https://raw.githubusercontent.com/Heuro-labs/pyssa/master/docs/images/plot_basic.png)
 
-### Accessing the results
+### Accessing simulation results
 
 ```python
 results = sim.results
