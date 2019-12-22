@@ -1,5 +1,7 @@
 """
-    Implementation of the direct method.
+    Implementation of Gillespie's Direct method. This is an exact simulation
+    algorithm that simulates each reaction step. This makes it slower than
+    other methods, but it's a good place to start.
 """
 
 cimport cython
