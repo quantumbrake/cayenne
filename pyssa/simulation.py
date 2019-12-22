@@ -62,7 +62,10 @@ class Simulation:
         >>> X0 = np.array([10,0,0])
         >>> k = np.array([1,1])
         >>> sim = Simulation(V_r, V_p, X0, k)
-        >>> sim.simulate(max_t=10, max_iter=100, n_rep=n_runs)
+
+        Notes
+        -----
+
     """
 
     _results: Optional[Results] = None
@@ -179,13 +182,18 @@ class Simulation:
             t: float
                 End time of the simulation.
             Xt: ndarray
-                System state at time `t` and initial.
+                System state at time ``t`` and initial.
             status: int
                 Indicates the status of the simulation at exit.
-                1: Succesful completion, terminated when `max_iter` iterations reached.
-                2: Succesful completion, terminated when `max_t` crossed.
+
+                1: Succesful completion, terminated when ``max_iter`` iterations reached.
+
+                2: Succesful completion, terminated when ``max_t`` crossed.
+
                 3: Succesful completion, terminated when all species went extinct.
+
                 -1: Failure, order greater than 3 detected.
+
                 -2: Failure, propensity zero without extinction.
         """
         tlist = []
