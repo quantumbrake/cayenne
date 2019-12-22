@@ -8,8 +8,8 @@ Introduction
 ------------
 
 ``pyssa`` is a Python package for stochastic simulations. It offers a
-simple api to define models, perform stochastic simulations on them and
-visualize the results in a convenient manner.
+simple API to define models, perform stochastic simulations with them
+and visualize the results in a convenient manner.
 
 Currently under active development in the ``develop`` branch.
 
@@ -30,6 +30,9 @@ Documentation
 Usage
 -----
 
+A short summary follows, but a more detailed tutorial can be found at
+https://pyssa.readthedocs.io/en/latest/tutorial.html
+
 .. code:: python
 
    from pyssa.simulation import Simulation
@@ -41,12 +44,18 @@ Usage
    # Run the simulation
    sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
 
+Change simulation algorithm
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 You can change the algorithm used to perform the simulation by changing
 the ``algorithm`` parameter
 
 .. code:: python
 
    sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, algorithm="tau_adaptive")
+
+Run simulations in parallel
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can run the simulations on multiple cores by specifying the
 ``n_procs`` parameter
@@ -55,8 +64,8 @@ You can run the simulations on multiple cores by specifying the
 
    sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, n_procs=4)
 
-Plotting
-~~~~~~~~
+Plot simulation results
+~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
@@ -67,8 +76,8 @@ Plotting
 
    Plot of species A, B and C
 
-Accessing the results
-~~~~~~~~~~~~~~~~~~~~~
+Accessing simulation results
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code:: python
 
