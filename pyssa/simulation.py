@@ -169,7 +169,6 @@ class Simulation:
         self,
         max_t: float = 10.0,
         max_iter: int = 1000,
-        volume: float = 1.0,
         seed: int = 0,
         n_rep: int = 1,
         n_procs: int = 1,
@@ -188,9 +187,6 @@ class Simulation:
             max_iter: int, optional
                 The maximum number of iterations of the simulation loop.
                 The default is 1000 iterations.
-            volume: float, optional
-                The volume of the system.
-                The default value is 1.0.
             seed: int, optional
                 The seed used to generate simulation seeds.
                 The default value is 0.
@@ -246,7 +242,7 @@ class Simulation:
                         self._k_det,
                         max_t,
                         max_iter,
-                        volume,
+                        self._volume,
                         sim_seeds[index],
                         self._chem_flag,
                     )
@@ -266,7 +262,7 @@ class Simulation:
                         self._k_det,
                         tau,
                         max_t,
-                        volume,
+                        self._volume,
                         sim_seeds[index],
                         self._chem_flag,
                     )
@@ -294,7 +290,7 @@ class Simulation:
                         epsilon,
                         max_t,
                         max_iter,
-                        volume,
+                        self._volume,
                         sim_seeds[index],
                         self._chem_flag,
                     )
