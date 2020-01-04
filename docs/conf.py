@@ -37,6 +37,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
+    "sphinx.ext.autosummary",
     "sphinx_rtd_theme",
 ]
 
@@ -172,3 +173,7 @@ texinfo_documents = [
         "Miscellaneous",
     )
 ]
+
+# Add the 'copybutton' javascript, to hide/show the prompt in code examples
+def setup(app):
+    app.add_javascript("copybutton.js")
