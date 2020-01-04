@@ -65,6 +65,33 @@ class Simulation:
 
         Notes
         -----
+        Stochastic reaction rates depend on the size of the system for second
+        and third order reactions. By this, we mean the volume of the system in
+        which the reactants are contained. Intuitively, this makes sense
+        considering that collisions between two or more molecules becomes
+        rarer as the size of the system increases. A detailed mathematical
+        treatment of this idea can be found in [3]_ .
+
+        In practice, this means that ``volume`` and ``chem_flag`` need to be
+        supplied for second and third order reactions. ``volume``
+        represents the size of the system containing the reactants.
+
+        In chemical systems ``chem_flag`` should generally be set to ``True``
+        as ``k_det`` is specified in units of molarity or M or mol/L.
+        For example, a second order rate constant could be = 0.15 mol / (L s).
+        Then Avogadro's constant (:math:`N_a`) is used for normalization while
+        computing ``k_stoc`` (:math:`c_\mu` in [3]_ ) from ``k_det``.
+
+        In biological systems, ``chem_flag`` should be generally be set to
+        ``False`` as ``k_det`` is specified in units of copies/L or CFU/L.
+        For example, a second order rate constant could be = 0.15 CFU / (L s).
+
+        References
+        ----------
+        .. [3] Gillespie, D.T., 1976.
+            A general method for numerically simulating the stochastic time
+            evolution of coupled chemical reactions. J. Comput. Phys. 22, 403–434.
+            doi:10.1016/0021-9991(76)90041-3.
 
     """
 
@@ -156,26 +183,26 @@ class Simulation:
             Parameters
             ----------
             max_t: float, optional
-                The end time of the simulation
-                The default is 10.0
+                The end time of the simulation.
+                The default is 10.0.
             max_iter: int, optional
-                The maximum number of iterations of the simulation loop
-                The default is 1000 iterations
+                The maximum number of iterations of the simulation loop.
+                The default is 1000 iterations.
             volume: float, optional
-                The volume of the system
-                The default value is 1.0
+                The volume of the system.
+                The default value is 1.0.
             seed: int, optional
                 The seed used to generate simulation seeds.
-                The default value is 0
+                The default value is 0.
             n_rep: int, optional
-                The number of repetitions of the simulation required
-                The default value is 1
+                The number of repetitions of the simulation required.
+                The default value is 1.
             n_procs: int, optional
-                The number of cpu cores to use for the simulation
-                The default value is 1
+                The number of cpu cores to use for the simulation.
+                The default value is 1.
             algorithm: str, optional
-                The algorithm to be used to run the simulation
-                The default value is "direct"
+                The algorithm to be used to run the simulation.
+                The default value is ``"direct"``.
 
             Returns
             -------
@@ -348,13 +375,13 @@ class Simulation:
             ----------
             plot_indices: list, optional
                 The indices of the species to be plotted.
-                The default is `[i for i in range(self._ns)]` plots all species.
+                The default is ``None`` and  plots all species.
             disp: bool, optional
-                If `True`, the plot is displayed.
+                If ``True``, the plot is displayed.
                 The default shows the plot.
             names: list, optional
                 The names of the species to be plotted.
-                The default is `xi` for species `i`.
+                The default is ``"xi"`` for species ``i``.
 
             Returns
             -------

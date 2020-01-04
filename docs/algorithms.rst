@@ -29,7 +29,7 @@ Gillespie's direct method (``direct``)
 .. _tau_leaping:
 
 Tau leaping method (``tau_leaping``)
-------------------
+------------------------------------
 
 .. automodule:: pyssa.algorithms.tau_leaping
 
