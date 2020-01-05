@@ -10,6 +10,7 @@ Fixed
 +++++
 - Propensity calculation in all algorithms
 - Considerable speed-up in algorithm runtimes
+- Remove ``volume`` from ``Simulation.simulate`` parameters
 
 Added
 +++++
@@ -20,12 +21,15 @@ Added
 - Accuracy tests from `sbml-test-suite <https://github.com/sbmlteam/sbml-test-suite>`_
 - HOR property and tests for it
 - Code coverage for ``Cython``
+- Algorithms page to the documentation
+- Examples page to the documentation
 
 Changed
 +++++++
 - Remove ``numba`` algorithms
 - Remove interpolation for direct algorithm
 - ``sim.plot`` now plots ``post`` step curve
+- Updated tutorial page of the documentation
 
 
 0.8.2 (2019-04-20)
