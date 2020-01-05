@@ -55,7 +55,7 @@ master_doc = "index"
 
 # General information about the project.
 project = "Stochastic Simulation Algorithms in Python"
-copyright = "2018-2019, Dileep Kishore, Srikiran Chandrasekaran"
+copyright = "2018-2020, Dileep Kishore, Srikiran Chandrasekaran"
 author = "Dileep Kishore, Srikiran Chandrasekaran"
 
 # The version info for the project you're documenting, acts as replacement

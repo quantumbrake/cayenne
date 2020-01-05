@@ -83,7 +83,7 @@ final_times, final_states = results.final
 
 ## License
 
-Copyright (c) 2018-2019, Dileep Kishore, Srikiran Chandrasekaran. Released under: Apache Software License 2.0
+Copyright (c) 2018-2020, Dileep Kishore, Srikiran Chandrasekaran. Released under: Apache Software License 2.0
 
 ## Credits
 

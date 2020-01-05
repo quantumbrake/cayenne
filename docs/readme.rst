@@ -92,7 +92,7 @@ You can also access the final states of all the simulation runs by
 License
 -------
 
-Copyright (c) 2018-2019, Dileep Kishore, Srikiran Chandrasekaran.
+Copyright (c) 2018-2020, Dileep Kishore, Srikiran Chandrasekaran.
 Released under: Apache Software License 2.0
 
 Credits
