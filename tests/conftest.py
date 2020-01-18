@@ -16,6 +16,16 @@ CURR_DIR = pathlib.Path(__file__).parent
 
 @pytest.fixture
 def setup_basic():
+    """
+        Setup the basic system.
+
+        Notes
+        -----
+        A --> B; k = 1.0
+        B --> C; k = 1.0
+
+        A0 = 100, B0 = C0 = 0
+    """
     V_r = np.array([[1, 0], [0, 1], [0, 0]])
     V_p = np.array([[0, 0], [1, 0], [0, 1]])
     X0 = np.array([100, 0, 0], dtype=np.int64)
@@ -25,6 +35,19 @@ def setup_basic():
 
 @pytest.fixture
 def setup_large():
+    """
+        Setup the large system.
+
+        Notes
+        -----
+        A --> B; k = 1.0
+        B --> C; k = 1.0
+        C --> D; k = 1.0
+        D --> E; k = 1.0
+        E --> _; k = 1.0
+
+        A0 = 10, B0 = C0 = D0 = E0 = 0
+    """
     V_r = np.array(
         [
             [1, 0, 0, 0, 0],
@@ -50,6 +73,12 @@ def setup_large():
 
 @pytest.fixture
 def setup_system():
+    """
+        Setup minimal system.
+
+        Contains only ``k_det`` and ``volume``. Used by TestKstoc class as
+        filler.
+    """
     k_det = np.array([3.0])
     volume = 7.0
     return k_det, volume
@@ -57,6 +86,17 @@ def setup_system():
 
 @pytest.fixture
 def setup_bifurcation():
+    """
+        Setup bifurcation system.
+
+        Notes
+        -----
+        A --> B; k = 1.0
+        B + D --> B + B; k = 0.01*Na
+        A + B --> C; k = 1.0
+
+        A0 = 1, B0 = C0 = 0, D0 = 10
+    """
     V_r = np.array([[1, 0, 1], [0, 1, 0], [0, 0, 0], [0, 1, 0]])
     V_p = np.array([[0, 0, 0], [1, 2, 0], [0, 0, 1], [0, 0, 0]])
     k = np.array([1.0, 0.01 * Na, 1.0])
@@ -66,6 +106,16 @@ def setup_bifurcation():
 
 @pytest.fixture
 def setup_long():
+    """
+        Setup a system that runs for a long time.
+
+        Notes
+        -----
+        A --> B; k = 1.0
+        B --> C; k = 1.0
+
+        A0 = 4e5, B0 = 1000, C0 = 0
+    """
     V_r = np.array([[1, 0], [0, 1], [0, 0]])
     V_p = np.array([[0, 0], [1, 0], [0, 1]])
     k = np.array([1.0, 1.0])
@@ -74,6 +124,36 @@ def setup_long():
 
 
 def read_results(test_id: str):
+    """
+        Read the simulation results used for accuracy tests.
+
+        Parameters
+        ----------
+        test_id: str
+            The index of the test number to return the results of.
+
+        Returns
+        -------
+        time_list: List[float]
+            Time points at which species amounts are analytically predicted.
+        mu_list: List[float]
+            Time course of the analytically predicted species amount means.
+        std_list: List[float]
+            Time course of the analytically predicted species amount standard
+            deviations.
+
+        See Also
+        --------
+        read_results_2sp: Read results for 2 species.
+
+        Notes
+        -----
+        The accuracy tests are taken from the SBML Test Suite [1]_ .
+
+        References
+        ----------
+        .. [1] https://github.com/sbmlteam/sbml-test-suite/tree/master/cases/stochastic
+    """
     filename = f"{CURR_DIR}/data/results_{test_id}.csv"
     time_list = []
     mu_list = []
@@ -89,6 +169,37 @@ def read_results(test_id: str):
 
 
 def read_results_2sp(test_id: str):
+    """
+        Read the simulation results used for accuracy tests when 2 species
+        are tracked.
+
+        Parameters
+        ----------
+        test_id: str
+            The index of the test number to return the results of.
+
+        Returns
+        -------
+        time_list: List[float]
+            Time points at which species amounts are analytically predicted.
+        mu_list: List[float]
+            Time course of the analytically predicted species amount means.
+        std_list: List[float]
+            Time course of the analytically predicted species amount standard
+            deviations.
+
+        See Also
+        --------
+        read_results: Read results for one species.
+
+        Notes
+        -----
+        The accuracy tests are taken from the SBML Test Suite [1]_ .
+
+        References
+        ----------
+        .. [1] https://github.com/sbmlteam/sbml-test-suite/tree/master/cases/stochastic
+    """
     filename = f"{CURR_DIR}/data/results_{test_id}.csv"
     time_list = []
     mu_list = []
