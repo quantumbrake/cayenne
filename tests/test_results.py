@@ -14,7 +14,13 @@ from pyssa.results import Results
 )
 @pytest.mark.usefixtures("setup_large")
 class TestResults:
+    """
+        Test the Results class.
+    """
     def test_init_good(self, algorithm, setup_large):
+        """
+            Test if initialization works.
+        """
         V_r, V_p, X0, k = setup_large
         sim = Simulation(V_r, V_p, X0, k)
         with pytest.warns(Warning):
@@ -23,6 +29,9 @@ class TestResults:
         assert sim.results
 
     def test_init_bad(self, algorithm, setup_large):
+        """
+            Test if initialization fails when it is supposed to.
+        """
         V_r, V_p, X0, k = setup_large
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm)
@@ -45,6 +54,9 @@ class TestResults:
             Results(t_list, x_list, status_list, algorithm, seed)
 
     def test_iter_len(self, algorithm, setup_large):
+        """
+            Test the ``__len__`` method and if shape of x and t match.
+        """
         V_r, V_p, X0, k = setup_large
         n_rep = 10
         sim = Simulation(V_r, V_p, X0, k)
@@ -56,6 +68,9 @@ class TestResults:
             assert s
 
     def test_contains_getitem(self, algorithm, setup_large):
+        """
+            Test the ``__getitem__`` method.
+        """
         V_r, V_p, X0, k = setup_large
         n_rep = 10
         sim = Simulation(V_r, V_p, X0, k)
@@ -69,6 +84,9 @@ class TestResults:
             results[100]
 
     def test_final(self, algorithm, setup_large):
+        """
+            Test the ``final`` property.
+        """
         V_r, V_p, X0, k = setup_large
         n_rep = 3
         max_t = 1e5
@@ -83,6 +101,9 @@ class TestResults:
                 assert (final_states[0, :] == final_states[i, :]).all()
 
     def test_get_states(self, algorithm, setup_large):
+        """
+            Test the ``get_state`` method.
+        """
         V_r, V_p, X0, k = setup_large
         n_rep = 3
         max_t = 1e5
@@ -93,6 +114,9 @@ class TestResults:
         assert np.all(results.get_state(0.0) == X0)
 
     def test_get_states_high_time(self, algorithm, setup_00003):
+        """
+            Test the ``get_state`` method at longer model times.
+        """
         V_r, V_p, X0, k, _, _, _, max_t, max_iter, n_rep = setup_00003
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=10000, max_iter=max_iter, n_rep=1)

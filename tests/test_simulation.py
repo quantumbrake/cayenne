@@ -13,6 +13,9 @@ from pyssa.simulation import Simulation
 )
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestSanitizeAlg:
+    """
+        Sanity checks on Simulation class where simulations are attempted.
+    """
     def test_null(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
         k = np.array([0.0, 0.0])
@@ -100,6 +103,9 @@ class TestSanitizeAlg:
 
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestSanitize:
+    """
+        Sanity checks on Simulation class where instance creation fails.
+    """
     def test_too_high_order(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         V_r = np.array([[2, 0], [2, 1], [0, 0]])
@@ -190,6 +196,9 @@ class TestSanitize:
 
 
 class TestHOR:
+    """
+        Test the HOR method for various combinations of reactants.
+    """
     @staticmethod
     def create_sim_inst(react_stoic):
         prod_stoic = np.random.randint(0, 5, react_stoic.shape)

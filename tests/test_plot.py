@@ -8,6 +8,7 @@ import pytest
 
 
 def test_plotting(setup_basic):
+    """ Test if plot generates without errors """
     V_r, V_p, X0, k = setup_basic
     n_runs = 10
     sim1 = Simulation(V_r, V_p, X0, k)
