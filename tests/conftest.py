@@ -216,8 +216,16 @@ def read_results_2sp(test_id: str):
 
 @pytest.fixture
 def setup_00001():
-    # A -0.1-> 2A
-    # A -0.11-> X
+    """
+        Setup the accuracy test 00001.
+
+        Notes
+        -----
+        A --> A + A; k = 0.1
+        A --> _; k = 0.11
+
+        A0 = 100, max_t = 51, max_iter = 1.5e3
+    """
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
     X0 = np.array([100], dtype=np.int64)
@@ -242,6 +250,16 @@ def setup_00001():
 
 @pytest.fixture
 def setup_00003():
+    """
+        Setup the accuracy test 00003.
+
+        Notes
+        -----
+        A --> A + A; k = 1.0
+        A --> _; k = 1.1
+
+        A0 = 100, max_t = 51, max_iter = 1e5
+    """
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
     X0 = np.array([100], dtype=np.int64)
@@ -266,6 +284,16 @@ def setup_00003():
 
 @pytest.fixture
 def setup_00004():
+    """
+        Setup the accuracy test 00004.
+
+        Notes
+        -----
+        A --> A + A; k = 0.1
+        A --> _; k = 0.11
+
+        A0 = 10, max_t = 51, max_iter = 1.5e3
+    """
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
     X0 = np.array([10], dtype=np.int64)
@@ -290,6 +318,16 @@ def setup_00004():
 
 @pytest.fixture
 def setup_00005():
+    """
+        Setup the accuracy test 00005.
+
+        Notes
+        -----
+        A --> A + A; k = 0.1
+        A --> _; k = 0.11
+
+        A0 = 10_000, max_t = 51, max_iter = 5e5
+    """
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
     X0 = np.array([10_000], dtype=np.int64)
@@ -314,6 +352,16 @@ def setup_00005():
 
 @pytest.fixture
 def setup_00011():
+    """
+        Setup the accuracy test 00011.
+
+        Notes
+        -----
+        A --> A + A; k = 0.1/2
+        A --> _; k = 0.11/2
+
+        A0 = 100, max_t = 51, max_iter = 1.5e3
+    """
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
     X0 = np.array([100], dtype=np.int64)
@@ -340,6 +388,16 @@ def setup_00011():
 
 @pytest.fixture
 def setup_00020():
+    """
+        Setup the accuracy test 00020.
+
+        Notes
+        -----
+        _ --> A; k = 1
+        A --> _; k = 0.1
+
+        A0 = 0, max_t = 52, max_iter = 1.5e3
+    """
     V_r = np.array([[0, 1]])
     V_p = np.array([[1, 0]])
     X0 = np.array([0], dtype=np.int64)
@@ -365,6 +423,16 @@ def setup_00020():
 
 @pytest.fixture
 def setup_00021():
+    """
+        Setup the accuracy test 00021.
+
+        Notes
+        -----
+        _ --> A; k = 10.0
+        A --> _; k = 0.1
+
+        A0 = 0, max_t = 51, max_iter = 1.5e3
+    """
     V_r = np.array([[0, 1]])
     V_p = np.array([[1, 0]])
     X0 = np.array([0], dtype=np.int64)
@@ -389,6 +457,16 @@ def setup_00021():
 
 @pytest.fixture
 def setup_00022():
+    """
+        Setup the accuracy test 00022.
+
+        Notes
+        -----
+        _ --> A; k = 5.0
+        A --> _; k = 0.1
+
+        A0 = 0, max_t = 51, max_iter = 1.5e3
+    """
     V_r = np.array([[0, 1]])
     V_p = np.array([[1, 0]])
     X0 = np.array([0], dtype=np.int64)
@@ -413,6 +491,16 @@ def setup_00022():
 
 @pytest.fixture
 def setup_00023():
+    """
+        Setup the accuracy test 00020.
+
+        Notes
+        -----
+        _ --> A; k = 1000
+        A --> _; k = 0.1
+
+        A0 = 0, max_t = 51, max_iter = 1.5e5
+    """
     V_r = np.array([[0, 1]])
     V_p = np.array([[1, 0]])
     X0 = np.array([0], dtype=np.int64)
@@ -437,12 +525,23 @@ def setup_00023():
 
 @pytest.fixture
 def setup_00030():
+    """
+        Setup the accuracy test 00030.
+
+        Notes
+        -----
+        A + A --> A2; k = 0.001
+        A2 --> A + A; k = 0.01
+
+        A0 = 100, max_t = 55, max_iter = 1.5e5
+
+        In the model description, they just say k1 = 0.001 without specifying
+        deterministic or stochastic. They end up using k1_stoc = 0.001. To have
+        k1_stoc = 0.001, we should set k1_det = 0.001/2.
+    """
     V_r = np.array([[2, 0], [0, 1]])
     V_p = np.array([[0, 2], [1, 0]])
     X0 = np.array([100, 0], dtype=np.int64)
-    # In the model description, they just say k1 = 0.001 without specifying
-    # deterministic or stochastic. They end up using k1_stoc = 0.001. To have
-    # k1_stoc = 0.001, we should set k1_det = 0.001/2
     k = np.array([0.001 / 2, 0.01])
     max_t = 55
     max_iter = int(1.5e5)
@@ -464,12 +563,23 @@ def setup_00030():
 
 @pytest.fixture
 def setup_00031():
+    """
+        Setup the accuracy test 00031.
+
+        Notes
+        -----
+        A + A --> A2; k = 0.0002
+        A2 --> A + A; k = 0.01
+
+        A0 = 1000, max_t = 52, max_iter = 1.5e5
+
+        In the model description, they just say k1 = 0.0002 without specifying
+        deterministic or stochastic. They end up using k1_stoc = 0.0002. To
+        have k1_stoc = 0.0002, we should set k1_det = 0.0002/2.
+    """
     V_r = np.array([[2, 0], [0, 1]])
     V_p = np.array([[0, 2], [1, 0]])
     X0 = np.array([1000, 0], dtype=np.int64)
-    # In the model description, they just say k1 = 0.0002 without specifying
-    # deterministic or stochastic. They end up using k1_stoc = 0.0002. To have
-    # k1_stoc = 0.0002, we should set k1_det = 0.0002/2
     k = np.array([0.0002 / 2, 0.004])
     max_t = 52
     max_iter = int(1.5e5)
@@ -491,6 +601,16 @@ def setup_00031():
 
 @pytest.fixture
 def setup_00037():
+    """
+        Setup the accuracy test 00037.
+
+        Notes
+        -----
+        _ --> 5A; k = 1.0
+        A --> _; k = 0.2
+
+        A0 = 0, max_t = 53, max_iter = 1.5e3
+    """
     V_r = np.array([[0, 1]])
     V_p = np.array([[5, 0]])
     X0 = np.array([0], dtype=np.int64)
@@ -515,6 +635,21 @@ def setup_00037():
 
 @pytest.fixture
 def setup_00038():
+    """
+        Setup the accuracy test 00038.
+
+        Notes
+        -----
+        _ --> 10A; k = 1.0
+        A --> _; k = 0.2
+
+        A0 = 0, max_t = 53, max_iter = 1.5e3
+
+        In the model description, they just say k2 = 0.2 without specifying
+        deterministic or stochastic. This is a first order reaction, so
+        technically k2 = k2_stoc. They instead use kstoc = 0.4 in the model
+        file, so this value is used.
+    """
     V_r = np.array([[0, 1]])
     V_p = np.array([[10, 0]])
     X0 = np.array([0], dtype=np.int64)
@@ -539,6 +674,21 @@ def setup_00038():
 
 @pytest.fixture
 def setup_00039():
+    """
+        Setup the accuracy test 00038.
+
+        Notes
+        -----
+        _ --> 10A; k = 1.0
+        A --> _; k = 0.2
+
+        A0 = 0, max_t = 53, max_iter = 1.5e5
+
+        In the model description, they just say k2 = 0.2 without specifying
+        deterministic or stochastic. This is a first order reaction, so
+        technically k2 = k2_stoc. They instead use kstoc = 4.0 in the model
+        file, so this value is used.
+    """
     V_r = np.array([[0, 1]])
     V_p = np.array([[100, 0]])
     X0 = np.array([0], dtype=np.int64)
