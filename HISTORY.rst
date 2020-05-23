@@ -2,6 +2,14 @@
 History
 =======
 
+0.9.1 (2020-05-23)
+------------------
+Fix interpolation bug in ``Results.get_state``
+
+Fixed
++++++
+- ``Results.get_state`` function now adds an epsilon to time
+
 0.9.0 (2019-12-14)
 ------------------
 Replace ``numba`` implementation with ``Cython`` implementation
