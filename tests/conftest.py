@@ -330,7 +330,7 @@ def setup_00005():
     """
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
-    X0 = np.array([10_000], dtype=np.int64)
+    X0 = np.array([10000], dtype=np.int64)
     k = np.array([0.1, 0.11])
     max_t = 51
     max_iter = int(5e5)
@@ -492,7 +492,7 @@ def setup_00022():
 @pytest.fixture
 def setup_00023():
     """
-        Setup the accuracy test 00020.
+        Setup the accuracy test 00023.
 
         Notes
         -----
@@ -569,7 +569,7 @@ def setup_00031():
         Notes
         -----
         A + A --> A2; k = 0.0002
-        A2 --> A + A; k = 0.01
+        A2 --> A + A; k = 0.004
 
         A0 = 1000, max_t = 52, max_iter = 1.5e5
 
@@ -583,7 +583,7 @@ def setup_00031():
     k = np.array([0.0002 / 2, 0.004])
     max_t = 52
     max_iter = int(1.5e5)
-    n_rep = 20
+    n_rep = 10
     time_list, mu_list, std_list = read_results_2sp("00031")
     return (
         V_r,
@@ -641,7 +641,7 @@ def setup_00038():
         Notes
         -----
         _ --> 10A; k = 1.0
-        A --> _; k = 0.2
+        A --> _; k = 0.4
 
         A0 = 0, max_t = 53, max_iter = 1.5e3
 
@@ -679,8 +679,8 @@ def setup_00039():
 
         Notes
         -----
-        _ --> 10A; k = 1.0
-        A --> _; k = 0.2
+        _ --> 100A; k = 1.0
+        A --> _; k = 4.0
 
         A0 = 0, max_t = 53, max_iter = 1.5e5
 
