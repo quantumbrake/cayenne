@@ -5,9 +5,7 @@ name = "pypi"
 
 [packages]
 numpy = "*"
-numba = "*"
 matplotlib = "*"
-numpydoc = "*"
 cython = "*"
 
 [dev-packages]

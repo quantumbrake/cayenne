@@ -169,6 +169,8 @@ class Results(Collection):
                 extinction.
         """
         states: List[np.ndarray] = []
+        e = np.finfo(float).eps * t
+        t = t + e
         for x_array, t_array, s in self:
             ind = np.searchsorted(t_array, t)
             ind = ind - 1 if ind > 0 else ind

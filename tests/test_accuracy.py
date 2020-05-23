@@ -70,7 +70,7 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #     # print(x)
 
 
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00001(setup_00001, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00001
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -85,7 +85,7 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #     assert (Y < 5).all()
 
 
-# def plot_zy(Z,Y, time_list):
+# def plot_zy(Z, Y, time_list):
 #     plt.figure()
 #     plt.subplot(121)
 #     plt.plot(time_list[1:], Z)
@@ -116,21 +116,22 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #             marker = "green"
 #         else:
 #             marker = "red"
-#         plt.plot(time_list[i+1], mu_list[i+1], "o", color=marker)
-#     plt.hlines(0,0,50)
+#         plt.plot(time_list[i + 1], mu_list[i + 1], "o", color=marker)
+#     plt.hlines(0, 0, 50)
 #     plt.ylabel("Observed mean")
 #     plt.subplot(122)
 #     plt.plot(time_list[1:], std_obs_list)
 #     for i in range(len(Y)):
 #         if -5 <= Y[i] <= 5:
-#             marker = 'green'
+#             marker = "green"
 #         else:
-#             marker = 'red'
-#         plt.plot(time_list[i+1], std_list[i+1], "o", color=marker)
+#             marker = "red"
+#         plt.plot(time_list[i + 1], std_list[i + 1], "o", color=marker)
 #     plt.ylabel("Observed SD")
 
+
 # @pytest.mark.filterwarnings("ignore::UserWarning")
-# @pytest.mark.parametrize("algorithm", ["direct"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00003(setup_00003, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00003
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -144,9 +145,9 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #     )
 #     t_final, x_final = sim1.results.final
 #     Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
-#     plot_zy(Z, Y, time_list)
-#     plot_sd(sim1, time_list, mu_list, std_list, Z, Y)
-#     plt.show()
+#     # plot_zy(Z, Y, time_list)
+#     # plot_sd(sim1, time_list, mu_list, std_list, Z, Y)
+#     # plt.show()
 #     assert (np.array(sim1.results.status_list) != 1).all()
 #     assert (-3 < Z).all()
 #     assert (Z < 3).all()
@@ -155,7 +156,7 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 
 
 # @pytest.mark.filterwarnings("ignore::UserWarning")
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_leaping"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00004(setup_00004, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00004
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -176,7 +177,7 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 
 
 # @pytest.mark.filterwarnings("ignore::UserWarning")
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00005(setup_00005, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00005
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -196,7 +197,7 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #     assert (Y < 5).all()
 
 
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00011(setup_00011, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00011
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -208,14 +209,13 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #         n_rep=n_rep,
 #     )
 #     Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
-#     assert np.all(sim1.results.final[0] > time_list[-1])
 #     assert (-3 < Z).all()
 #     assert (Z < 3).all()
 #     assert (-5 < Y).all()
 #     assert (Y < 5).all()
 
 
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00020(setup_00020, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00020
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -226,16 +226,14 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #         chem_flag=False,
 #         n_rep=n_rep,
 #     )
-#     print(sim1.results.status_list)
 #     Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
-#     assert np.all(sim1.results.final[0] > time_list[-1])
 #     assert (-3 < Z).all()
 #     assert (Z < 3).all()
 #     assert (-5 < Y).all()
 #     assert (Y < 5).all()
 
 
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00021(setup_00021, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00021
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -247,14 +245,13 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #         n_rep=n_rep,
 #     )
 #     Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
-#     assert np.all(sim1.results.final[0] > time_list[-1])
 #     assert (-3 < Z).all()
 #     assert (Z < 3).all()
 #     assert (-5 < Y).all()
 #     assert (Y < 5).all()
 
 
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00022(setup_00022, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00022
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -266,14 +263,13 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #         n_rep=n_rep,
 #     )
 #     Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
-#     assert np.all(sim1.results.final[0] > time_list[-1])
 #     assert (-3 < Z).all()
 #     assert (Z < 3).all()
 #     assert (-5 < Y).all()
 #     assert (Y < 5).all()
 
 
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00023(setup_00023, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00023
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -285,7 +281,6 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #         n_rep=n_rep,
 #     )
 #     Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
-#     assert np.all(sim1.results.final[0] > time_list[-1])
 #     assert (-3 < Z).all()
 #     assert (Z < 3).all()
 #     assert (-5 < Y).all()
@@ -293,7 +288,7 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 
 
 # @pytest.mark.filterwarnings("ignore::UserWarning")
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00030(setup_00030, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00030
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -306,7 +301,6 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #     )
 #     Z, Y = calculate_zy_2sp(sim1, time_list, mu_list, std_list)
 #     assert (np.array(sim1.results.status_list) != 1).all()
-#     assert np.all(sim1.results.final[0] > time_list[-1])
 #     assert (-3 < Z).all()
 #     assert (Z < 3).all()
 #     assert (-5 < Y).all()
@@ -314,7 +308,7 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 
 
 # @pytest.mark.filterwarnings("ignore::UserWarning")
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00031(setup_00031, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00031
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -326,14 +320,13 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #         n_rep=n_rep,
 #     )
 #     Z, Y = calculate_zy_2sp(sim1, time_list, mu_list, std_list)
-#     assert np.all(sim1.results.final[0] > time_list[-1])
 #     assert (-3 < Z).all()
 #     assert (Z < 3).all()
 #     assert (-5 < Y).all()
 #     assert (Y < 5).all()
 
 
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00037(setup_00037, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00037
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -345,14 +338,13 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #         n_rep=n_rep,
 #     )
 #     Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
-#     assert np.all(sim1.results.final[0] > time_list[-1])
 #     assert (-3 < Z).all()
 #     assert (Z < 3).all()
 #     assert (-5 < Y).all()
 #     assert (Y < 5).all()
 
 
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00038(setup_00038, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00038
 #     sim1 = Simulation(V_r, V_p, X0, k)
@@ -364,7 +356,6 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 #         n_rep=n_rep,
 #     )
 #     Z, Y = calculate_zy(sim1, time_list, mu_list, std_list)
-#     assert np.all(sim1.results.final[0] > time_list[-1])
 #     assert (-3 < Z).all()
 #     assert (Z < 3).all()
 #     assert (-5 < Y).all()
@@ -372,7 +363,7 @@ from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
 
 
 # @pytest.mark.filterwarnings("ignore::UserWarning")
-# @pytest.mark.parametrize("algorithm", ["direct", "tau_adaptive"])
+# @pytest.mark.parametrize("algorithm", ["tau_adaptive"])
 # def test_00039(setup_00039, algorithm):
 #     V_r, V_p, X0, k, time_list, mu_list, std_list, max_t, max_iter, n_rep = setup_00039
 #     sim1 = Simulation(V_r, V_p, X0, k)

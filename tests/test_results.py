@@ -9,14 +9,13 @@ from pyssa.simulation import Simulation
 from pyssa.results import Results
 
 
-@pytest.mark.parametrize(
-    "algorithm", ["direct", "tau_leaping", "tau_adaptive"]
-)
+@pytest.mark.parametrize("algorithm", ["direct", "tau_leaping", "tau_adaptive"])
 @pytest.mark.usefixtures("setup_large")
 class TestResults:
     """
         Test the Results class.
     """
+
     def test_init_good(self, algorithm, setup_large):
         """
             Test if initialization works.
@@ -111,7 +110,32 @@ class TestResults:
         sim = Simulation(V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=max_t, max_iter=max_iter, n_rep=n_rep)
         results = sim.results
-        assert np.all(results.get_state(0.0) == X0)
+        assert np.isclose(results.get_state(0.0), np.array(X0, dtype=np.float)).all()
+
+        x_list = [
+            np.array([0, 1, 2, 3]).reshape(-1, 1),
+            np.array([0, 2, 3, 4]).reshape(-1, 1),
+            np.array([0, 0, 1, 2]).reshape(-1, 1),
+        ]
+        t_list = [
+            np.array([0, 1, 2, 3]),
+            np.array([0, 1, 2, 3]),
+            np.array([0, 1, 2, 3]),
+        ]
+        status_list = [1, 1, 1]
+        seed = [0, 1, 2]
+        res = Results(t_list, x_list, status_list, algorithm, seed)
+        zero_array = np.array([0])
+        one_array = np.array([1])
+        two_array = np.array([2])
+        three_array = np.array([3])
+        four_array = np.array([4])
+        assert np.isclose(res.get_state(0), [zero_array, zero_array, zero_array]).all()
+        assert np.isclose(res.get_state(1), [one_array, two_array, zero_array]).all()
+        assert np.isclose(
+            res.get_state(1 + np.finfo(float).eps), [one_array, two_array, zero_array]
+        ).all()
+        assert np.isclose(res.get_state(3), [three_array, four_array, two_array]).all()
 
     def test_get_states_high_time(self, algorithm, setup_00003):
         """
@@ -128,4 +152,4 @@ class TestResults:
         assert states[0] == x_final[0]
         sim.simulate(algorithm=algorithm, max_t=2, max_iter=max_iter, n_rep=1)
         with pytest.warns(UserWarning):
-            sim.results.get_state(t=1000000)
+            sim.results.get_state(t=1_000_000)
