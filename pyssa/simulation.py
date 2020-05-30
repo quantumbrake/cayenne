@@ -171,7 +171,7 @@ class Simulation:
         max_iter: int = 1000,
         seed: int = 0,
         n_rep: int = 1,
-        n_procs: int = 1,
+        n_procs: Optional[int] = 1,
         algorithm: str = "direct",
         debug: bool = False,
         **kwargs,
@@ -195,6 +195,7 @@ class Simulation:
                 The default value is 1.
             n_procs: int, optional
                 The number of cpu cores to use for the simulation.
+                Use ``None`` to automatically detect number of cpu cores.
                 The default value is 1.
             algorithm: str, optional
                 The algorithm to be used to run the simulation.
