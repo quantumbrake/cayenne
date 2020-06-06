@@ -2,18 +2,19 @@
     The main class for running stochastic simulation
 """
 
-from functools import partial
 import multiprocessing as mp
-from typing import List, Optional
+from functools import partial
+from typing import Optional
 from warnings import warn
 
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+import matplotlib.pyplot as plt
+import numpy as np
 
 from .algorithms.direct import direct
-from .algorithms.tau_leaping import tau_leaping
 from .algorithms.tau_adaptive import tau_adaptive
+from .algorithms.tau_leaping import tau_leaping
+from .model_io import ModelIO
 from .results import Results
 
 
@@ -164,6 +165,28 @@ class Simulation:
             return self._results
         else:
             return self._results
+
+    @classmethod
+    def load_model(cls, contents: str, contents_type: str) -> "Simulation":
+        """
+            Load model contents into a Simulation object
+
+            Parameters
+            ----------
+            model_contents : str
+                Either the model string or the file path
+            content_type : str
+                The type of the model
+                {"AntimonyString", "SBMLString", "AntimonyFile", "SBMLFile"}
+
+            Returns
+            -------
+            sim : Simulation
+                An instance of the Simulation class.
+         """
+        modelio = ModelIO(contents, contents_type)
+        (react_stoic, prod_stoic, init_state, k_det, chem_flag, volume) = modelio.args
+        return cls(react_stoic, prod_stoic, init_state, k_det, chem_flag, volume)
 
     def simulate(
         self,
