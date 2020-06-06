@@ -3,19 +3,25 @@
 """
 
 import numpy as np
-import pytest
 
+import pytest
+from pyssa.model_io import (
+    ChemFlagError,
+    InitialStateError,
+    ModelError,
+    RateConstantError,
+    VolumeError,
+)
 from pyssa.simulation import Simulation
 
 
-@pytest.mark.parametrize(
-    "algorithm", ["direct", "tau_leaping", "tau_adaptive"]
-)
+@pytest.mark.parametrize("algorithm", ["direct", "tau_leaping", "tau_adaptive"])
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestSanitizeAlg:
     """
         Sanity checks on Simulation class where simulations are attempted.
     """
+
     def test_null(self, algorithm, setup_basic):
         V_r, V_p, X0, k = setup_basic
         k = np.array([0.0, 0.0])
@@ -106,6 +112,7 @@ class TestSanitize:
     """
         Sanity checks on Simulation class where instance creation fails.
     """
+
     def test_too_high_order(self, setup_basic):
         V_r, V_p, X0, k = setup_basic
         V_r = np.array([[2, 0], [2, 1], [0, 0]])
@@ -199,6 +206,7 @@ class TestHOR:
     """
         Test the HOR method for various combinations of reactants.
     """
+
     @staticmethod
     def create_sim_inst(react_stoic):
         prod_stoic = np.random.randint(0, 5, react_stoic.shape)
@@ -293,3 +301,38 @@ class TestHOR:
         )
         sim = self.create_sim_inst(react_stoic)
         assert np.all(sim.HOR == [-3, -2, 3, 3, 3])
+
+
+class TestLoadModel:
+    def test_correct(self, setup_00001_correct):
+        sim = Simulation.load_model(setup_00001_correct, "AntimonyString")
+
+    def test_nochemflag(self, setup_00001_nochemflag):
+        with pytest.raises(ChemFlagError):
+            sim = Simulation.load_model(setup_00001_nochemflag, "AntimonyString")
+
+    def test_norate(self, setup_00001_norate):
+        with pytest.raises(RateConstantError):
+            sim = Simulation.load_model(setup_00001_norate, "AntimonyString")
+
+    def test_noratevalue(self, setup_00001_noratevalue):
+        with pytest.raises(RateConstantError):
+            sim = Simulation.load_model(setup_00001_noratevalue, "AntimonyString")
+
+    def test_rateequation(self, setup_00001_rateequation):
+        with pytest.raises(RateConstantError):
+            sim = Simulation.load_model(setup_00001_rateequation, "AntimonyString")
+
+    def test_nospeciesvalue(self, setup_00001_nospeciesvalue):
+        with pytest.raises(InitialStateError):
+            sim = Simulation.load_model(setup_00001_nospeciesvalue, "AntimonyString")
+
+    def test_incompletespeciesvalue(self, setup_00001_incompletespeciesvalue):
+        with pytest.raises(InitialStateError):
+            sim = Simulation.load_model(
+                setup_00001_incompletespeciesvalue, "AntimonyString"
+            )
+
+    def test_nocompartment(self, setup_00001_nocompartment):
+        with pytest.raises(VolumeError):
+            sim = Simulation.load_model(setup_00001_nocompartment, "AntimonyString")
