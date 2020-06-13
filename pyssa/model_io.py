@@ -35,7 +35,7 @@ class ModelIO:
         ---------
         model_contents : str
             Either the model string or the file path
-        content_type : str, {"CAntimonyString", "CSBMLString", "CAntimonyFile", "CSBMLFile"}
+        content_type : str, {"ModelString", "ModelFile"}
             The type of the model
 
         Attributes
@@ -60,14 +60,10 @@ class ModelIO:
     """
 
     def __init__(self, model_contents: str, content_type: str) -> None:
-        if content_type == "CAntimonyString":
+        if content_type == "ModelString":
             er_code = sb.loadAntimonyString(model_contents)
-        elif content_type == "CSBMLString":
-            er_code = sb.loadSBMLString(model_contents)
-        elif content_type == "CAntimonyFile":
+        elif content_type == "ModelFile":
             er_code = sb.loadAntimonyFile(model_contents)
-        elif content_type == "CSBMLFile":
-            er_code = sb.loadSBMLFile(model_contents)
         else:
             raise KeyError(f"Unsupported content_type: {content_type}")
         self.er_code = er_code
@@ -87,6 +83,7 @@ class ModelIO:
         return stoic_mat
 
     def _parse_model(self):
+        """ Parse model contents """
         react_stoic_tuple = sb.getReactantStoichiometries(self.sb_module)
         react_names = sb.getReactantNames(self.sb_module)
         prod_names = sb.getProductNames(self.sb_module)
