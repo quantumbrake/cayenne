@@ -3,15 +3,8 @@
 """
 
 import numpy as np
-
 import pytest
-from pyssa.model_io import (
-    ChemFlagError,
-    InitialStateError,
-    ModelError,
-    RateConstantError,
-    VolumeError,
-)
+
 from pyssa.simulation import Simulation
 
 
@@ -304,35 +297,8 @@ class TestHOR:
 
 
 class TestLoadModel:
-    def test_correct(self, setup_00001_correct):
-        sim = Simulation.load_model(setup_00001_correct, "AntimonyString")
+    def test_correct_model_str(self, setup_00001_correct):
+        sim = Simulation.load_model(setup_00001_correct, "ModelString")
 
-    def test_nochemflag(self, setup_00001_nochemflag):
-        with pytest.raises(ChemFlagError):
-            sim = Simulation.load_model(setup_00001_nochemflag, "AntimonyString")
-
-    def test_norate(self, setup_00001_norate):
-        with pytest.raises(RateConstantError):
-            sim = Simulation.load_model(setup_00001_norate, "AntimonyString")
-
-    def test_noratevalue(self, setup_00001_noratevalue):
-        with pytest.raises(RateConstantError):
-            sim = Simulation.load_model(setup_00001_noratevalue, "AntimonyString")
-
-    def test_rateequation(self, setup_00001_rateequation):
-        with pytest.raises(RateConstantError):
-            sim = Simulation.load_model(setup_00001_rateequation, "AntimonyString")
-
-    def test_nospeciesvalue(self, setup_00001_nospeciesvalue):
-        with pytest.raises(InitialStateError):
-            sim = Simulation.load_model(setup_00001_nospeciesvalue, "AntimonyString")
-
-    def test_incompletespeciesvalue(self, setup_00001_incompletespeciesvalue):
-        with pytest.raises(InitialStateError):
-            sim = Simulation.load_model(
-                setup_00001_incompletespeciesvalue, "AntimonyString"
-            )
-
-    def test_nocompartment(self, setup_00001_nocompartment):
-        with pytest.raises(VolumeError):
-            sim = Simulation.load_model(setup_00001_nocompartment, "AntimonyString")
+    def test_correct_model_file(self):
+        sim = Simulation.load_model("tests/models/00001.txt", "ModelFile")
