@@ -197,7 +197,7 @@ class Simulation:
         algorithm: str = "direct",
         debug: bool = False,
         **kwargs,
-    ):
+    ) -> None:
         """
             Run the simulation
 
@@ -223,12 +223,12 @@ class Simulation:
                 The algorithm to be used to run the simulation.
                 The default value is ``"direct"``.
 
-            Returns
-            -------
-            t: float
-                End time of the simulation.
-            Xt: ndarray
-                System state at time ``t`` and initial.
+            Notes
+            -----
+            The status indicates the status of the simulation at exit. Each
+            repetition will have a status associated with it, and these are
+            accessible through the ``Simulation.results.status_list``.
+
             status: int
                 Indicates the status of the simulation at exit.
 

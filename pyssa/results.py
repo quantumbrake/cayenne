@@ -25,6 +25,22 @@ class Results(Collection):
             Algorithm used to run the simulation
         sim_seeds: List[int]
             List of seeds used for the simulation
+
+        Notes
+        -----
+        The status indicates the status of the simulation at exit. Each
+        repetition will have a status associated with it, and these are
+        accessible through the ``status_list``.
+
+        1: Succesful completion, terminated when ``max_iter`` iterations reached.
+
+        2: Succesful completion, terminated when ``max_t`` crossed.
+
+        3: Succesful completion, terminated when all species went extinct.
+
+        -1: Failure, order greater than 3 detected.
+
+        -2: Failure, propensity zero without extinction.
     """
 
     def __init__(
