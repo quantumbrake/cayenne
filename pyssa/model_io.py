@@ -90,8 +90,11 @@ class ModelIO:
         prod_stoic_tuple = sb.getProductStoichiometries(self.sb_module)
         # 0:all, 1:speciescounts, 2:rateconstants, 6:rxnrateequations, 9:compartmentvols
         species_names = sb.getSymbolNamesOfType(self.sb_module, 1)
+        self.species = species_names
         ns = len(species_names)
         nr = sb.getNumReactions(self.sb_module)
+
+        # Stochastic matrices
         self.react_stoic = self._create_stoic_mat(
             ns, nr, react_names, react_stoic_tuple, species_names
         )
@@ -158,3 +161,17 @@ class ModelIO:
             self.chem_flag,
             self.volume,
         )
+
+    @classmethod
+    def translate_sbml(cls, sbml_file: str):
+        """
+            Translate SBML file to Antimony model specification.
+            pyssa's model specification is loosely based on Antimony's model
+            specification.
+        """
+        er_code = sb.loadSBMLFile(sbml_file)
+        if er_code == -1:
+            raise ModelError("Error while parsing model")
+        sb_module = sb.getMainModuleName()
+        sb_string = sb.getAntimonyString(sb_module)
+        return sb_string
