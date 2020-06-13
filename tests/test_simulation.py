@@ -299,6 +299,12 @@ class TestHOR:
 class TestLoadModel:
     def test_correct_model_str(self, setup_00001_correct):
         sim = Simulation.load_model(setup_00001_correct, "ModelString")
+        sim.simulate()
+        assert sim.results.status_list == [2]
+        sim.simulate(max_t=20.0, max_iter=5)
+        assert sim.results.status_list == [1]
 
     def test_correct_model_file(self):
         sim = Simulation.load_model("tests/models/00001.txt", "ModelFile")
+        sim.simulate()
+        assert sim.results.status_list == [2]
