@@ -20,8 +20,8 @@ class TestResults:
         """
             Test if initialization works.
         """
-        V_r, V_p, X0, k = setup_large
-        sim = Simulation(V_r, V_p, X0, k)
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         with pytest.warns(Warning):
             sim.results
         sim.simulate(algorithm=algorithm)
@@ -31,8 +31,8 @@ class TestResults:
         """
             Test if initialization fails when it is supposed to.
         """
-        V_r, V_p, X0, k = setup_large
-        sim = Simulation(V_r, V_p, X0, k)
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm)
         results = sim.results
         t_list = results.t_list
@@ -56,9 +56,9 @@ class TestResults:
         """
             Test the ``__len__`` method and if shape of x and t match.
         """
-        V_r, V_p, X0, k = setup_large
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
         n_rep = 10
-        sim = Simulation(V_r, V_p, X0, k)
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, n_rep=n_rep)
         results = sim.results
         assert len(results) == n_rep
@@ -70,9 +70,9 @@ class TestResults:
         """
             Test the ``__getitem__`` method.
         """
-        V_r, V_p, X0, k = setup_large
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
         n_rep = 10
-        sim = Simulation(V_r, V_p, X0, k)
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, n_rep=n_rep)
         results = sim.results
         assert 9 in results
@@ -86,11 +86,11 @@ class TestResults:
         """
             Test the ``final`` property.
         """
-        V_r, V_p, X0, k = setup_large
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
         n_rep = 3
         max_t = 1e5
         max_iter = 100
-        sim = Simulation(V_r, V_p, X0, k)
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=max_t, max_iter=max_iter, n_rep=n_rep)
         results = sim.results
         final_times, final_states = results.final
@@ -103,11 +103,11 @@ class TestResults:
         """
             Test the ``get_state`` method.
         """
-        V_r, V_p, X0, k = setup_large
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
         n_rep = 3
         max_t = 1e5
         max_iter = 100
-        sim = Simulation(V_r, V_p, X0, k)
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=max_t, max_iter=max_iter, n_rep=n_rep)
         results = sim.results
         assert np.isclose(results.get_state(0.0), np.array(X0, dtype=np.float)).all()
@@ -141,8 +141,21 @@ class TestResults:
         """
             Test the ``get_state`` method at longer model times.
         """
-        V_r, V_p, X0, k, _, _, _, max_t, max_iter, n_rep = setup_00003
-        sim = Simulation(V_r, V_p, X0, k)
+        (
+            species_names,
+            rxn_names,
+            V_r,
+            V_p,
+            X0,
+            k,
+            _,
+            _,
+            _,
+            max_t,
+            max_iter,
+            n_rep,
+        ) = setup_00003
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=10000, max_iter=max_iter, n_rep=1)
         print(
             "status", sim.results.status_list[0], sim.results.t_list, sim.results.x_list

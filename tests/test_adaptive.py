@@ -14,7 +14,7 @@ from .test_simulation import TestHOR
 
 
 def test_tauadaptive_step1(setup_basic):
-    V_r, V_p, X0, k = setup_basic
+    _, _, V_r, V_p, X0, k = setup_basic
     V = V_p - V_r
     kstoc = get_kstoc(V_r, k, 1.0, False)
     X0 = np.array([100, 9, 0], dtype=np.int64)
@@ -78,7 +78,7 @@ def test_tauadaptive_step1(setup_basic):
 
 
 def test_tauadaptive_step2(setup_basic):
-    V_r, V_p, X0, k = setup_basic
+    _, _, V_r, V_p, X0, k = setup_basic
     V = V_p - V_r
     sim = TestHOR.create_sim_inst(V_r)
     hor = np.int32(sim.HOR)
@@ -115,7 +115,7 @@ def test_tauadaptive_step2_get_g():
 
 
 def test_tauadaptive_step5(setup_basic):
-    V_r, V_p, X0, k = setup_basic
+    _, _, V_r, V_p, X0, k = setup_basic
     nr = V_r.shape[1]
     V = V_p - V_r
     kstoc = get_kstoc(V_r, k, 1.0, False)

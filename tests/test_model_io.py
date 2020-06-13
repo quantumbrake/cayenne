@@ -15,7 +15,7 @@ from pyssa.simulation import Simulation
 class TestModelIO:
     def test_correct_model_str(self, setup_00001_correct, setup_00001):
         modelio = ModelIO(setup_00001_correct, "ModelString")
-        (react_stoic, prod_stoic, init_state, k_det, *_) = modelio.args
+        (_, _, react_stoic, prod_stoic, init_state, k_det, *_) = modelio.args
         V_r, V_p, X0, k, *_ = setup_00001
         assert (react_stoic == V_r).all()
         assert (prod_stoic == V_p).all()
@@ -24,7 +24,7 @@ class TestModelIO:
 
     def test_correct_model_file(self, setup_00001):
         modelio = ModelIO("tests/models/00001.txt", "ModelFile")
-        (react_stoic, prod_stoic, init_state, k_det, *_) = modelio.args
+        (_, _, react_stoic, prod_stoic, init_state, k_det, *_) = modelio.args
         V_r, V_p, X0, k, *_ = setup_00001
         assert (react_stoic == V_r).all()
         assert (prod_stoic == V_p).all()
