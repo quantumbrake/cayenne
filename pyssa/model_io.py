@@ -90,7 +90,9 @@ class ModelIO:
         prod_stoic_tuple = sb.getProductStoichiometries(self.sb_module)
         # 0:all, 1:speciescounts, 2:rateconstants, 6:rxnrateequations, 9:compartmentvols
         species_names = sb.getSymbolNamesOfType(self.sb_module, 1)
-        self.species = species_names
+        self.species_names = species_names
+        rxn_names = sb.getSymbolNamesOfType(self.sb_module, 6)
+        self.rxn_names = rxn_names
         ns = len(species_names)
         nr = sb.getNumReactions(self.sb_module)
 
@@ -154,6 +156,8 @@ class ModelIO:
     def args(self):
         """ Returns the attributes of the ModelIO class """
         return (
+            self.species_names,
+            self.rxn_names,
             self.react_stoic,
             self.prod_stoic,
             self.init_state,

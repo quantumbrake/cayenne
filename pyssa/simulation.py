@@ -4,7 +4,7 @@
 
 import multiprocessing as mp
 from functools import partial
-from typing import Optional
+from typing import List, Optional
 from warnings import warn
 
 import matplotlib.lines as mlines
@@ -100,6 +100,8 @@ class Simulation:
 
     def __init__(
         self,
+        species_names: List[str],
+        rxn_names: List[str],
         react_stoic: np.ndarray,
         prod_stoic: np.ndarray,
         init_state: np.ndarray,
@@ -107,6 +109,8 @@ class Simulation:
         chem_flag: bool = False,
         volume: float = 1.0,
     ) -> None:
+        self.species_names = species_names
+        self.rxn_names = rxn_names
         self._react_stoic = react_stoic
         self._prod_stoic = prod_stoic
         self._init_state = init_state
@@ -121,6 +125,14 @@ class Simulation:
         self._check_consistency()
 
     def _check_consistency(self):
+        if len(self.species_names) != self._ns:
+            raise ValueError(
+                "Species names must match the stoichiometric matrix shapes."
+            )
+        if len(self.rxn_names) != self._nr:
+            raise ValueError(
+                "Reaction names must match the stoichiometric matrix shapes."
+            )
         if (self._ns != self._prod_stoic.shape[0]) or (
             self._nr != self._prod_stoic.shape[1]
         ):
@@ -184,8 +196,26 @@ class Simulation:
                 An instance of the Simulation class.
          """
         modelio = ModelIO(contents, contents_type)
-        (react_stoic, prod_stoic, init_state, k_det, chem_flag, volume) = modelio.args
-        return cls(react_stoic, prod_stoic, init_state, k_det, chem_flag, volume)
+        (
+            species_names,
+            rxn_names,
+            react_stoic,
+            prod_stoic,
+            init_state,
+            k_det,
+            chem_flag,
+            volume,
+        ) = modelio.args
+        return cls(
+            species_names,
+            rxn_names,
+            react_stoic,
+            prod_stoic,
+            init_state,
+            k_det,
+            chem_flag,
+            volume,
+        )
 
     def simulate(
         self,
@@ -427,7 +457,7 @@ class Simulation:
             generic_names = [""] * n_indices
             for index1 in range(n_indices):
                 legend_handlers[index1] = mlines.Line2D([], [], color=colors[index1])
-                generic_names[index1] = "x" + str(plot_indices[index1])
+                generic_names[index1] = self.species_names[plot_indices[index1]]
                 for index2 in range(len(res.status_list)):
                     ax.step(
                         res.t_list[index2],
