@@ -177,7 +177,7 @@ class Simulation:
                 Either the model string or the file path
             content_type : str
                 The type of the model
-                {"AntimonyString", "SBMLString", "AntimonyFile", "SBMLFile"}
+                {"CAntimonyString", "CSBMLString", "CAntimonyFile", "CSBMLFile"}
 
             Returns
             -------

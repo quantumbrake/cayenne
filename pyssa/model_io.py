@@ -35,7 +35,7 @@ class ModelIO:
         ---------
         model_contents : str
             Either the model string or the file path
-        content_type : str, {"AntimonyString", "SBMLString", "AntimonyFile", "SBMLFile"}
+        content_type : str, {"CAntimonyString", "CSBMLString", "CAntimonyFile", "CSBMLFile"}
             The type of the model
 
         Attributes
@@ -60,13 +60,13 @@ class ModelIO:
     """
 
     def __init__(self, model_contents: str, content_type: str) -> None:
-        if content_type == "AntimonyString":
+        if content_type == "CAntimonyString":
             er_code = sb.loadAntimonyString(model_contents)
-        elif content_type == "SBMLString":
+        elif content_type == "CSBMLString":
             er_code = sb.loadSBMLString(model_contents)
-        elif content_type == "AntimonyFile":
+        elif content_type == "CAntimonyFile":
             er_code = sb.loadAntimonyFile(model_contents)
-        elif content_type == "SBMLFile":
+        elif content_type == "CSBMLFile":
             er_code = sb.loadSBMLFile(model_contents)
         else:
             raise KeyError(f"Unsupported content_type: {content_type}")
