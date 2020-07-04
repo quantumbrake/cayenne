@@ -28,6 +28,10 @@ class Simulation:
 
         Parameters
         ----------
+        species_names : List[str]
+            List of species names
+        rxn_names : List[str]
+            List of reaction names
         react_stoic: (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
             Reactions are columns and species are rows.
@@ -361,7 +365,15 @@ class Simulation:
             tlist.append(t)
             xlist.append(X)
             status_list.append(status)
-        self._results = Results(tlist, xlist, status_list, algorithm, sim_seeds)
+        self._results = Results(
+            self.species_names,
+            self.rxn_names,
+            tlist,
+            xlist,
+            status_list,
+            algorithm,
+            sim_seeds,
+        )
 
     @property
     def HOR(self) -> np.ndarray:
@@ -416,19 +428,16 @@ class Simulation:
                     HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
         return HOR
 
-    def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
+    def plot(self, species_names: list = None, new_names: list = None):
         """
             Plot the simulation
 
             Parameters
             ----------
-            plot_indices: list, optional
-                The indices of the species to be plotted.
+            species_names: list, optional
+                The names of the species to be plotted (``list`` of ``str``).
                 The default is ``None`` and  plots all species.
-            disp: bool, optional
-                If ``True``, the plot is displayed.
-                The default shows the plot.
-            names: list, optional
+            new_names: list, optional
                 The names of the species to be plotted.
                 The default is ``"xi"`` for species ``i``.
 
@@ -443,31 +452,28 @@ class Simulation:
         if self._results is None:
             raise ValueError("Simulate not run.")
         else:
-            if plot_indices is None:
-                plot_indices = [i for i in range(self._ns)]
-            elif np.any(np.array(plot_indices) < 0):
-                raise ValueError("Negative indexing not supported")
-
-            n_indices = len(plot_indices)
+            if species_names is None:
+                species_names = self.species_names
+            n_species = len(species_names)
             prop_cycle = plt.rcParams["axes.prop_cycle"]
             colors = prop_cycle.by_key()["color"]
             fig, ax = plt.subplots()
             res = self._results
-            legend_handlers = [0] * n_indices
-            generic_names = [""] * n_indices
-            for index1 in range(n_indices):
+            legend_handlers = [0] * n_species
+            generic_names = [""] * n_species
+            for index1 in range(n_species):
                 legend_handlers[index1] = mlines.Line2D([], [], color=colors[index1])
-                generic_names[index1] = self.species_names[plot_indices[index1]]
-                for index2 in range(len(res.status_list)):
+                this_species = species_names[index1]
+                generic_names[index1] = this_species
+                n_reps = len(res)
+                for index2 in range(n_reps):
                     ax.step(
                         res.t_list[index2],
-                        res.x_list[index2][:, plot_indices[index1]],
+                        res.get_species([this_species])[index2],
                         color=colors[index1],
                         where="post",
                     )
-            if names is None:
-                names = generic_names
-            fig.legend(legend_handlers, names)
-            if disp:
-                plt.show()
+            if new_names is None:
+                new_names = self.species_names
+            fig.legend(legend_handlers, new_names)
             return fig, ax
