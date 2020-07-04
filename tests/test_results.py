@@ -40,17 +40,39 @@ class TestResults:
         status_list = results.status_list
         algorithm = "direct"
         seed = [0] * len(status_list)
-        assert Results(t_list, x_list, status_list, algorithm, seed)
+        assert Results(
+            species_names, rxn_names, t_list, x_list, status_list, algorithm, seed
+        )
         with pytest.raises(ValueError):
-            Results(t_list, x_list, status_list, algorithm, seed[:-2])
+            Results(
+                species_names,
+                rxn_names,
+                t_list,
+                x_list,
+                status_list,
+                algorithm,
+                seed[:-2],
+            )
         with pytest.raises(ValueError):
-            Results(t_list[:-2], x_list, status_list, algorithm, seed)
+            Results(
+                species_names,
+                rxn_names,
+                t_list[:-2],
+                x_list,
+                status_list,
+                algorithm,
+                seed,
+            )
         with pytest.raises(ValueError):
             t_list[0] = t_list[0][:-2]
-            Results(t_list, x_list, status_list, algorithm, seed)
+            Results(
+                species_names, rxn_names, t_list, x_list, status_list, algorithm, seed
+            )
         with pytest.raises(ValueError):
             status_list[-1] = "fail"
-            Results(t_list, x_list, status_list, algorithm, seed)
+            Results(
+                species_names, rxn_names, t_list, x_list, status_list, algorithm, seed
+            )
 
     def test_iter_len(self, algorithm, setup_large):
         """
@@ -124,7 +146,7 @@ class TestResults:
         ]
         status_list = [1, 1, 1]
         seed = [0, 1, 2]
-        res = Results(t_list, x_list, status_list, algorithm, seed)
+        res = Results(["A"], ["r1"], t_list, x_list, status_list, algorithm, seed)
         zero_array = np.array([0])
         one_array = np.array([1])
         two_array = np.array([2])
