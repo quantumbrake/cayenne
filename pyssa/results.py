@@ -218,3 +218,23 @@ class Results(Collection):
                 else:
                     states.append(x_array[ind, :])
         return states
+
+    def get_species(self, species_names: List[str]) -> List[np.ndarray]:
+        """
+            Returns the species concentrations only for the species in species_names
+
+            Parameters
+            ---------
+            species_names : List[str]
+                The names of the species as a list
+
+            Returns
+            ------
+            List[np.ndarray]
+                Simulation output of the selected species.
+        """
+        x_list_curated = []
+        species_inds = [self.species_names.index(s) for s in species_names]
+        for rep_ind in range(len(self)):
+            x_list_curated.append(self[rep_ind][0][:, species_inds])
+        return x_list_curated
