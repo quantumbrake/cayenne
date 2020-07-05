@@ -1,9 +1,9 @@
 -i https://pypi.org/simple
 cycler==0.10.0
-cython==0.29.14
-kiwisolver==1.1.0
-matplotlib==3.1.2
-numpy==1.18.1
-pyparsing==2.4.6
+cython==0.29.19
+kiwisolver==1.2.0
+matplotlib==3.2.1
+numpy==1.18.4
+pyparsing==2.4.7
 python-dateutil==2.8.1
-six==1.14.0
+six==1.15.0

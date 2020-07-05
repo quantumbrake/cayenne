@@ -128,11 +128,14 @@ class TestResults:
         zero_array = np.array([0])
         one_array = np.array([1])
         two_array = np.array([2])
+        three_array = np.array([3])
+        four_array = np.array([4])
         assert np.isclose(res.get_state(0), [zero_array, zero_array, zero_array]).all()
         assert np.isclose(res.get_state(1), [one_array, two_array, zero_array]).all()
         assert np.isclose(
             res.get_state(1 + np.finfo(float).eps), [one_array, two_array, zero_array]
         ).all()
+        assert np.isclose(res.get_state(3), [three_array, four_array, two_array]).all()
 
     def test_get_states_high_time(self, algorithm, setup_00003):
         """
