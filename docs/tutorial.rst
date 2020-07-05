@@ -50,7 +50,7 @@ Suppose we want to run 10 repetitions of the system for at most 1000 steps / 150
 .. automethod:: pyssa.simulation.Simulation.simulate
 
 .. note::
-    The ``chem_flag`` is set to ``True`` since we are dealing with a chemical system. For defintion of ``chem_flag``, see the notes under the definition of the Simulation class.
+    The ``chem_flag`` is set to ``True`` since we are dealing with a chemical system. For defintion of ``chem_flag``, see the notes under the definition of the ``Simulation`` class.
 
 Plotting
 --------
