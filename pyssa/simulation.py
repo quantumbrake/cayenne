@@ -476,4 +476,6 @@ class Simulation:
             if new_names is None:
                 new_names = self.species_names
             fig.legend(legend_handlers, new_names)
+            ax.set_xlabel("Time")
+            ax.set_ylabel("Species amounts")
             return fig, ax
