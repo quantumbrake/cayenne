@@ -14,18 +14,24 @@ Zero order system
 
 This can be coded up with::
 
-    >>> import numpy as np
     >>> from pyssa import Simulation
-    >>> V_r = np.array([[0]])
-    >>> V_p = np.array([[1]])
-    >>> X0 = np.array([100], dtype=np.int64)
-    >>> k_det = np.array([1.1])
-    >>> sim = Simulation(V_r, V_p, X0, k_det)
+    >>> model_str = """
+            const compartment comp1;
+            comp1 = 1.0; # volume of compartment
+
+            r1:  => A; k1;
+
+            k1 = 1.1;
+            chem_flag = false;
+
+            A = 100;
+        """
+    >>> sim = Simulation.load_model(model_str, "ModelString")
     >>> sim.simulate()
     >>> sim.plot()
 
 .. image:: ../docs/images/ex_0.png
-    :scale: 70%
+    :scale: 80%
     :align: center
     :alt: Plot of a zero order system.
 
@@ -42,28 +48,35 @@ First order system
 
 This can be coded up with::
 
-    >>> import numpy as np
     >>> from pyssa import Simulation
-    >>> V_r = np.array([[1], [0]])
-    >>> V_p = np.array([[0], [1]])
-    >>> X0 = np.array([100, 20], dtype=np.int64)
-    >>> k_det = np.array([1.1])
-    >>> sim = Simulation(V_r, V_p, X0, k_det)
+    >>> model_str = """
+            const compartment comp1;
+            comp1 = 1.0; # volume of compartment
+
+            r1: A => B; k1;
+
+            k1 = 1.1;
+            chem_flag = false;
+
+            A = 100;
+            B = 20;
+        """
+    >>> sim = Simulation.load_model(model_str, "ModelString")
     >>> sim.simulate()
     >>> sim.plot()
 
 .. image:: ../docs/images/ex_1a.png
-    :scale: 70%
+    :scale: 80%
     :align: center
     :alt: Plot of a first order system.
 
 Suppose you want to use the ``tau_leaping`` algorithm, run 20 repetitions and plot only species :math:`B`. Then do::
 
     >>> sim.simulate(algorithm="tau_leaping", n_rep=20)
-    >>> sim.plot(plot_indices=[1], names=["B"])
+    >>> sim.plot(species_names=["B"], new_names=["Species B"])
 
 .. image:: ../docs/images/ex_1b.png
-    :scale: 70%
+    :scale: 80%
     :align: center
     :alt: Plot of a first order system with more repetitions.
 
@@ -87,35 +100,61 @@ Enzyme kinetics (second order system with multiple reactions)
 
 This can be coded up with::
 
-    >>> import numpy as np
     >>> from pyssa import Simulation
-    >>> V_r = np.array([[1, 0, 0], [1, 0, 0], [0, 1, 1], [0, 0, 0]])
-    >>> V_p = np.array([[0, 1, 0], [0, 1, 1], [1, 0, 0], [0, 0, 1]])
-    >>> X0 = np.array([200, 50, 0, 0], dtype=np.int64)
-    >>> k_det = np.array([0.006, 0.005, 0.1])
-    >>> sim = Simulation(V_r, V_p, X0, k_det)
+    >>> model_str = """
+            const compartment comp1;
+            comp1 = 1.0; # volume of compartment
+
+            binding: S + E => SE; k1;
+            dissociation: SE => S + E; k2;
+            conversion: SE => P + E; k3;
+
+            k1 = 0.006;
+            k2 = 0.005;
+            k3 = 0.1;
+            chem_flag = false;
+
+            S = 200;
+            E = 50;
+            SE = 0;
+            P = 0;
+        """
+    >>> sim = Simulation.load_model(model_str, "ModelString")
     >>> sim.simulate(max_t=50, n_rep=10)
-    >>> sim.plot(names=["S", "E", "SE", "P"])
+    >>> sim.plot()
 
 .. image:: ../docs/images/ex_2a.png
-    :scale: 70%
+    :scale: 80%
     :align: center
     :alt: Plot of enzyme kinetics simulation.
 
 Since this is a second order system, the size of the system affects the reaction rates. What happens in a larger system? ::
 
-    >>> import numpy as np
     >>> from pyssa import Simulation
-    >>> V_r = np.array([[1, 0, 0], [1, 0, 0], [0, 1, 1], [0, 0, 0]])
-    >>> V_p = np.array([[0, 1, 0], [0, 1, 1], [1, 0, 0], [0, 0, 1]])
-    >>> X0 = np.array([200, 50, 0, 0], dtype=np.int64)
-    >>> k_det = np.array([0.006, 0.005, 0.1])
-    >>> sim = Simulation(V_r, V_p, X0, k_det, volume=5.0)
+    >>> model_str = """
+            const compartment comp1;
+            comp1 = 5.0; # volume of compartment
+
+            binding: S + E => SE; k1;
+            dissociation: SE => S + E; k2;
+            conversion: SE => P + E; k3;
+
+            k1 = 0.006;
+            k2 = 0.005;
+            k3 = 0.1;
+            chem_flag = false;
+
+            S = 200;
+            E = 50;
+            SE = 0;
+            P = 0;
+        """
+    >>> sim = Simulation.load_model(model_str, "ModelString")
     >>> sim.simulate(max_t=50, n_rep=10)
-    >>> sim.plot(names=["S", "E", "SE", "P"])
+    >>> sim.plot()
 
 .. image:: ../docs/images/ex_2b.png
-    :scale: 70%
+    :scale: 80%
     :align: center
     :alt: Plot of enzyme kinetics simulation with a larger volume.
 
