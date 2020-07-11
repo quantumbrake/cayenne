@@ -29,7 +29,7 @@ $ pip install pyssa
 ## Documentation
 
   - General: <https://pyssa.readthedocs.io>.
-
+  - Benchmark repository, comparing `pyssa` with other stochastic simulation packages: <https://github.com/Heuro-labs/pyssa-benchmarks>
 
 ## Usage
 
@@ -64,11 +64,13 @@ sim.plot()
 
 ### Change simulation algorithm
 
-You can change the algorithm used to perform the simulation by changing the `algorithm` parameter
+You can change the algorithm used to perform the simulation by changing the `algorithm` parameter (one of `"direct"`, `"tau_leaping"` or `"tau_adaptive"`)
 
 ```python
-sim.simulate(max_t=150, max_iter=1000, n_rep=10, algorithm="tau_adaptive")
+sim.simulate(max_t=150, max_iter=1000, n_rep=10, algorithm="tau_leaping")
 ```
+
+Our [benchmarks](https://github.com/Heuro-labs/pyssa-benchmarks) are summarized [below](#benchmarks), and show `direct` to be a good starting point. `tau_leaping` offers greater speed but needs specification and tuning of the `tau` hyperparameter. The `tau_adaptive` is less accurate and a work in progress.
 
 ### Run simulations in parallel
 You can run the simulations on multiple cores by specifying the `n_procs` parameter
@@ -102,6 +104,15 @@ Additionally, you can access the state a particular time point of interest $t$. 
 t = 10.0
 states = results.get_state(t) # returns a list of numpy arrays
 ```
+
+<h2 id="benchmarks"> Benchmarks </h2>
+
+| | direct|	tau_leaping |	tau_adaptive |
+--- | --- |--- | --- |
+pyssa	| :heavy_check_mark: Most accurate yet	| :heavy_check_mark: Very fast but may need manual tuning|	Less accurate than GillespieSSA's version|
+Tellurium | :exclamation: Inaccurate for 2nd order | N/A | N/A |
+GillespieSSA | Very slow |:exclamation: Inaccurate for initial zero counts | :exclamation: Inaccurate for initial zero counts
+BioSimulator.jl |	:exclamation: Inaccurate interpolation | :exclamation: Inaccurate for initial zero counts | :exclamation: Inaccurate for initial zero counts
 
 ## License
 
