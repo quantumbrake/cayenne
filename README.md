@@ -33,52 +33,74 @@ $ pip install pyssa
 
 ## Usage
 
-A short summary follows, but a more detailed tutorial can be found at <https://pyssa.readthedocs.io/en/latest/tutorial.html>
+A short summary follows, but a more detailed tutorial can be found [here](https://pyssa.readthedocs.io/en/latest/tutorial.html). You can define a model as a Python string (or a text file, see [docs](https://pyssa.readthedocs.io)). The format of this string is loosely based on the excellent [antimony](https://tellurium.readthedocs.io/en/latest/antimony.html#introduction-basics) library, which is used behind the scenes by `pyssa`.
 
 ```python
 from pyssa.simulation import Simulation
-V_r = np.array([[1, 0], [0, 1], [0, 0]])  # Reactant matrix
-V_p = np.array([[0, 0], [1, 0], [0, 1]])  # Product matrix
-X0 = np.array([100, 0, 0])  # Initial state
-k = np.array([1.0, 1.0])  # Rate constants
-sim = Simulation(V_r, V_p, X0, k)  # Declare the simulation object
+import matplotlib.pyplot as plt
+model_str = """
+        const compartment comp1;
+        comp1 = 7; # volume of compartment
+
+        r1: A => B; k1;
+        r2: B => C; k2;
+
+        k1 = 0.11;
+        k2 = 0.1;
+        chem_flag = false;
+
+        A = 100;
+        B = 0;
+        C = 0;
+    """
+sim = Simulation.load_model(model_str, "ModelString")
 # Run the simulation
-sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
+sim.simulate(max_t=40, max_iter=1000, n_rep=10)
+sim.plot()
 ```
+
+![Plot of species A, B and C](https://raw.githubusercontent.com/Heuro-labs/pyssa/master/docs/images/plot_basic.png)
+
 
 ### Change simulation algorithm
 
 You can change the algorithm used to perform the simulation by changing the `algorithm` parameter
 
 ```python
-sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, algorithm="tau_adaptive")
+sim.simulate(max_t=150, max_iter=1000, n_rep=10, algorithm="tau_adaptive")
 ```
 
 ### Run simulations in parallel
 You can run the simulations on multiple cores by specifying the `n_procs` parameter
 
 ```python
-sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, n_procs=4)
+sim.simulate(max_t=150, max_iter=1000, n_rep=10, n_procs=4)
 ```
-
-### Plot simulation results
-
-```python
-sim.plot()
-```
-
-![Plot of species A, B and C](https://raw.githubusercontent.com/Heuro-labs/pyssa/master/docs/images/plot_basic.png)
 
 ### Accessing simulation results
 
+You can access all the results or the results for a specific list of species
+
 ```python
+# Get all the results
 results = sim.results
+# Get results only for one or more species
+results.get_species(["A", "C"])
 ```
 
 You can also access the final states of all the simulation runs by
 
 ```python
+# Get results at the simulation endpoints
 final_times, final_states = results.final
+```
+
+Additionally, you can access the state a particular time point of interest $t$. `pyssa` will interpolate the value from nearby time points to give an accurate estimate.
+
+```python
+# Get results at timepoint "t"
+t = 10.0
+states = results.get_state(t) # returns a list of numpy arrays
 ```
 
 ## License
@@ -88,6 +110,7 @@ Copyright (c) 2018-2020, Dileep Kishore, Srikiran Chandrasekaran. Released under
 ## Credits
 
 - [Cython](https://cython.org/)
+- [antimony](https://tellurium.readthedocs.io/en/latest/antimony.html)
 - [pytest](https://docs.pytest.org)
 - [Cookiecutter](https://github.com/audreyr/cookiecutter)
 - [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)
