@@ -37,10 +37,9 @@ A short summary follows, but a more detailed tutorial can be found [here](https:
 
 ```python
 from pyssa.simulation import Simulation
-import matplotlib.pyplot as plt
 model_str = """
         const compartment comp1;
-        comp1 = 7; # volume of compartment
+        comp1 = 1.0; # volume of compartment
 
         r1: A => B; k1;
         r2: B => C; k2;
