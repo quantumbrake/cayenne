@@ -29,21 +29,62 @@ Suppose k\ :sub:`0.11` = 1, k\ :sub:`0.1` = 1 and there are initially 100 units 
             C = 0;
         """
 
-The format of the model string is based on the `antimony modeling language <https://tellurium.readthedocs.io/en/latest/antimony.html#introduction-basics>`_, but with one key difference. ``Antimony`` allows the user to specify custom rate *equations* for each reaction. ``pyssa`` automagically generates the rate equations behind the scenes, and user need only supply the rate *constants*. We note that ``pyssa`` only accepts zero, first, second and third order reactions. We decided to not allow custom rate equations for stochastic simulations for two reasons:
+The format of the model string is based on the `antimony modeling language <https://tellurium.readthedocs.io/en/latest/antimony.html#introduction-basics>`_, but with one key difference. ``Antimony`` allows the user to specify custom rate *equations* for each reaction. ``pyssa`` automagically generates the rate equations behind the scenes, and user need only supply the rate *constants*. The format is discussed below:
 
-1. A custom rate equation, such as the Monod equation (see here_ for background) equation below, may violate the assumptions_ of stochastic simulations. These assumptions include a well stirred chamber with molecules in Brownian motion, among others.
+Model format
+^^^^^^^^^^^^
 
-.. math::
+::
 
-    \mu = \frac{\mu_{max}S}{K_S + S}
+    const compartment comp1;
 
-2. An equation resembling the Monod equation, the Michaelis-Menten_ equation, is grounded chemical kinetic theory. Yet the rate expression (see below) does not fall under 0-3 order reactions allowed by ``pyssa``. However, the *elementary* reactions that make up the Michaelis-Menten kinetics are first and second order in nature. These *elementary* reactions can easily be modeled with ``pyssa``, but with the specification of additional constants (see `examples <examples.html>`_). A study shows that using the rate expression of Michaelis-Menten kinetics is valid under `some conditions <https://pubmed.ncbi.nlm.nih.gov/21261403/>`_.
+This defines the compartment in which the reactions happen.::
 
-.. TODO: From here (talk about model string components)
+    comp1 = 1.0;
 
-.. math::
+This defines the volume of the compartment in which reactions happen. For zero and first order reactions, this number does not matter. For second and third order reactions, varying compartment volume will affect the kinetic outcomes even when the rest of the model is not changed. A blank line after this separates these definitions from the reactions.::
 
-    \frac{dP}{dt} = \frac{\mu_{max}S}{K_S + S}
+    r1: A => B; k1; # differs from antimony
+    r2: B => C; k2; # differs from antimony
+
+Here ``r1`` and ``r2`` refer to the names of the reactions. This is followed by a colon and the reactants in that reaction. In ``r1`` there is only one reactant, ``A``. Additional reactants or stoichiometries can be written like ``A + 2B``. This is followed by a ``=>`` which separates reactants and products. Products are written in a fashion similar to the reactants. A semi-colon indicates the end of the products. This is followed by a symbol depicting the rate constant e.g. ``k1``, and the reaction ends with a second semi-colon. A blank line after this separates these reactions from rate-constant assignments.::
+
+    k1 = 0.11;
+    k2 = 0.1;
+
+The rate constants are assigned one per line, with each line ending in a semi-colon. Every rate constant defined in the reactions must be assigned a numerical value at this stage, or pyssa will throw a `pyssa.model_io.RateConstantError`.::
+
+    chem_flag = false;
+
+An additional element that is included at this stage is the ``chem_flag`` boolean variable. This is discussed more in detail in the documentation of pyssa.Simulation class under the notes section. Briefly, if
+
+1. the system under consideration is a chemical system and the supplied rate constants are in units of molarity or M or mol/L, ``chem_flag`` should be set to ``true``
+2. the system under consideration is a biological system and the supplied rate constants are in units of copies/L or CFU/L, ``chem_flag`` should be set to ``false``
+
+A blank line after this separates rate constants from initial values for the species.::
+
+    A = 100;
+    B = 0;
+    C = 0;
+
+The initial values for species are assigned one per line, with each line ending in a semi-colon. Every species defined in the reactions must be assigned an integer initial value at this stage, or pyssa will throw a `cayenne.model_io.InitialStateError`.
+
+.. note::
+
+    ``pyssa`` only accepts zero, first, second and third order reactions. We decided to not allow custom rate equations for stochastic simulations for two reasons:
+
+    1. A custom rate equation, such as the Monod equation (see here_ for background) equation below, may violate the assumptions_ of stochastic simulations. These assumptions include a well stirred chamber with molecules in Brownian motion, among others.
+
+    .. math::
+
+        \mu = \frac{\mu_{max}S}{K_S + S}
+
+    2. An equation resembling the Monod equation, the Michaelis-Menten_ equation, is grounded chemical kinetic theory. Yet the rate expression (see below) does not fall under 0-3 order reactions supported by ``pyssa``. However, the *elementary* reactions that make up the Michaelis-Menten kinetics are first and second order in nature. These *elementary* reactions can easily be modeled with ``pyssa``, but with the specification of additional constants (see `examples <examples.html>`_). A study shows that using the rate expression of Michaelis-Menten kinetics is valid under `some conditions <https://pubmed.ncbi.nlm.nih.gov/21261403/>`_.
+
+
+    .. math::
+
+        \frac{dP}{dt} = \frac{\mu_{max}S}{K_S + S}
 
 .. _antimony:
 .. _here: https://en.wikipedia.org/wiki/Monod_equation
