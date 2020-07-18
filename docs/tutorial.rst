@@ -94,7 +94,7 @@ The initial values for species are assigned one per line, with each line ending 
 .. note::
     The ``chem_flag`` is set to ``True`` since we are dealing with a chemical system. For defintion of ``chem_flag``, see the notes under the definition of the ``Simulation`` class.
 
-We then pass these variables to the ``Simulation`` class to create an object that represents the current system ::
+These variables are passed to the ``Simulation`` class to create an object that represents the current system ::
 
     >>> from pyssa import Simulation
 
@@ -124,18 +124,27 @@ To plot the results on the screen, we can simply plot all species concentrations
     :align: center
     :alt: Plot of A, B and C species over time.
 
-To plot only certain species concentrations we can use the ``plot_indices`` parameter. These correspond to the indices of the species assigned during the initialization of the ``Simulation`` instance. For example to plot only A and B, we use - ``[0,1]`` ::
 
-    >>> sim.plot(plot_indices = [0, 1])
+A subset of the species can be plotted along with custom display names by supplying additional arguments to ``Simulation.plot`` as follows:
 
-.. image:: ../docs/images/plot_ab.png
+    >>> sim.plot(species_names = ["A", "C"], new_names = ["Starting material", "Product"])
+
+.. image:: ../docs/images/plot_ac.png
     :scale: 70%
     :align: center
     :alt: Plot of A and B species over time.
 
-To not display the plot on the screen and retrieve the figure and axis objects, we set the ``disp`` parameter to False ::
+By default, calling the plot object returns the ``matplotlib`` figure and axis objects. To display the plot, we just do::
 
-    >>> fig, ax = sim.plot(disp = False)
+    >>> sim.plot()
+    >>> import matplotlib.pyplot as plt
+    >>> plt.show()
+
+Instead to save the figure directly to a file, we do::
+
+    >>> sim.plot()
+    >>> import matplotlib.pyplot as plt
+    >>> plt.savefig("plot.png")
 
 .. automethod:: pyssa.simulation.Simulation.plot
 
@@ -154,7 +163,8 @@ The results of the simulation can be retrieved by accessing the ``Results`` obje
 
     >>> results = sim.results
     >>> results
-    <Results n_rep=10 algorithm=direct sim_seeds=[8325804 1484405 2215104 5157699 8222403 7644169 5853461 6739698  374564 2832983]>
+    <Results species=('A', 'B', 'C') n_rep=10algorithm=direct sim_seeds=[8325804 1484405 2215104 5157699 8222403 7644169 5853461 6739698  374564
+ 2832983]>
 
 The ``Results`` object provides abstractions for easy retrieval and iteration over the simulation results. For example you can iterate over every run of the simulation using ::
 
@@ -201,6 +211,12 @@ You can obtain the state of the system at a particular time using the ``get_stat
     array([ 1,  6, 93]),
     array([ 1,  3, 96])]
 
+Additionally, you can also access a particular species' trajectory through time across all simulations with the ``get_species`` function as follows: ::
+
+    >>> results.get_species(["A", "C"])
+
+This will return a list with a numpy array for each repetition. We use a list here instead of higher dimensional ndarray for the following reason: any two repetitions of a stochastic simulation need not return the same number of time steps.
+
 .. autoclass:: pyssa.results.Results
 
 .. autosummary::
@@ -223,4 +239,4 @@ The ``Simulation`` class currently supports the following algorithms (see :ref:`
 
 You can change the algorithm used to perform a simulation using the ``algorithm`` argument ::
 
-    >>> sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10, algorithm="tau_leaping")
+    >>> sim.simulate(max_t=150, max_iter=1000, n_rep=10, algorithm="tau_leaping")
