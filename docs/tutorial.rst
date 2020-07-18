@@ -11,46 +11,65 @@ Consider a simple system of chemical reactions given by:
     A \xrightarrow[]{k_1} B\\
     B \xrightarrow[]{k_2} C\\
 
-Suppose k\ :sub:`1` = 1, k\ :sub:`2` = 1 and there are initially 100 units of A. Then we have the following variable definitions ::
+Suppose k\ :sub:`0.11` = 1, k\ :sub:`0.1` = 1 and there are initially 100 units of A. Then we have the following model string ::
 
-    >>> k1, k2 = 1.0, 1.0
-    >>> A0, B0, C0 = 100, 0, 0
+    >>> model_str = """
+            const compartment comp1;
+            comp1 = 1.0; # volume of compartment
 
-Then to build the model we have the following variable definitions::
+            r1: A => B; k1; # differs from antimony
+            r2: B => C; k2; # differs from antimony
 
-    >>> import numpy as np
+            k1 = 0.11;
+            k2 = 0.1;
+            chem_flag = false;
 
-    # reaction stoichiometry
-    >>> V_r = np.array([[1, 0], [0, 1], [0, 0]])
-    # product stoichiometry
-    >>> V_p = np.array([[0, 0], [1, 0], [0, 1]])
-    # initial concentration
-    >>> X0 = np.array([A0, B0, C0])
-    # reaction rates
-    >>> k = np.array([k1, k2])
+            A = 100;
+            B = 0;
+            C = 0;
+        """
+
+The format of the model string is based on the `antimony modeling language <https://tellurium.readthedocs.io/en/latest/antimony.html#introduction-basics>`_, but with one key difference. ``Antimony`` allows the user to specify custom rate *equations* for each reaction. ``pyssa`` automagically generates the rate equations behind the scenes, and user need only supply the rate *constants*. We note that ``pyssa`` only accepts zero, first, second and third order reactions. We decided to not allow custom rate equations for stochastic simulations for two reasons:
+
+1. A custom rate equation, such as the Monod equation (see here_ for background) equation below, may violate the assumptions_ of stochastic simulations. These assumptions include a well stirred chamber with molecules in Brownian motion, among others.
+
+.. math::
+
+    \mu = \frac{\mu_{max}S}{K_S + S}
+
+2. An equation resembling the Monod equation, the Michaelis-Menten_ equation, is grounded chemical kinetic theory. Yet the rate expression (see below) does not fall under 0-3 order reactions allowed by ``pyssa``. However, the *elementary* reactions that make up the Michaelis-Menten kinetics are first and second order in nature. These *elementary* reactions can easily be modeled with ``pyssa``, but with the specification of additional constants (see `examples <examples.html>`_). A study shows that using the rate expression of Michaelis-Menten kinetics is valid under `some conditions <https://pubmed.ncbi.nlm.nih.gov/21261403/>`_.
+
+.. TODO: From here (talk about model string components)
+
+.. math::
+
+    \frac{dP}{dt} = \frac{\mu_{max}S}{K_S + S}
+
+.. _antimony:
+.. _here: https://en.wikipedia.org/wiki/Monod_equation
+.. _assumptions: https://en.wikipedia.org/wiki/Gillespie_algorithm
+.. _Michaelis-Menten: https://en.wikipedia.org/wiki/Michaelis%E2%80%93Menten_kinetics
+
+.. note::
+    The ``chem_flag`` is set to ``True`` since we are dealing with a chemical system. For defintion of ``chem_flag``, see the notes under the definition of the ``Simulation`` class.
 
 We then pass these variables to the ``Simulation`` class to create an object that represents the current system ::
 
     >>> from pyssa import Simulation
 
-    >>> sim = Simulation(V_r, V_p, X0, k)
+    >>> sim = Simulation.load_model(model_str, "ModelString")
 
 .. autoclass:: pyssa.simulation.Simulation
 
 Running Simulations
 -------------------
 
-Suppose we want to run 10 repetitions of the system for at most 1000 steps / 150 time units each, we can use the ``simulate`` method to do this. ::
+Suppose we want to run 10 repetitions of the system for at most 1000 steps / 40 time units each, we can use the ``simulate`` method to do this. ::
 
-    >>> from pyssa import Simulation
-
-    >>> sim = Simulation(V_r, V_p, X0, k)
-    >>> sim.simulate(max_t=150, max_iter=1000, chem_flag=True, n_rep=10)
+    >>> sim.simulate(max_t=40, max_iter=1000, n_rep=10)
 
 .. automethod:: pyssa.simulation.Simulation.simulate
 
-.. note::
-    The ``chem_flag`` is set to ``True`` since we are dealing with a chemical system. For defintion of ``chem_flag``, see the notes under the definition of the ``Simulation`` class.
 
 Plotting
 --------
