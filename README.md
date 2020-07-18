@@ -1,6 +1,6 @@
-# cayenne : Python package for stochastic simulations
-
 ![Logo for cayenne](https://raw.githubusercontent.com/Heuro-labs/cayenne/master/docs/images/logo.png)
+
+# cayenne : Python package for stochastic simulations
 
 [![Travis Build Status](https://travis-ci.com/Heuro-labs/cayenne.svg?branch=master)](https://travis-ci.com/Heuro-labs/cayenne)
 [![Azure Build Status](https://dev.azure.com/srikiranc/cayenne/_apis/build/status/Heuro-labs.cayenne?branchName=master)](https://dev.azure.com/srikiranc/cayenne/_build)
