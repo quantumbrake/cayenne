@@ -108,7 +108,7 @@ class ModelIO:
         init_state_values = sb.getSymbolInitialAssignmentsOfType(self.sb_module, 1)
         if "" in init_state_values:
             raise InitialStateError("Missing initial value for one of the species.")
-        self.init_state = np.array(init_state_values, dtype=int)
+        self.init_state = np.array(init_state_values, dtype=np.int64)
 
         # Rate constants
         rxn_rateeqns = sb.getSymbolEquationsOfType(self.sb_module, 6)
