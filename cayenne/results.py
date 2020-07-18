@@ -104,8 +104,8 @@ class Results(Collection):
             summary: str
                 Summary of the simulation with length of simulation, algorithm and seeds used.
         """
-        summary = f"<Results species={self.species_names} n_rep={len(self)}"
-        summary = summary + "algorithm={self.algorithm} sim_seeds={self.sim_seeds}>"
+        summary = f"<Results species={self.species_names} n_rep={len(self)} "
+        summary = summary + f"algorithm={self.algorithm} sim_seeds={self.sim_seeds}>"
         return summary
 
     def __str__(self) -> str:
