@@ -1,11 +1,11 @@
-# pyssa : Python package for stochastic simulations
+# cayenne : Python package for stochastic simulations
 
-[![Build Status](https://travis-ci.com/Heuro-labs/pyssa.svg?token=qCMKydrUTvcJ87J6czex&branch=master)](https://travis-ci.com/Heuro-labs/pyssa)
-[![Build Status](https://dev.azure.com/srikiranc/pyssa/_apis/build/status/Heuro-labs.pyssa?branchName=master)](https://dev.azure.com/srikiranc/pyssa/_build/latest?definitionId=1?branchName=master)
-[![codecov](https://img.shields.io/codecov/c/github/Heuro-labs/pyssa.svg)](https://codecov.io/gh/Heuro-labs/pyssa)
-[![Updates](https://pyup.io/repos/github/Heuro-labs/pyssa/shield.svg)](https://pyup.io/repos/github/Heuro-labs/pyssa/)
-[![Documentation Status](https://readthedocs.org/projects/pyssa/badge/?version=latest)](https://pyssa.readthedocs.io/en/latest/?badge=latest)
-[![pypi](https://img.shields.io/pypi/v/pyssa.svg)](https://pypi.python.org/pypi/pyssa)
+[![Build Status](https://travis-ci.com/Heuro-labs/cayenne.svg?token=qCMKydrUTvcJ87J6czex&branch=master)](https://travis-ci.com/Heuro-labs/cayenne)
+[![Build Status](https://dev.azure.com/srikiranc/cayenne/_apis/build/status/Heuro-labs.cayenne?branchName=master)](https://dev.azure.com/srikiranc/cayenne/_build/latest?definitionId=1?branchName=master)
+[![codecov](https://img.shields.io/codecov/c/github/Heuro-labs/cayenne.svg)](https://codecov.io/gh/Heuro-labs/cayenne)
+[![Updates](https://pyup.io/repos/github/Heuro-labs/cayenne/shield.svg)](https://pyup.io/repos/github/Heuro-labs/cayenne/)
+[![Documentation Status](https://readthedocs.org/projects/cayenne/badge/?version=latest)](https://cayenne.readthedocs.io/en/latest/?badge=latest)
+[![pypi](https://img.shields.io/pypi/v/cayenne.svg)](https://pypi.python.org/pypi/cayenne)
 ![License](https://img.shields.io/badge/license-Apache%202-blue.svg)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
 
@@ -13,7 +13,7 @@
 
 ## Introduction
 
-`pyssa` is a Python package for stochastic simulations. It offers a simple API to define models, perform stochastic simulations with them and visualize the results in a convenient manner.
+`cayenne` is a Python package for stochastic simulations. It offers a simple API to define models, perform stochastic simulations with them and visualize the results in a convenient manner.
 
 Currently under active development in the `develop` branch.
 
@@ -22,21 +22,21 @@ Currently under active development in the `develop` branch.
 Install with `pip`:
 
 ```bash
-$ pip install pyssa
+$ pip install cayenne
 ```
 
 
 ## Documentation
 
-  - General: <https://pyssa.readthedocs.io>.
-  - Benchmark repository, comparing `pyssa` with other stochastic simulation packages: <https://github.com/Heuro-labs/pyssa-benchmarks>
+  - General: <https://cayenne.readthedocs.io>.
+  - Benchmark repository, comparing `cayenne` with other stochastic simulation packages: <https://github.com/Heuro-labs/cayenne-benchmarks>
 
 ## Usage
 
-A short summary follows, but a more detailed tutorial can be found [here](https://pyssa.readthedocs.io/en/latest/tutorial.html). You can define a model as a Python string (or a text file, see [docs](https://pyssa.readthedocs.io)). The format of this string is loosely based on the excellent [antimony](https://tellurium.readthedocs.io/en/latest/antimony.html#introduction-basics) library, which is used behind the scenes by `pyssa`.
+A short summary follows, but a more detailed tutorial can be found [here](https://cayenne.readthedocs.io/en/latest/tutorial.html). You can define a model as a Python string (or a text file, see [docs](https://cayenne.readthedocs.io)). The format of this string is loosely based on the excellent [antimony](https://tellurium.readthedocs.io/en/latest/antimony.html#introduction-basics) library, which is used behind the scenes by `cayenne`.
 
 ```python
-from pyssa.simulation import Simulation
+from cayenne.simulation import Simulation
 model_str = """
         const compartment comp1;
         comp1 = 1.0; # volume of compartment
@@ -58,7 +58,7 @@ sim.simulate(max_t=40, max_iter=1000, n_rep=10)
 sim.plot()
 ```
 
-![Plot of species A, B and C](https://raw.githubusercontent.com/Heuro-labs/pyssa/master/docs/images/plot_basic.png)
+![Plot of species A, B and C](https://raw.githubusercontent.com/Heuro-labs/cayenne/master/docs/images/plot_basic.png)
 
 
 ### Change simulation algorithm
@@ -69,7 +69,7 @@ You can change the algorithm used to perform the simulation by changing the `alg
 sim.simulate(max_t=150, max_iter=1000, n_rep=10, algorithm="tau_leaping")
 ```
 
-Our [benchmarks](https://github.com/Heuro-labs/pyssa-benchmarks) are summarized [below](#benchmarks), and show `direct` to be a good starting point. `tau_leaping` offers greater speed but needs specification and tuning of the `tau` hyperparameter. The `tau_adaptive` is less accurate and a work in progress.
+Our [benchmarks](https://github.com/Heuro-labs/cayenne-benchmarks) are summarized [below](#benchmarks), and show `direct` to be a good starting point. `tau_leaping` offers greater speed but needs specification and tuning of the `tau` hyperparameter. The `tau_adaptive` is less accurate and a work in progress.
 
 ### Run simulations in parallel
 You can run the simulations on multiple cores by specifying the `n_procs` parameter
@@ -96,7 +96,7 @@ You can also access the final states of all the simulation runs by
 final_times, final_states = results.final
 ```
 
-Additionally, you can access the state a particular time point of interest $t$. `pyssa` will interpolate the value from nearby time points to give an accurate estimate.
+Additionally, you can access the state a particular time point of interest $t$. `cayenne` will interpolate the value from nearby time points to give an accurate estimate.
 
 ```python
 # Get results at timepoint "t"
@@ -108,7 +108,7 @@ states = results.get_state(t) # returns a list of numpy arrays
 
 | | direct|	tau_leaping |	tau_adaptive |
 --- | --- |--- | --- |
-pyssa	| :heavy_check_mark: Most accurate yet	| :heavy_check_mark: Very fast but may need manual tuning|	Less accurate than GillespieSSA's version|
+cayenne	| :heavy_check_mark: Most accurate yet	| :heavy_check_mark: Very fast but may need manual tuning|	Less accurate than GillespieSSA's version|
 Tellurium | :exclamation: Inaccurate for 2nd order | N/A | N/A |
 GillespieSSA | Very slow |:exclamation: Inaccurate for initial zero counts | :exclamation: Inaccurate for initial zero counts
 BioSimulator.jl |	:exclamation: Inaccurate interpolation | :exclamation: Inaccurate for initial zero counts | :exclamation: Inaccurate for initial zero counts
