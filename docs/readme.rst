@@ -1,8 +1,13 @@
 cayenne : Python package for stochastic simulations
 ===================================================
 
-|Build Status| |Build Status| |codecov| |Updates| |Documentation Status|
-|pypi| |License| |Code style: black|
+.. figure:: https://raw.githubusercontent.com/Heuro-labs/cayenne/master/docs/images/logo.png
+   :alt: Logo for cayenne
+
+   Logo for cayenne
+
+|Travis Build Status| |Azure Build Status| |codecov| |Updates|
+|Documentation Status| |pypi| |License| |Code style: black|
 
 Introduction
 ------------
@@ -175,10 +180,10 @@ Credits
 -  `audreyr/cookiecutter-pypackage <https://github.com/audreyr/cookiecutter-pypackage>`__
 -  `black <https://github.com/ambv/black>`__
 
-.. |Build Status| image:: https://travis-ci.com/Heuro-labs/cayenne.svg?branch=master
+.. |Travis Build Status| image:: https://travis-ci.com/Heuro-labs/cayenne.svg?branch=master
    :target: https://travis-ci.com/Heuro-labs/cayenne
-.. |Build Status| image:: https://dev.azure.com/srikiranc/cayenne/_apis/build/status/Heuro-labs.cayenne?branchName=master
-   :target: https://dev.azure.com/srikiranc/cayenne/_build/latest?definitionId=1?branchName=master
+.. |Azure Build Status| image:: https://dev.azure.com/srikiranc/cayenne/_apis/build/status/Heuro-labs.cayenne?branchName=master
+   :target: https://dev.azure.com/srikiranc/cayenne/_build
 .. |codecov| image:: https://codecov.io/gh/Heuro-labs/cayenne/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/Heuro-labs/cayenne
 .. |Updates| image:: https://pyup.io/repos/github/Heuro-labs/cayenne/shield.svg
