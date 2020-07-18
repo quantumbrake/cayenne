@@ -8,7 +8,7 @@ import pathlib
 import numpy as np
 import pytest
 
-from pyssa.utils import Na
+from cayenne.utils import Na
 
 
 CURR_DIR = pathlib.Path(__file__).parent

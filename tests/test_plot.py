@@ -3,7 +3,7 @@
 """
 
 
-from pyssa.simulation import Simulation
+from cayenne.simulation import Simulation
 
 
 def test_plotting(setup_basic):

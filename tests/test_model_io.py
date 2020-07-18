@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from pyssa.model_io import (
+from cayenne.model_io import (
     ChemFlagError,
     InitialStateError,
     ModelError,
@@ -9,7 +9,7 @@ from pyssa.model_io import (
     RateConstantError,
     VolumeError,
 )
-from pyssa.simulation import Simulation
+from cayenne.simulation import Simulation
 
 
 class TestModelIO:

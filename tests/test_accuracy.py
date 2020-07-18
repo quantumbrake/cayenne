@@ -3,9 +3,9 @@
 """
 import numpy as np
 import pytest
-from pyssa.simulation import Simulation
+from cayenne.simulation import Simulation
 import matplotlib.pyplot as plt
-from pyssa.algorithms.tau_adaptive import tau_adaptive as tac
+from cayenne.algorithms.tau_adaptive import tau_adaptive as tac
 
 
 # def calculate_zy(sim: Simulation, time_list: list, mu_list: list, std_list: list):

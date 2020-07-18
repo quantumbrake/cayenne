@@ -3,13 +3,13 @@
 """
 
 import numpy as np
-from pyssa.algorithms.tau_adaptive import (
+from cayenne.algorithms.tau_adaptive import (
     _py_step1,
     _py_step2,
     _py_step2_get_g,
     _py_step5,
 )
-from pyssa.utils import get_kstoc, HIGH
+from cayenne.utils import get_kstoc, HIGH
 from .test_simulation import TestHOR
 
 

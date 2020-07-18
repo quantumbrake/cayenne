@@ -5,7 +5,7 @@
 import numpy as np
 import pytest
 
-from pyssa.simulation import Simulation
+from cayenne.simulation import Simulation
 
 
 @pytest.mark.parametrize("algorithm", ["direct", "tau_leaping", "tau_adaptive"])

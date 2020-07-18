@@ -2,9 +2,9 @@
 
 import pytest
 import numpy as np
-from pyssa.simulation import Simulation
-from pyssa.utils import get_kstoc
-from pyssa.utils import py_roulette_selection as roulette_selection
+from cayenne.simulation import Simulation
+from cayenne.utils import get_kstoc
+from cayenne.utils import py_roulette_selection as roulette_selection
 
 
 @pytest.mark.usefixtures("setup_basic", "setup_large")
