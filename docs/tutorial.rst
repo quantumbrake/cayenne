@@ -29,7 +29,7 @@ Suppose k\ :sub:`0.11` = 1, k\ :sub:`0.1` = 1 and there are initially 100 units 
             C = 0;
         """
 
-The format of the model string is based on the `antimony modeling language <https://tellurium.readthedocs.io/en/latest/antimony.html#introduction-basics>`_, but with one key difference. ``Antimony`` allows the user to specify custom rate *equations* for each reaction. ``pyssa`` automagically generates the rate equations behind the scenes, and user need only supply the rate *constants*. The format is discussed below:
+The format of the model string is based on the `antimony modeling language <https://tellurium.readthedocs.io/en/latest/antimony.html#introduction-basics>`_, but with one key difference. ``Antimony`` allows the user to specify custom rate *equations* for each reaction. ``cayenne`` automagically generates the rate equations behind the scenes, and user need only supply the rate *constants*. The format is discussed below:
 
 Model format
 ^^^^^^^^^^^^
@@ -52,11 +52,11 @@ Here ``r1`` and ``r2`` refer to the names of the reactions. This is followed by 
     k1 = 0.11;
     k2 = 0.1;
 
-The rate constants are assigned one per line, with each line ending in a semi-colon. Every rate constant defined in the reactions must be assigned a numerical value at this stage, or pyssa will throw a `pyssa.model_io.RateConstantError`.::
+The rate constants are assigned one per line, with each line ending in a semi-colon. Every rate constant defined in the reactions must be assigned a numerical value at this stage, or ``cayenne`` will throw a `cayenne.model_io.RateConstantError`.::
 
     chem_flag = false;
 
-An additional element that is included at this stage is the ``chem_flag`` boolean variable. This is discussed more in detail in the documentation of pyssa.Simulation class under the notes section. Briefly, if
+An additional element that is included at this stage is the ``chem_flag`` boolean variable. This is discussed more in detail in the documentation of cayenne.Simulation class under the notes section. Briefly, if
 
 1. the system under consideration is a chemical system and the supplied rate constants are in units of molarity or M or mol/L, ``chem_flag`` should be set to ``true``
 2. the system under consideration is a biological system and the supplied rate constants are in units of copies/L or CFU/L, ``chem_flag`` should be set to ``false``
@@ -67,11 +67,11 @@ A blank line after this separates rate constants from initial values for the spe
     B = 0;
     C = 0;
 
-The initial values for species are assigned one per line, with each line ending in a semi-colon. Every species defined in the reactions must be assigned an integer initial value at this stage, or pyssa will throw a `cayenne.model_io.InitialStateError`.
+The initial values for species are assigned one per line, with each line ending in a semi-colon. Every species defined in the reactions must be assigned an integer initial value at this stage, or ``cayenne`` will throw a `cayenne.model_io.InitialStateError`.
 
 .. note::
 
-    ``pyssa`` only accepts zero, first, second and third order reactions. We decided to not allow custom rate equations for stochastic simulations for two reasons:
+    ``cayenne`` only accepts zero, first, second and third order reactions. We decided to not allow custom rate equations for stochastic simulations for two reasons:
 
     1. A custom rate equation, such as the Monod equation (see here_ for background) equation below, may violate the assumptions_ of stochastic simulations. These assumptions include a well stirred chamber with molecules in Brownian motion, among others.
 
@@ -79,7 +79,7 @@ The initial values for species are assigned one per line, with each line ending 
 
         \mu = \frac{\mu_{max}S}{K_S + S}
 
-    2. An equation resembling the Monod equation, the Michaelis-Menten_ equation, is grounded chemical kinetic theory. Yet the rate expression (see below) does not fall under 0-3 order reactions supported by ``pyssa``. However, the *elementary* reactions that make up the Michaelis-Menten kinetics are first and second order in nature. These *elementary* reactions can easily be modeled with ``pyssa``, but with the specification of additional constants (see `examples <examples.html>`_). A study shows that using the rate expression of Michaelis-Menten kinetics is valid under `some conditions <https://pubmed.ncbi.nlm.nih.gov/21261403/>`_.
+    2. An equation resembling the Monod equation, the Michaelis-Menten_ equation, is grounded chemical kinetic theory. Yet the rate expression (see below) does not fall under 0-3 order reactions supported by ``cayenne``. However, the *elementary* reactions that make up the Michaelis-Menten kinetics are first and second order in nature. These *elementary* reactions can easily be modeled with ``cayenne``, but with the specification of additional constants (see `examples <examples.html>`_). A study shows that using the rate expression of Michaelis-Menten kinetics is valid under `some conditions <https://pubmed.ncbi.nlm.nih.gov/21261403/>`_.
 
 
     .. math::
@@ -96,11 +96,11 @@ The initial values for species are assigned one per line, with each line ending 
 
 These variables are passed to the ``Simulation`` class to create an object that represents the current system ::
 
-    >>> from pyssa import Simulation
+    >>> from cayenne import Simulation
 
     >>> sim = Simulation.load_model(model_str, "ModelString")
 
-.. autoclass:: pyssa.simulation.Simulation
+.. autoclass:: cayenne.simulation.Simulation
 
 Running Simulations
 -------------------
@@ -109,7 +109,7 @@ Suppose we want to run 10 repetitions of the system for at most 1000 steps / 40 
 
     >>> sim.simulate(max_t=40, max_iter=1000, n_rep=10)
 
-.. automethod:: pyssa.simulation.Simulation.simulate
+.. automethod:: cayenne.simulation.Simulation.simulate
 
 
 Plotting
@@ -146,7 +146,7 @@ Instead to save the figure directly to a file, we do::
     >>> import matplotlib.pyplot as plt
     >>> plt.savefig("plot.png")
 
-.. automethod:: pyssa.simulation.Simulation.plot
+.. automethod:: cayenne.simulation.Simulation.plot
 
 .. note::
 
@@ -157,7 +157,7 @@ Instead to save the figure directly to a file, we do::
 Accessing the results
 ---------------------
 
-.. currentmodule:: pyssa.results
+.. currentmodule:: cayenne.results
 
 The results of the simulation can be retrieved by accessing the ``Results`` object as ::
 
@@ -217,7 +217,7 @@ Additionally, you can also access a particular species' trajectory through time 
 
 This will return a list with a numpy array for each repetition. We use a list here instead of higher dimensional ndarray for the following reason: any two repetitions of a stochastic simulation need not return the same number of time steps.
 
-.. autoclass:: pyssa.results.Results
+.. autoclass:: cayenne.results.Results
 
 .. autosummary::
 

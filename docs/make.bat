@@ -9,7 +9,7 @@ if "%SPHINXBUILD%" == "" (
 )
 set SOURCEDIR=.
 set BUILDDIR=_build
-set SPHINXPROJ=pyssa
+set SPHINXPROJ=cayenne
 
 if "%1" == "" goto help
 

@@ -1,7 +1,7 @@
 Examples
 ========
 
-Here we discuss some example systems and how to code them up using ``pyssa``.
+Here we discuss some example systems and how to code them up using ``cayenne``.
 
 Zero order system
 -----------------
@@ -14,7 +14,7 @@ Zero order system
 
 This can be coded up with::
 
-    >>> from pyssa import Simulation
+    >>> from cayenne import Simulation
     >>> model_str = """
             const compartment comp1;
             comp1 = 1.0; # volume of compartment
@@ -48,7 +48,7 @@ First order system
 
 This can be coded up with::
 
-    >>> from pyssa import Simulation
+    >>> from cayenne import Simulation
     >>> model_str = """
             const compartment comp1;
             comp1 = 1.0; # volume of compartment
@@ -100,7 +100,7 @@ Enzyme kinetics (second order system with multiple reactions)
 
 This can be coded up with::
 
-    >>> from pyssa import Simulation
+    >>> from cayenne import Simulation
     >>> model_str = """
             const compartment comp1;
             comp1 = 1.0; # volume of compartment
@@ -130,7 +130,7 @@ This can be coded up with::
 
 Since this is a second order system, the size of the system affects the reaction rates. What happens in a larger system? ::
 
-    >>> from pyssa import Simulation
+    >>> from cayenne import Simulation
     >>> model_str = """
             const compartment comp1;
             comp1 = 5.0; # volume of compartment

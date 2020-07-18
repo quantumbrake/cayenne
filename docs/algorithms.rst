@@ -3,7 +3,7 @@
 Algorithms
 ==========
 
-``pyssa`` currently has 3 algorithms:
+``cayenne`` currently has 3 algorithms:
 
 1. :ref:`direct` (accurate, may be slow)
 
@@ -19,9 +19,9 @@ Methods are described more in depth below.
 Gillespie's direct method (``direct``)
 ---------------------------------------
 
-.. automodule:: pyssa.algorithms.direct
+.. automodule:: cayenne.algorithms.direct
 
-.. autoclass:: pyssa.algorithms.direct
+.. autoclass:: cayenne.algorithms.direct
    :members:
    :undoc-members:
    :show-inheritance:
@@ -31,9 +31,9 @@ Gillespie's direct method (``direct``)
 Tau leaping method (``tau_leaping``)
 ------------------------------------
 
-.. automodule:: pyssa.algorithms.tau_leaping
+.. automodule:: cayenne.algorithms.tau_leaping
 
-.. autoclass:: pyssa.algorithms.tau_leaping
+.. autoclass:: cayenne.algorithms.tau_leaping
    :members:
    :undoc-members:
    :show-inheritance:
@@ -44,9 +44,9 @@ Tau leaping method (``tau_leaping``)
 Adaptive tau leaping method (experimental, ``tau_adaptive``)
 -------------------------------------------------------------
 
-.. automodule:: pyssa.algorithms.tau_adaptive
+.. automodule:: cayenne.algorithms.tau_adaptive
 
-.. autoclass:: pyssa.algorithms.tau_adaptive
+.. autoclass:: cayenne.algorithms.tau_adaptive
    :members:
    :undoc-members:
    :show-inheritance:
