@@ -1,8 +1,8 @@
 # cayenne : Python package for stochastic simulations
 
-[![Build Status](https://travis-ci.com/Heuro-labs/cayenne.svg?token=qCMKydrUTvcJ87J6czex&branch=master)](https://travis-ci.com/Heuro-labs/cayenne)
+[![Build Status](https://travis-ci.com/Heuro-labs/cayenne.svg?branch=master)](https://travis-ci.com/Heuro-labs/cayenne)
 [![Build Status](https://dev.azure.com/srikiranc/cayenne/_apis/build/status/Heuro-labs.cayenne?branchName=master)](https://dev.azure.com/srikiranc/cayenne/_build/latest?definitionId=1?branchName=master)
-[![codecov](https://img.shields.io/codecov/c/github/Heuro-labs/cayenne.svg)](https://codecov.io/gh/Heuro-labs/cayenne)
+[![codecov](https://codecov.io/gh/Heuro-labs/cayenne/branch/master/graph/badge.svg)](https://codecov.io/gh/Heuro-labs/cayenne)
 [![Updates](https://pyup.io/repos/github/Heuro-labs/cayenne/shield.svg)](https://pyup.io/repos/github/Heuro-labs/cayenne/)
 [![Documentation Status](https://readthedocs.org/projects/cayenne/badge/?version=latest)](https://cayenne.readthedocs.io/en/latest/?badge=latest)
 [![pypi](https://img.shields.io/pypi/v/cayenne.svg)](https://pypi.python.org/pypi/cayenne)
