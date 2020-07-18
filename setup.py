@@ -19,27 +19,19 @@ ext_modules = [
     Extension(
         "cayenne.algorithms.direct",
         ["cayenne/algorithms/direct.pyx"],
-        define_macros=[("CYTHON_TRACE", "1")],
         include_dirs=[np.get_include()],
     ),
     Extension(
         "cayenne.algorithms.tau_leaping",
         ["cayenne/algorithms/tau_leaping.pyx"],
-        define_macros=[("CYTHON_TRACE", "1")],
         include_dirs=[np.get_include()],
     ),
     Extension(
         "cayenne.algorithms.tau_adaptive",
         ["cayenne/algorithms/tau_adaptive.pyx"],
-        define_macros=[("CYTHON_TRACE", "1")],
         include_dirs=[np.get_include()],
     ),
-    Extension(
-        "cayenne.utils",
-        ["cayenne/utils.pyx"],
-        define_macros=[("CYTHON_TRACE", "1")],
-        include_dirs=[np.get_include()],
-    ),
+    Extension("cayenne.utils", ["cayenne/utils.pyx"], include_dirs=[np.get_include()]),
 ]
 
 setup(

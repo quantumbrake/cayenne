@@ -170,7 +170,7 @@ class ModelIO:
     def translate_sbml(cls, sbml_file: str):
         """
             Translate SBML file to Antimony model specification.
-            pyssa's model specification is loosely based on Antimony's model
+            cayenne's model specification is loosely based on Antimony's model
             specification.
         """
         er_code = sb.loadSBMLFile(sbml_file)
