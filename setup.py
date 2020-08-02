@@ -3,15 +3,21 @@
 
 from setuptools import setup, find_packages
 from setuptools.extension import Extension
-from Cython.Build import cythonize
+
+from setuptools import dist
+
+dist.Distribution().fetch_build_eggs(["Cython>=0.29", "numpy>=1.18"])
+
 import numpy as np
+from Cython.Build import cythonize
+
 
 with open("README.md") as readme_file:
     readme = readme_file.read()
 
-requirements = ["numpy", "Cython", "matplotlib"]
+requirements = ["numpy>=1.18", "Cython>=0.29", "matplotlib>=3.3", "antimony>=2.12"]
 
-setup_requirements = ["Cython"]
+setup_requirements = ["Cython>=0.29", "numpy>=1.18"]
 
 test_requirements = ["pytest", "pytest-runner", "pytest-benchmark"]
 
@@ -38,7 +44,7 @@ setup(
     author="Dileep Kishore, Srikiran Chandrasekaran",
     author_email="k.dileep1994@gmail.com",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
         "Intended Audience :: Science/Research",
         "License :: OSI Approved :: Apache Software License",
@@ -47,7 +53,7 @@ setup(
         "Programming Language :: Python :: 3.7",
     ],
     description="Python package for stochastic simulations",
-    install_requires=requirements,
+    install_requires=requirements + setup_requirements,
     license="Apache Software License 2.0",
     long_description=readme + "\n\n",
     long_description_content_type="text/markdown",
