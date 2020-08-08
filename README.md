@@ -127,3 +127,4 @@ Copyright (c) 2018-2020, Dileep Kishore, Srikiran Chandrasekaran. Released under
 - [Cookiecutter](https://github.com/audreyr/cookiecutter)
 - [audreyr/cookiecutter-pypackage](https://github.com/audreyr/cookiecutter-pypackage)
 - [black](https://github.com/ambv/black)
+- Logo made with [logomakr](https://logomakr.com/)
