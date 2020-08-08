@@ -2,6 +2,18 @@
 History
 =======
 
+1.0.2 (2020-08-08)
+------------------
+
+Added
++++++
+- Warnings about antimony keyword usage in tutorial, ``ModelIO`` class
+
+Fixed
++++++
+- ``setup.py`` setup requirements are automatically installed
+- ``antimony`` version incompatibility issue
+
 1.0.0 (2020-07-18)
 ------------------
 
