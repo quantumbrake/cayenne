@@ -29,7 +29,7 @@ Suppose k\ :sub:`0.11` = 1, k\ :sub:`0.1` = 1 and there are initially 100 units 
             C = 0;
         """
 
-The format of the model string is based on the `antimony modeling language <https://tellurium.readthedocs.io/en/latest/antimony.html#introduction-basics>`_, but with one key difference. ``Antimony`` allows the user to specify custom rate *equations* for each reaction. ``cayenne`` automagically generates the rate equations behind the scenes, and user need only supply the rate *constants*. The format is discussed below:
+The format of the model string is based on a subset of the `antimony modeling language <https://tellurium.readthedocs.io/en/latest/antimony.html#introduction-basics>`_, but with one key difference. ``Antimony`` allows the user to specify custom rate *equations* for each reaction. ``cayenne`` automagically generates the rate equations behind the scenes, and user need only supply the rate *constants*. The format is discussed below:
 
 Model format
 ^^^^^^^^^^^^
@@ -68,6 +68,10 @@ A blank line after this separates rate constants from initial values for the spe
     C = 0;
 
 The initial values for species are assigned one per line, with each line ending in a semi-colon. Every species defined in the reactions must be assigned an integer initial value at this stage, or ``cayenne`` will throw a `cayenne.model_io.InitialStateError`.
+
+.. warning::
+
+    ``Antimony`` has a set of reserved keywords that cannot be used as species, compartment or variable names, Eg. ``formula``, ``priority``, ``time``, etc. Refer to the `antimony documentation <https://tellurium.readthedocs.io/en/latest/antimony.html#language-reference>`_ for more information.
 
 .. note::
 

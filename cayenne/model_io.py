@@ -68,7 +68,10 @@ class ModelIO:
             raise KeyError(f"Unsupported content_type: {content_type}")
         self.er_code = er_code
         if self.er_code == -1:
-            raise ModelError("Error while parsing model")
+            error_msg = "Error while parsing model. Model variable names "
+            error_msg += "might be antimony keywords (see docs at https://"
+            error_msg += "cayenne.readthedocs.io/en/latest/tutorial.html)."
+            raise ModelError(error_msg)
         self.sb_module = sb.getMainModuleName()
         self._parse_model()
 
@@ -125,7 +128,6 @@ class ModelIO:
         # Check rate constant specifications
         del rxn_rate_dict["chem_flag"]
         rxn_rate_names.remove("chem_flag")
-        print(rxn_rateeqns, rxn_rate_names)
         if "" in rxn_rateeqns:
             raise RateConstantError("Missing rate constant for one of the reactions.")
         for rxn_rateeqn in rxn_rateeqns:

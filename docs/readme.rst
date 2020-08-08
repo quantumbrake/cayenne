@@ -179,6 +179,7 @@ Credits
 -  `Cookiecutter <https://github.com/audreyr/cookiecutter>`__
 -  `audreyr/cookiecutter-pypackage <https://github.com/audreyr/cookiecutter-pypackage>`__
 -  `black <https://github.com/ambv/black>`__
+-  Logo made with `logomakr <https://logomakr.com/>`__
 
 .. |Travis Build Status| image:: https://travis-ci.com/Heuro-labs/cayenne.svg?branch=master
    :target: https://travis-ci.com/Heuro-labs/cayenne
