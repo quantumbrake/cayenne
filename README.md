@@ -10,6 +10,7 @@
 [![pypi](https://img.shields.io/pypi/v/cayenne.svg)](https://pypi.python.org/pypi/cayenne)
 ![License](https://img.shields.io/badge/license-Apache%202-blue.svg)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/ambv/black)
+[![Gitter chat](https://badges.gitter.im/gitterHQ/gitter.png)](https://gitter.im/cayenne-package)
 
 
 

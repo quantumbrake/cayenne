@@ -7,7 +7,8 @@ cayenne : Python package for stochastic simulations
 ===================================================
 
 |Travis Build Status| |Azure Build Status| |codecov| |Updates|
-|Documentation Status| |pypi| |License| |Code style: black|
+|Documentation Status| |pypi| |License| |Code style: black| |Gitter
+chat|
 
 Introduction
 ------------
@@ -196,3 +197,5 @@ Credits
 .. |License| image:: https://img.shields.io/badge/license-Apache%202-blue.svg
 .. |Code style: black| image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/ambv/black
+.. |Gitter chat| image:: https://badges.gitter.im/gitterHQ/gitter.png
+   :target: https://gitter.im/cayenne-package
