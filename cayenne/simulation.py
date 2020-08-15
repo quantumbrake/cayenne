@@ -428,7 +428,9 @@ class Simulation:
                     HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
         return HOR
 
-    def plot(self, species_names: list = None, new_names: list = None):
+    def plot(
+        self, species_names: list = None, new_names: list = None, thinning: int = 1
+    ):
         """
             Plot the simulation
 
@@ -440,6 +442,10 @@ class Simulation:
             new_names: list, optional
                 The names of the species to be plotted.
                 The default is ``"xi"`` for species ``i``.
+            thinning: int
+                The parameter that controls the sampling
+                Eg. a value of 100 means that 1 point will be sampled every 100 steps
+                The default is 1 (every time-point is sampled)
 
             Returns
             -------
@@ -459,6 +465,8 @@ class Simulation:
             colors = prop_cycle.by_key()["color"]
             fig, ax = plt.subplots()
             res = self._results
+            if not isinstance(thinning, int):
+                raise ValueError("The thinning parameter must be integer")
             legend_handlers = [0] * n_species
             generic_names = [""] * n_species
             for index1 in range(n_species):
@@ -467,12 +475,19 @@ class Simulation:
                 generic_names[index1] = this_species
                 n_reps = len(res)
                 for index2 in range(n_reps):
-                    ax.step(
-                        res.t_list[index2],
-                        res.get_species([this_species])[index2],
-                        color=colors[index1],
-                        where="post",
-                    )
+                    if thinning == 1:
+                        ax.step(
+                            res.t_list[index2][::thinning],
+                            res.get_species([this_species])[index2][::thinning, :],
+                            color=colors[index1],
+                            where="post",
+                        )
+                    else:
+                        ax.scatter(
+                            res.t_list[index2][::thinning],
+                            res.get_species([this_species])[index2][::thinning, :],
+                            color=colors[index1],
+                        )
             if new_names is None:
                 new_names = self.species_names
             fig.legend(legend_handlers, new_names)
