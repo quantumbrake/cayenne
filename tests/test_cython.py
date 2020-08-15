@@ -2,25 +2,23 @@
 
 import pytest
 import numpy as np
-from pyssa.simulation import Simulation
-from pyssa.utils import get_kstoc
-from pyssa.utils import py_roulette_selection as roulette_selection
+from cayenne.simulation import Simulation
+from cayenne.utils import get_kstoc
+from cayenne.utils import py_roulette_selection as roulette_selection
 
 
 @pytest.mark.usefixtures("setup_basic", "setup_large")
 class TestCython:
     def test_sim(self, setup_basic):
-        V_r, V_p, X0, k = setup_basic
-        sim = Simulation(V_r, V_p, X0, k)
-        sim.simulate(
-            algorithm="direct", max_t=1e5, max_iter=int(1e8), chem_flag=False
-        )
+        species_names, rxn_names, V_r, V_p, X0, k = setup_basic
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
+        sim.simulate(algorithm="direct", max_t=1e5, max_iter=int(1e8), chem_flag=False)
 
     def test_get_kstoc(self, setup_basic):
 
         # A -> B
         # B -> C
-        vr, _, _, k = setup_basic
+        _, _, vr, _, _, k = setup_basic
         kstoc = np.array(get_kstoc(vr, k, 1.0, False))
         assert (kstoc == k).all()
         kstoc = np.array(get_kstoc(vr, k, 2.0, False))

@@ -1,4 +1,4 @@
-* Stochastic Simulation Algorithms in Python version:
+* cayenne version:
 * Python version:
 * Operating System:
 

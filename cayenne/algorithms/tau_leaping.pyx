@@ -4,7 +4,7 @@
     This is an approximate method that needs to be tuned to the system at hand
     (by modifying the time step given by the ``tau`` parameter).
     A default ``tau=0.1`` is assumed by
-    ``pyssa``. This algorithm is approximate and faster than the Direct
+    ``cayenne``. This algorithm is approximate and faster than the Direct
     algorithm, but it must be used with caution. Smaller time steps make the
     simulation more accurate, but increase the code run time. Larger time steps
     make the simulations less accurate but speeds up code run time.

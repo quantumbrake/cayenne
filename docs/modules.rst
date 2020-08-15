@@ -1,7 +1,7 @@
-pyssa
-=====
+cayenne
+=======
 
 .. toctree::
    :maxdepth: 4
 
-   pyssa
+   cayenne

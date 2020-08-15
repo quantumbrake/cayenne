@@ -5,8 +5,8 @@
 import numpy as np
 import pytest
 
-from pyssa.utils import Na, get_kstoc
-from pyssa.simulation import Simulation
+from cayenne.utils import Na, get_kstoc
+from cayenne.simulation import Simulation
 
 
 @pytest.mark.usefixtures("setup_system")
@@ -14,6 +14,7 @@ class TestKstoc:
     """
         Test the output of `get_kstoc`.
     """
+
     def test_100(self, setup_system):
         """ A -> ..."""
         k_det, volume = setup_system

@@ -1,0 +1,13 @@
+const compartment comp1;
+comp1 = 7; # volume
+
+r1: S1 => S1 + S1; k1;
+r2: S1 => ; k2;
+
+k1 = 0.1;
+k2 = 0.11;
+chem_flag = false;
+
+S1 = 100;
+
+S1 in comp1;

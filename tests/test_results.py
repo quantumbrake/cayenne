@@ -5,8 +5,8 @@
 import numpy as np
 import pytest
 
-from pyssa.simulation import Simulation
-from pyssa.results import Results
+from cayenne.simulation import Simulation
+from cayenne.results import Results
 
 
 @pytest.mark.parametrize("algorithm", ["direct", "tau_leaping", "tau_adaptive"])
@@ -20,8 +20,8 @@ class TestResults:
         """
             Test if initialization works.
         """
-        V_r, V_p, X0, k = setup_large
-        sim = Simulation(V_r, V_p, X0, k)
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         with pytest.warns(Warning):
             sim.results
         sim.simulate(algorithm=algorithm)
@@ -31,8 +31,8 @@ class TestResults:
         """
             Test if initialization fails when it is supposed to.
         """
-        V_r, V_p, X0, k = setup_large
-        sim = Simulation(V_r, V_p, X0, k)
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm)
         results = sim.results
         t_list = results.t_list
@@ -40,25 +40,47 @@ class TestResults:
         status_list = results.status_list
         algorithm = "direct"
         seed = [0] * len(status_list)
-        assert Results(t_list, x_list, status_list, algorithm, seed)
+        assert Results(
+            species_names, rxn_names, t_list, x_list, status_list, algorithm, seed
+        )
         with pytest.raises(ValueError):
-            Results(t_list, x_list, status_list, algorithm, seed[:-2])
+            Results(
+                species_names,
+                rxn_names,
+                t_list,
+                x_list,
+                status_list,
+                algorithm,
+                seed[:-2],
+            )
         with pytest.raises(ValueError):
-            Results(t_list[:-2], x_list, status_list, algorithm, seed)
+            Results(
+                species_names,
+                rxn_names,
+                t_list[:-2],
+                x_list,
+                status_list,
+                algorithm,
+                seed,
+            )
         with pytest.raises(ValueError):
             t_list[0] = t_list[0][:-2]
-            Results(t_list, x_list, status_list, algorithm, seed)
+            Results(
+                species_names, rxn_names, t_list, x_list, status_list, algorithm, seed
+            )
         with pytest.raises(ValueError):
             status_list[-1] = "fail"
-            Results(t_list, x_list, status_list, algorithm, seed)
+            Results(
+                species_names, rxn_names, t_list, x_list, status_list, algorithm, seed
+            )
 
     def test_iter_len(self, algorithm, setup_large):
         """
             Test the ``__len__`` method and if shape of x and t match.
         """
-        V_r, V_p, X0, k = setup_large
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
         n_rep = 10
-        sim = Simulation(V_r, V_p, X0, k)
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, n_rep=n_rep)
         results = sim.results
         assert len(results) == n_rep
@@ -70,9 +92,9 @@ class TestResults:
         """
             Test the ``__getitem__`` method.
         """
-        V_r, V_p, X0, k = setup_large
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
         n_rep = 10
-        sim = Simulation(V_r, V_p, X0, k)
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, n_rep=n_rep)
         results = sim.results
         assert 9 in results
@@ -86,11 +108,11 @@ class TestResults:
         """
             Test the ``final`` property.
         """
-        V_r, V_p, X0, k = setup_large
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
         n_rep = 3
         max_t = 1e5
         max_iter = 100
-        sim = Simulation(V_r, V_p, X0, k)
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=max_t, max_iter=max_iter, n_rep=n_rep)
         results = sim.results
         final_times, final_states = results.final
@@ -103,11 +125,11 @@ class TestResults:
         """
             Test the ``get_state`` method.
         """
-        V_r, V_p, X0, k = setup_large
+        species_names, rxn_names, V_r, V_p, X0, k = setup_large
         n_rep = 3
         max_t = 1e5
         max_iter = 100
-        sim = Simulation(V_r, V_p, X0, k)
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=max_t, max_iter=max_iter, n_rep=n_rep)
         results = sim.results
         assert np.isclose(results.get_state(0.0), np.array(X0, dtype=np.float)).all()
@@ -124,7 +146,7 @@ class TestResults:
         ]
         status_list = [1, 1, 1]
         seed = [0, 1, 2]
-        res = Results(t_list, x_list, status_list, algorithm, seed)
+        res = Results(["A"], ["r1"], t_list, x_list, status_list, algorithm, seed)
         zero_array = np.array([0])
         one_array = np.array([1])
         two_array = np.array([2])
@@ -141,8 +163,21 @@ class TestResults:
         """
             Test the ``get_state`` method at longer model times.
         """
-        V_r, V_p, X0, k, _, _, _, max_t, max_iter, n_rep = setup_00003
-        sim = Simulation(V_r, V_p, X0, k)
+        (
+            species_names,
+            rxn_names,
+            V_r,
+            V_p,
+            X0,
+            k,
+            _,
+            _,
+            _,
+            max_t,
+            max_iter,
+            n_rep,
+        ) = setup_00003
+        sim = Simulation(species_names, rxn_names, V_r, V_p, X0, k)
         sim.simulate(algorithm=algorithm, max_t=10000, max_iter=max_iter, n_rep=1)
         print(
             "status", sim.results.status_list[0], sim.results.t_list, sim.results.x_list

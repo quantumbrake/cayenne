@@ -8,7 +8,7 @@ import pathlib
 import numpy as np
 import pytest
 
-from pyssa.utils import Na
+from cayenne.utils import Na
 
 
 CURR_DIR = pathlib.Path(__file__).parent
@@ -30,7 +30,9 @@ def setup_basic():
     V_p = np.array([[0, 0], [1, 0], [0, 1]])
     X0 = np.array([100, 0, 0], dtype=np.int64)
     k = np.array([1.0, 1.0])
-    return V_r, V_p, X0, k
+    species_names = ["A", "B", "C"]
+    rxn_names = ["r1", "r2"]
+    return species_names, rxn_names, V_r, V_p, X0, k
 
 
 @pytest.fixture
@@ -68,7 +70,9 @@ def setup_large():
     )
     X0 = np.array([10, 0, 0, 0, 0], dtype=np.int64)
     k = np.array([1.0, 1.0, 1.0, 1.0, 1.0])
-    return V_r, V_p, X0, k
+    species_names = ["A", "B", "C", "D", "E"]
+    rxn_names = ["r1", "r2", "r3", "r4", "r5"]
+    return species_names, rxn_names, V_r, V_p, X0, k
 
 
 @pytest.fixture
@@ -101,7 +105,9 @@ def setup_bifurcation():
     V_p = np.array([[0, 0, 0], [1, 2, 0], [0, 0, 1], [0, 0, 0]])
     k = np.array([1.0, 0.01 * Na, 1.0])
     X0 = np.array([1, 0, 0, 10], dtype=np.int64)
-    return V_r, V_p, X0, k
+    species_names = ["A", "B", "C", "D"]
+    rxn_names = ["r1", "r2", "r3"]
+    return species_names, rxn_names, V_r, V_p, X0, k
 
 
 @pytest.fixture
@@ -120,7 +126,9 @@ def setup_long():
     V_p = np.array([[0, 0], [1, 0], [0, 1]])
     k = np.array([1.0, 1.0])
     X0 = np.array([int(4e5), 1000, 0], dtype=np.int64)
-    return V_r, V_p, X0, k
+    species_names = ["A", "B", "C"]
+    rxn_names = ["r1", "r2"]
+    return species_names, rxn_names, V_r, V_p, X0, k
 
 
 def read_results(test_id: str):
@@ -260,6 +268,8 @@ def setup_00003():
 
         A0 = 100, max_t = 51, max_iter = 1e5
     """
+    species_names = ["A"]
+    rxn_names = ["r1", "r2"]
     V_r = np.array([[1, 1]])
     V_p = np.array([[2, 0]])
     X0 = np.array([100], dtype=np.int64)
@@ -269,6 +279,8 @@ def setup_00003():
     n_rep = 10
     time_list, mu_list, std_list = read_results("00003")
     return (
+        species_names,
+        rxn_names,
         V_r,
         V_p,
         X0,
@@ -709,3 +721,141 @@ def setup_00039():
         max_iter,
         n_rep,
     )
+
+
+@pytest.fixture
+def setup_00001_correct():
+    MODEL_00001 = """
+        const compartment comp1;
+        comp1 = 7; # volume
+
+        r1: S1 => S1 + S1; k1;
+        r2: S1 => ; k2;
+
+        k1 = 0.1;
+        k2 = 0.11;
+        chem_flag = false;
+
+        S1 = 100;
+    """
+    return MODEL_00001
+
+
+@pytest.fixture
+def setup_00001_nochemflag():
+    MODEL_00001 = """
+        const compartment comp1;
+        comp1 = 7; # volume
+
+        r1: S1 => S1 + S1; k1;
+        r2: S1 => ; k2;
+
+        k1 = 0.1;
+        k2 = 0.11;
+
+        S1 = 100;
+    """
+    return MODEL_00001
+
+
+@pytest.fixture
+def setup_00001_norate():
+    MODEL_00001 = """
+        const compartment comp1;
+        comp1 = 7; # volume
+
+        r1: S1 => S1 + S1; k1;
+        r2: S1 => ;
+
+        k1 = 0.1;
+        chem_flag = false;
+
+        S1 = 100;
+    """
+    return MODEL_00001
+
+
+@pytest.fixture
+def setup_00001_noratevalue():
+    MODEL_00001 = """
+        const compartment comp1;
+        comp1 = 7; # volume
+
+        r1: S1 => S1 + S1; k1;
+        r2: S1 => ; k2;
+
+        k1 = 0.1;
+        chem_flag = false;
+
+        S1 = 100;
+    """
+    return MODEL_00001
+
+
+@pytest.fixture
+def setup_00001_nospeciesvalue():
+    MODEL_00001 = """
+        const compartment comp1;
+        comp1 = 7; # volume
+
+        r1: S1 => S1 + S1; k1;
+        r2: S1 => ; k2;
+
+        k1 = 0.1;
+        k2 = 0.11;
+        chem_flag = false;
+
+    """
+    return MODEL_00001
+
+
+@pytest.fixture
+def setup_00001_rateequation():
+    MODEL_00001 = """
+        const compartment comp1;
+        comp1 = 7; # volume
+
+        r1: S1 => S1 + S1; k1*S1;
+        r2: S1 => ; k2*S1;
+
+        k1 = 0.1;
+        k2 = 0.11;
+        chem_flag = false;
+
+        S1 = 100;
+    """
+    return MODEL_00001
+
+
+@pytest.fixture
+def setup_00001_incompletespeciesvalue():
+    MODEL_00001 = """
+        const compartment comp1;
+        comp1 = 7; # volume
+
+        r1: S1 => S1 + S1; k1;
+        r2: S1 => S2; k2;
+
+        k1 = 0.1;
+        k2 = 0.11;
+        chem_flag = false;
+
+        S1 = 100;
+
+    """
+    return MODEL_00001
+
+
+@pytest.fixture
+def setup_00001_nocompartment():
+    MODEL_00001 = """
+        r1: S1 => S1 + S1; k1;
+        r2: S1 => ; k2;
+
+        k1 = 0.1;
+        k2 = 0.11;
+        chem_flag = false;
+
+        S1 = 100;
+    """
+    return MODEL_00001

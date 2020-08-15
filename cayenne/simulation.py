@@ -2,18 +2,19 @@
     The main class for running stochastic simulation
 """
 
-from functools import partial
 import multiprocessing as mp
+from functools import partial
 from typing import List, Optional
 from warnings import warn
 
-import numpy as np
-import matplotlib.pyplot as plt
 import matplotlib.lines as mlines
+import matplotlib.pyplot as plt
+import numpy as np
 
 from .algorithms.direct import direct
-from .algorithms.tau_leaping import tau_leaping
 from .algorithms.tau_adaptive import tau_adaptive
+from .algorithms.tau_leaping import tau_leaping
+from .model_io import ModelIO
 from .results import Results
 
 
@@ -27,6 +28,10 @@ class Simulation:
 
         Parameters
         ----------
+        species_names : List[str]
+            List of species names
+        rxn_names : List[str]
+            List of reaction names
         react_stoic: (ns, nr) ndarray
             A 2D array of the stoichiometric coefficients of the reactants.
             Reactions are columns and species are rows.
@@ -99,6 +104,8 @@ class Simulation:
 
     def __init__(
         self,
+        species_names: List[str],
+        rxn_names: List[str],
         react_stoic: np.ndarray,
         prod_stoic: np.ndarray,
         init_state: np.ndarray,
@@ -106,6 +113,8 @@ class Simulation:
         chem_flag: bool = False,
         volume: float = 1.0,
     ) -> None:
+        self.species_names = species_names
+        self.rxn_names = rxn_names
         self._react_stoic = react_stoic
         self._prod_stoic = prod_stoic
         self._init_state = init_state
@@ -120,6 +129,14 @@ class Simulation:
         self._check_consistency()
 
     def _check_consistency(self):
+        if len(self.species_names) != self._ns:
+            raise ValueError(
+                "Species names must match the stoichiometric matrix shapes."
+            )
+        if len(self.rxn_names) != self._nr:
+            raise ValueError(
+                "Reaction names must match the stoichiometric matrix shapes."
+            )
         if (self._ns != self._prod_stoic.shape[0]) or (
             self._nr != self._prod_stoic.shape[1]
         ):
@@ -165,17 +182,56 @@ class Simulation:
         else:
             return self._results
 
+    @classmethod
+    def load_model(cls, contents: str, contents_type: str) -> "Simulation":
+        """
+            Load model contents into a Simulation object
+
+            Parameters
+            ----------
+            model_contents : str
+                Either the model string or the file path
+            content_type : str, {"ModelString", "ModelFile"}
+                The type of the model
+
+            Returns
+            -------
+            sim : Simulation
+                An instance of the Simulation class.
+         """
+        modelio = ModelIO(contents, contents_type)
+        (
+            species_names,
+            rxn_names,
+            react_stoic,
+            prod_stoic,
+            init_state,
+            k_det,
+            chem_flag,
+            volume,
+        ) = modelio.args
+        return cls(
+            species_names,
+            rxn_names,
+            react_stoic,
+            prod_stoic,
+            init_state,
+            k_det,
+            chem_flag,
+            volume,
+        )
+
     def simulate(
         self,
         max_t: float = 10.0,
         max_iter: int = 1000,
         seed: int = 0,
         n_rep: int = 1,
-        n_procs: int = 1,
+        n_procs: Optional[int] = 1,
         algorithm: str = "direct",
         debug: bool = False,
         **kwargs,
-    ):
+    ) -> None:
         """
             Run the simulation
 
@@ -195,17 +251,18 @@ class Simulation:
                 The default value is 1.
             n_procs: int, optional
                 The number of cpu cores to use for the simulation.
+                Use ``None`` to automatically detect number of cpu cores.
                 The default value is 1.
             algorithm: str, optional
                 The algorithm to be used to run the simulation.
                 The default value is ``"direct"``.
 
-            Returns
-            -------
-            t: float
-                End time of the simulation.
-            Xt: ndarray
-                System state at time ``t`` and initial.
+            Notes
+            -----
+            The status indicates the status of the simulation at exit. Each
+            repetition will have a status associated with it, and these are
+            accessible through the ``Simulation.results.status_list``.
+
             status: int
                 Indicates the status of the simulation at exit.
 
@@ -308,7 +365,15 @@ class Simulation:
             tlist.append(t)
             xlist.append(X)
             status_list.append(status)
-        self._results = Results(tlist, xlist, status_list, algorithm, sim_seeds)
+        self._results = Results(
+            self.species_names,
+            self.rxn_names,
+            tlist,
+            xlist,
+            status_list,
+            algorithm,
+            sim_seeds,
+        )
 
     @property
     def HOR(self) -> np.ndarray:
@@ -363,19 +428,16 @@ class Simulation:
                     HOR[ind] = -3  # g_i should be(3 + 1/(x_i-1) + 2/(x_i-2))
         return HOR
 
-    def plot(self, plot_indices: list = None, disp: bool = True, names: list = None):
+    def plot(self, species_names: list = None, new_names: list = None):
         """
             Plot the simulation
 
             Parameters
             ----------
-            plot_indices: list, optional
-                The indices of the species to be plotted.
+            species_names: list, optional
+                The names of the species to be plotted (``list`` of ``str``).
                 The default is ``None`` and  plots all species.
-            disp: bool, optional
-                If ``True``, the plot is displayed.
-                The default shows the plot.
-            names: list, optional
+            new_names: list, optional
                 The names of the species to be plotted.
                 The default is ``"xi"`` for species ``i``.
 
@@ -390,31 +452,30 @@ class Simulation:
         if self._results is None:
             raise ValueError("Simulate not run.")
         else:
-            if plot_indices is None:
-                plot_indices = [i for i in range(self._ns)]
-            elif np.any(np.array(plot_indices) < 0):
-                raise ValueError("Negative indexing not supported")
-
-            n_indices = len(plot_indices)
+            if species_names is None:
+                species_names = self.species_names
+            n_species = len(species_names)
             prop_cycle = plt.rcParams["axes.prop_cycle"]
             colors = prop_cycle.by_key()["color"]
             fig, ax = plt.subplots()
             res = self._results
-            legend_handlers = [0] * n_indices
-            generic_names = [""] * n_indices
-            for index1 in range(n_indices):
+            legend_handlers = [0] * n_species
+            generic_names = [""] * n_species
+            for index1 in range(n_species):
                 legend_handlers[index1] = mlines.Line2D([], [], color=colors[index1])
-                generic_names[index1] = "x" + str(plot_indices[index1])
-                for index2 in range(len(res.status_list)):
+                this_species = species_names[index1]
+                generic_names[index1] = this_species
+                n_reps = len(res)
+                for index2 in range(n_reps):
                     ax.step(
                         res.t_list[index2],
-                        res.x_list[index2][:, plot_indices[index1]],
+                        res.get_species([this_species])[index2],
                         color=colors[index1],
                         where="post",
                     )
-            if names is None:
-                names = generic_names
-            fig.legend(legend_handlers, names)
-            if disp:
-                plt.show()
+            if new_names is None:
+                new_names = self.species_names
+            fig.legend(legend_handlers, new_names)
+            ax.set_xlabel("Time")
+            ax.set_ylabel("Species amounts")
             return fig, ax

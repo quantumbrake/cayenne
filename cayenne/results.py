@@ -3,7 +3,7 @@
 """
 
 from collections.abc import Collection
-from typing import List, Tuple
+from typing import List, Tuple, Iterator
 from warnings import warn
 
 import numpy as np
@@ -15,6 +15,10 @@ class Results(Collection):
 
         Parameters
         ----------
+        species_names : List[str]
+            List of species names
+        rxn_names : List[str]
+            List of reaction names
         t_list: List[float]
             List of time points for each repetition
         x_list: List[np.ndarray]
@@ -25,16 +29,36 @@ class Results(Collection):
             Algorithm used to run the simulation
         sim_seeds: List[int]
             List of seeds used for the simulation
+
+        Notes
+        -----
+        The status indicates the status of the simulation at exit. Each
+        repetition will have a status associated with it, and these are
+        accessible through the ``status_list``.
+
+        1: Succesful completion, terminated when ``max_iter`` iterations reached.
+
+        2: Succesful completion, terminated when ``max_t`` crossed.
+
+        3: Succesful completion, terminated when all species went extinct.
+
+        -1: Failure, order greater than 3 detected.
+
+        -2: Failure, propensity zero without extinction.
     """
 
     def __init__(
         self,
+        species_names: List[str],
+        rxn_names: List[str],
         t_list: List[np.ndarray],
         x_list: List[np.ndarray],
         status_list: List[int],
         algorithm: str,
         sim_seeds: List[int],
     ) -> None:
+        self.species_names = species_names
+        self.rxn_names = rxn_names
         self.x_list = x_list
         self.t_list = t_list
         self.status_list = status_list
@@ -65,6 +89,8 @@ class Results(Collection):
         for x, t, status in self:
             if x.shape[0] != t.shape[0]:
                 return False
+            if x.shape[1] != len(self.species_names):
+                return False
             if not isinstance(status, int):
                 return False
         return True
@@ -78,18 +104,19 @@ class Results(Collection):
             summary: str
                 Summary of the simulation with length of simulation, algorithm and seeds used.
         """
-        summary = f"<Results n_rep={len(self)} algorithm={self.algorithm} sim_seeds={self.sim_seeds}>"
+        summary = f"<Results species={self.species_names} n_rep={len(self)} "
+        summary = summary + f"algorithm={self.algorithm} sim_seeds={self.sim_seeds}>"
         return summary
 
     def __str__(self) -> str:
         """ Return self.__repr__() """
         return self.__repr__()
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Tuple[np.ndarray, np.ndarray, int]]:
         """ Iterate over each repetition """
         return zip(self.x_list, self.t_list, self.status_list)
 
-    def __len__(self):
+    def __len__(self) -> int:
         """
             Return number of repetitions in simulation
 
@@ -101,14 +128,14 @@ class Results(Collection):
         n_rep = len(self.x_list)
         return n_rep
 
-    def __contains__(self, ind):
+    def __contains__(self, ind: int):
         """ Returns True if ind is one of the repetition numbers """
         if ind < len(self):
             return True
         else:
             return False
 
-    def __getitem__(self, ind: int):
+    def __getitem__(self, ind: int) -> Tuple[np.ndarray, np.ndarray, int]:
         """
             Return sim. state, time points and status of repetition no. `ind`
 
@@ -191,3 +218,23 @@ class Results(Collection):
                 else:
                     states.append(x_array[ind, :])
         return states
+
+    def get_species(self, species_names: List[str]) -> List[np.ndarray]:
+        """
+            Returns the species concentrations only for the species in species_names
+
+            Parameters
+            ---------
+            species_names : List[str]
+                The names of the species as a list
+
+            Returns
+            ------
+            List[np.ndarray]
+                Simulation output of the selected species.
+        """
+        x_list_curated = []
+        species_inds = [self.species_names.index(s) for s in species_names]
+        for rep_ind in range(len(self)):
+            x_list_curated.append(self[rep_ind][0][:, species_inds])
+        return x_list_curated

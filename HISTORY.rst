@@ -2,6 +2,41 @@
 History
 =======
 
+1.0.2 (2020-08-08)
+------------------
+
+Added
++++++
+- Warnings about antimony keyword usage in tutorial, ``ModelIO`` class
+
+Fixed
++++++
+- ``setup.py`` setup requirements are automatically installed
+- ``antimony`` version incompatibility issue
+
+1.0.0 (2020-07-18)
+------------------
+
+Added
++++++
+- ``Antimony`` support and ``ModelIO`` class, giving easier entry point to load models
+- Support for custom species names in plotting and ``Results``
+- Support for automatic ``cpu`` core detection
+- New logo for ``cayenne``
+
+Changed
++++++++
+- Package name changed from ``pyssa`` to ``cayenne``
+- Update docs for new API
+
+0.9.1 (2020-05-23)
+------------------
+Fix interpolation bug in ``Results.get_state``
+
+Fixed
++++++
+- ``Results.get_state`` function now adds an epsilon to time
+
 0.9.0 (2019-12-14)
 ------------------
 Replace ``numba`` implementation with ``Cython`` implementation
