@@ -2,6 +2,13 @@
 History
 =======
 
+1.0.3 (2020-08-22)
+------------------
+
+Added
++++++
+- ``thinning`` parameter to control sampling in ``Simulation.plot``
+
 1.0.2 (2020-08-08)
 ------------------
 
