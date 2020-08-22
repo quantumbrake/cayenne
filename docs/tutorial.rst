@@ -116,8 +116,6 @@ Suppose we want to run 10 repetitions of the system for at most 1000 steps / 40 
 
 .. automethod:: cayenne.simulation.Simulation.simulate
 
->>>>>>> master
-
 Plotting
 --------
 
