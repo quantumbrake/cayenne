@@ -96,6 +96,7 @@ The initial values for species are assigned one per line, with each line ending 
 .. _Michaelis-Menten: https://en.wikipedia.org/wiki/Michaelis%E2%80%93Menten_kinetics
 
 .. note::
+
     The ``chem_flag`` is set to ``True`` since we are dealing with a chemical system. For defintion of ``chem_flag``, see the notes under the definition of the ``Simulation`` class.
 
 These variables are passed to the ``Simulation`` class to create an object that represents the current system ::
@@ -114,7 +115,6 @@ Suppose we want to run 10 repetitions of the system for at most 1000 steps / 40 
     >>> sim.simulate(max_t=40, max_iter=1000, n_rep=10)
 
 .. automethod:: cayenne.simulation.Simulation.simulate
-
 
 Plotting
 --------
@@ -238,7 +238,7 @@ Algorithms
 The ``Simulation`` class currently supports the following algorithms (see :ref:`algorithms`):
 
 1. :ref:`Gillespie's direct method <direct>`
-2. :ref:`Tau leaping method method <tau_leaping>`
+2. :ref:`Tau leaping method <tau_leaping>`
 3. :ref:`Adaptive tau leaping method (experimental) <tau_adaptive>`
 
 You can change the algorithm used to perform a simulation using the ``algorithm`` argument ::

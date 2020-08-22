@@ -59,7 +59,7 @@ def direct(
         Returns
         -------
         t: ndarray
-            Numpy array of the times.
+            Numpy array of the time points.
         x: ndarray
             Numpy array of the states of the system at times in in ``t``.
         status: int

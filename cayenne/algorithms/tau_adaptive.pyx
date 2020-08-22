@@ -1,8 +1,8 @@
 """
     Experimental implementation of the `tau adaptive algorithm
     <https://doi.org/10.1063/1.2159468>`_. This is an approximate method that
-    builds off the tau_leaping method. It self-adapts the value of ``tau``
-    over the course of the simulation. For sytems with a small number of
+    builds off the ``tau_leaping method``. It self-adapts the value of ``tau``
+    over the course of the simulation. For systems with a small number of
     molecules, it will be similar in speed to the direct method. For systems
     with a large number of molecules, it will be much faster than the direct
     method.
@@ -260,9 +260,9 @@ def tau_adaptive(
         Returns
         -------
         t: ndarray
-            Numpy array of the times.
+            Numpy array of the time points.
         x: ndarray
-            Numpy array of the states of the system at times in in ``t``.
+            Numpy array of the states of the system at times in ``t``.
         status: int
             Indicates the status of the simulation at exit.
 

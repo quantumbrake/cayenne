@@ -2,12 +2,12 @@
     Implementation of the
     `tau leaping algorithm <https://en.wikipedia.org/wiki/Tau-leaping>`_.
     This is an approximate method that needs to be tuned to the system at hand
-    (by modifying the time step or the ``tau`` parameter).
+    (by modifying the time step given by the ``tau`` parameter).
     A default ``tau=0.1`` is assumed by
     ``cayenne``. This algorithm is approximate and faster than the Direct
     algorithm, but it must be used with caution. Smaller time steps make the
     simulation more accurate, but increase the code run time. Larger time steps
-    makes the simulations less accurate and speeds up code run time.
+    make the simulations less accurate but speeds up code run time.
 """
 
 cimport cython
@@ -64,7 +64,7 @@ def tau_leaping(
         Returns
         -------
         t: ndarray
-            Numpy array of the times.
+            Numpy array of the time points.
         x: ndarray
             Numpy array of the states of the system at times in in `t`.
         status: int
