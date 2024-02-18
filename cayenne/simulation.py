@@ -300,7 +300,7 @@ class Simulation:
                         max_t,
                         max_iter,
                         self._volume,
-                        sim_seeds[index],
+                        int(sim_seeds[index]),
                         self._chem_flag,
                     )
                 )
@@ -320,7 +320,7 @@ class Simulation:
                         tau,
                         max_t,
                         self._volume,
-                        sim_seeds[index],
+                        nt(sim_seeds[index]),
                         self._chem_flag,
                     )
                 )
@@ -348,7 +348,7 @@ class Simulation:
                         max_t,
                         max_iter,
                         self._volume,
-                        sim_seeds[index],
+                        int(sim_seeds[index]),
                         self._chem_flag,
                     )
                 )
